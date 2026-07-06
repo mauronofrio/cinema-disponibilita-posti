@@ -1,0 +1,266 @@
+[
+  {
+    "cinemaId": "1028",
+    "name": "Beinasco",
+    "slug": "beinasco",
+    "address": "Via Giovanni Falcone, 10149 Beinasco TO",
+    "lat": 45.021899,
+    "lng": 7.594591
+  },
+  {
+    "cinemaId": "1032",
+    "name": "Belpasso",
+    "slug": "belpasso",
+    "address": "Via Valcorrente, 23, 95032 Belpasso CT",
+    "lat": 37.543031,
+    "lng": 14.954819
+  },
+  {
+    "cinemaId": "1003",
+    "name": "Bologna",
+    "slug": "bologna",
+    "address": "Viale Europa, 5 Bologna 40128",
+    "lat": 44.511261,
+    "lng": 11.373616
+  },
+  {
+    "cinemaId": "1024",
+    "name": "Casamassima Bari",
+    "slug": "casamassima",
+    "address": "Via Noicattaro, 2 Casamassima (Bari) 70010 - presso Parco Commerciale Casamassima",
+    "lat": 40.96825967825999,
+    "lng": 16.925639738787776
+  },
+  {
+    "cinemaId": "1036",
+    "name": "Catanzaro",
+    "slug": "catanzaro",
+    "address": "Le Fontane Shopping Mall, 88100 Catanzaro CZ",
+    "lat": 38.857518,
+    "lng": 16.631039
+  },
+  {
+    "cinemaId": "1016",
+    "name": "Cerro Maggiore",
+    "slug": "cerro-maggiore",
+    "address": "Via F. Turati, 72, 20023 Cerro Maggiore MI",
+    "lat": 45.601465,
+    "lng": 8.95037
+  },
+  {
+    "cinemaId": "1027",
+    "name": "Corciano",
+    "slug": "corciano",
+    "address": "Via Pierluigi Nervi Corciano 06073",
+    "lat": 43.099126,
+    "lng": 12.315488
+  },
+  {
+    "cinemaId": "1035",
+    "name": "Firenze",
+    "slug": "firenze",
+    "address": "Via di Novoli, 2, 50127 Firenze FI",
+    "lat": 43.794760559533216,
+    "lng": 11.249314205356347
+  },
+  {
+    "cinemaId": "1008",
+    "name": "Genova",
+    "slug": "genova",
+    "address": "Via Magazzini del Cotone Genova 16128",
+    "lat": 44.4081936013936,
+    "lng": 8.922253371200085
+  },
+  {
+    "cinemaId": "1004",
+    "name": "Grosseto",
+    "slug": "grosseto",
+    "address": "Via Canada, 80, 58100 Grosseto GR",
+    "lat": 42.77999546508037,
+    "lng": 11.114116552105463
+  },
+  {
+    "cinemaId": "1007",
+    "name": "Guidonia",
+    "slug": "guidonia",
+    "address": "Via Antonio De Curtis, 00012 Guidonia Montecelio RM",
+    "lat": 41.95810992084777,
+    "lng": 12.709571755239326
+  },
+  {
+    "cinemaId": "1034",
+    "name": "Lamezia",
+    "slug": "lamezia",
+    "address": "Località Comuni Condomini, 88046 Maida CZ",
+    "lat": 38.89893161750952,
+    "lng": 16.350709642148427
+  },
+  {
+    "cinemaId": "1012",
+    "name": "Limena",
+    "slug": "limena",
+    "address": "Via Vincenzo Stefano Breda, 11, 35010 Limena PD",
+    "lat": 45.46381289234778,
+    "lng": 11.848565777363412
+  },
+  {
+    "cinemaId": "1017",
+    "name": "Livorno",
+    "slug": "livorno",
+    "address": "Via Antonio Bacchelli, 60, 57124 Livorno LI",
+    "lat": 43.54774683892599,
+    "lng": 10.338412625145981
+  },
+  {
+    "cinemaId": "1002",
+    "name": "Montebello",
+    "slug": "montebello",
+    "address": "Via Mirabella, 6, 27054 Montebello della Battaglia PV",
+    "lat": 45.00030463119429,
+    "lng": 9.071732473069174
+  },
+  {
+    "cinemaId": "1026",
+    "name": "Montesilvano",
+    "slug": "montesilvano",
+    "address": "Via Alberto D' Andrea, 1 Montesilvano 65015",
+    "lat": 42.52217548845613,
+    "lng": 14.150756269278732
+  },
+  {
+    "cinemaId": "1019",
+    "name": "Napoli",
+    "slug": "napoli",
+    "address": "Viale Giochi del Mediterraneo, 80125 Napoli NA",
+    "lat": 40.82186139945638,
+    "lng": 14.177437455716454
+  },
+  {
+    "cinemaId": "1033",
+    "name": "Nola",
+    "slug": "nola",
+    "address": "Via Boscofangone, 80035 Località Gallo NA presso Centro Commerciale Vulcano Buono",
+    "lat": 40.95319075010608,
+    "lng": 14.488031267958982
+  },
+  {
+    "cinemaId": "1013",
+    "name": "Parma Campus",
+    "slug": "parma-campus",
+    "address": "Largo Sergio Leone, 7/A, 43124 Parma PR",
+    "lat": 44.76602255301333,
+    "lng": 10.322170404324613
+  },
+  {
+    "cinemaId": "1031",
+    "name": "Parma Centro",
+    "slug": "parma-centro",
+    "address": "Largo Fausto Bocchi, 29/A, 43121 Parma PR",
+    "lat": 44.80068789271356,
+    "lng": 10.34660709756116
+  },
+  {
+    "cinemaId": "1010",
+    "name": "Pradamano",
+    "slug": "pradamano",
+    "address": "Via Pier Paolo Pasolini, 6, 33040 Pradamano UD",
+    "lat": 46.02174967001299,
+    "lng": 13.286029286608079
+  },
+  {
+    "cinemaId": "1029",
+    "name": "Quartucciu",
+    "slug": "quartucciu",
+    "address": "Via delle Serre presso Le Vele Shopping Center, 09044 Quartucciu CA",
+    "lat": 39.24482707763826,
+    "lng": 9.163392370996153
+  },
+  {
+    "cinemaId": "1021",
+    "name": "Roma Moderno",
+    "slug": "roma-moderno",
+    "address": "P.za della Repubblica, 43/45, 00184 Roma RM",
+    "lat": 41.90220499251632,
+    "lng": 12.497232305465545
+  },
+  {
+    "cinemaId": "1020",
+    "name": "Rozzano",
+    "slug": "rozzano",
+    "address": "Via Sandro Pertini, 20, 20089 Rozzano MI",
+    "lat": 45.38982045616271,
+    "lng": 9.179129473085704
+  },
+  {
+    "cinemaId": "1015",
+    "name": "Salerno",
+    "slug": "salerno",
+    "address": "Viale Antonio Bandiera, 84131 Salerno SA",
+    "lat": 40.64806177635783,
+    "lng": 14.821786184544607
+  },
+  {
+    "cinemaId": "1014",
+    "name": "Sestu",
+    "slug": "sestu",
+    "address": "Centro Commerciale La Corte del Sole, 09028 Sestu CA",
+    "lat": 39.304785310438895,
+    "lng": 9.067493676530875
+  },
+  {
+    "cinemaId": "1009",
+    "name": "Silea",
+    "slug": "silea",
+    "address": "Via Sile, 8, 31057 Silea TV",
+    "lat": 45.65208496293912,
+    "lng": 12.293346710480975
+  },
+  {
+    "cinemaId": "1001",
+    "name": "Surbo",
+    "slug": "surbo",
+    "address": "Via Benzi, 5, 73010 Surbo LE",
+    "lat": 40.37554439896252,
+    "lng": 18.146897744048108
+  },
+  {
+    "cinemaId": "1006",
+    "name": "Terni",
+    "slug": "terni",
+    "address": "Viale Donato Bramante, Snc, 05100 Terni TR",
+    "lat": 42.57265108903491,
+    "lng": 12.635527540445901
+  },
+  {
+    "cinemaId": "1011",
+    "name": "Trieste",
+    "slug": "trieste",
+    "address": "Via Italo Svevo, 14, 34100 Trieste TS",
+    "lat": 45.63509979933124,
+    "lng": 13.780747354068323
+  },
+  {
+    "cinemaId": "1023",
+    "name": "Verona",
+    "slug": "verona",
+    "address": "Via Trentino, 1 Lugagnano presso La Grande Mela Shoppingland, 37060 Lugagnano VR",
+    "lat": 45.439638395561225,
+    "lng": 10.864570521536777
+  },
+  {
+    "cinemaId": "1022",
+    "name": "Vicenza Torri di Quartesolo",
+    "slug": "vicenza",
+    "address": "Via Brescia, 13, 36040 Torri di Quartesolo VI",
+    "lat": 45.51066350453136,
+    "lng": 11.623372586586216
+  },
+  {
+    "cinemaId": "1030",
+    "name": "Vimercate",
+    "slug": "vimercate",
+    "address": "Via Torri Bianche, 16, 20871 Vimercate MI",
+    "lat": 45.6010418483577,
+    "lng": 9.35977668474591
+  }
+]

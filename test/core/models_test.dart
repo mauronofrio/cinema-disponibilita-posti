@@ -1,0 +1,113 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:thespace_companion/core/models/film.dart';
+import 'package:thespace_companion/core/models/seat_map.dart';
+
+void main() {
+  group('SeatMap.fromApiResponseJson', () {
+    late String rawJson;
+
+    setUpAll(() {
+      rawJson = File('test/fixtures/seats_sample.json').readAsStringSync();
+    });
+
+    test('parses screen metadata', () {
+      final seatMap = SeatMap.fromApiResponseJson(rawJson);
+      expect(seatMap.screenLabel, 'Sala 5');
+      expect(seatMap.totalRows, 19);
+      expect(seatMap.totalColumns, 26);
+    });
+
+    test('maps every known seatStatus code to the right enum value', () {
+      final seatMap = SeatMap.fromApiResponseJson(rawJson);
+      final byStatus = <SeatStatus, int>{};
+      for (final row in seatMap.rows) {
+        for (final seat in row.seats) {
+          if (seat == null) continue;
+          byStatus[seat.status] = (byStatus[seat.status] ?? 0) + 1;
+        }
+      }
+      // The fixture was curated to cover codes 0, 1, 9 and 11.
+      expect(byStatus[SeatStatus.available], greaterThan(0));
+      expect(byStatus[SeatStatus.occupied], greaterThan(0));
+      expect(byStatus[SeatStatus.accessibility], greaterThan(0));
+    });
+
+    test('unknown seatStatus codes fall back to unknown, not a crash', () {
+      expect(seatStatusFromCode(999), SeatStatus.unknown);
+    });
+
+    test('drops the redundant per-seat sitecoreSeatStatus payload', () {
+      final decoded = json.decode(rawJson) as Map<String, dynamic>;
+      final firstRowWithSeat = (decoded['result']['seatRows'] as List<dynamic>)
+          .firstWhere(
+            (r) => (r['columns'] as List<dynamic>).any((c) => c != null),
+          );
+      final rawSeat = (firstRowWithSeat['columns'] as List<dynamic>).firstWhere(
+        (c) => c != null,
+      );
+      expect(
+        rawSeat,
+        contains('sitecoreSeatStatus'),
+        reason: 'sanity check: fixture still has the bloat',
+      );
+
+      final seatMap = SeatMap.fromApiResponseJson(rawJson);
+      final firstSeat = seatMap.rows
+          .expand((r) => r.seats)
+          .firstWhere((s) => s != null)!;
+      // Seat only exposes the trimmed fields - nothing to assert "absence" of
+      // sitecoreSeatStatus on since the model has no such field at all.
+      expect(firstSeat.name, isNotEmpty);
+      expect(firstSeat.areaCategoryCode, isNotEmpty);
+    });
+
+    test('parses area categories with color and sold-out flag', () {
+      final seatMap = SeatMap.fromApiResponseJson(rawJson);
+      expect(seatMap.areaCategories, isNotEmpty);
+      final category = seatMap.areaCategories.first;
+      expect(category.code, isNotEmpty);
+      expect(category.color, startsWith('#'));
+    });
+  });
+
+  group('Film parsing', () {
+    late List<dynamic> rawFilms;
+
+    setUpAll(() {
+      final decoded = json.decode(
+        File('test/fixtures/films_sample.json').readAsStringSync(),
+      );
+      rawFilms = decoded['result'] as List<dynamic>;
+    });
+
+    test('maps title, poster and showing groups', () {
+      final film = Film.fromJson(rawFilms.first as Map<String, dynamic>);
+      expect(film.title, isNotEmpty);
+      expect(film.filmId, isNotEmpty);
+      expect(film.showingGroups, isNotEmpty);
+    });
+
+    test('sessionsOn returns sessions only for the matching calendar day', () {
+      final film = Film.fromJson(rawFilms.first as Map<String, dynamic>);
+      final firstGroupDate = film.showingGroups.first.date;
+
+      expect(film.sessionsOn(firstGroupDate), isNotEmpty);
+      expect(
+        film.sessionsOn(firstGroupDate.add(const Duration(days: 365))),
+        isEmpty,
+      );
+    });
+
+    test(
+      'drops empty-name session attributes (API includes blank placeholders)',
+      () {
+        final film = Film.fromJson(rawFilms.first as Map<String, dynamic>);
+        final session = film.showingGroups.first.sessions.first;
+        expect(session.attributes.every((a) => a.name.isNotEmpty), isTrue);
+      },
+    );
+  });
+}
