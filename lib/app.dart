@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/date/clock.dart';
 import 'core/date/day_label.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/no_stretch_scroll_behavior.dart';
 import 'features/cinema_picker/cinema_list_provider.dart';
 import 'features/showtimes/films_provider.dart';
 import 'features/showtimes/showing_dates_provider.dart';
@@ -57,6 +58,7 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
       title: 'The Space (non ufficiale)',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
+      scrollBehavior: const NoStretchScrollBehavior(),
       routerConfig: router,
       locale: const Locale('it'),
       supportedLocales: const [Locale('it')],
