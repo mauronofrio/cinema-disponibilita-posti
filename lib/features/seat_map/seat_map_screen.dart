@@ -36,7 +36,16 @@ class SeatMapScreen extends ConsumerWidget {
           await ref.read(seatMapProvider(key).future);
         },
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          // Android 15+ edge-to-edge means the system nav bar floats over the
+          // app rather than reserving its own space, so the bottom inset has
+          // to be added explicitly or the last rows of the grid end up
+          // permanently hidden behind it.
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            16 + MediaQuery.paddingOf(context).bottom,
+          ),
           children: [
             Text(
               '${args.screenName} · ${DateFormat.Hm().format(args.startTime)}',
@@ -65,7 +74,7 @@ class SeatMapScreen extends ConsumerWidget {
                   children: [
                     AreaLegend(seatMap: seatMap),
                     const SizedBox(height: 20),
-                    Center(child: SeatGrid(seatMap: seatMap)),
+                    SeatGrid(seatMap: seatMap),
                   ],
                 );
               },

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +7,65 @@ import 'dio_provider.dart';
 import '../models/film.dart';
 import '../models/showing_date.dart';
 import '../models/seat_map.dart';
+
+/// A failure the API itself reported (HTTP error status, but with a JSON
+/// body carrying a human-readable `errorMessage` - the backend does this
+/// even for perfectly ordinary situations, e.g. a specific session's seat
+/// data being temporarily unavailable). [message] is already fit to show
+/// directly in the UI.
+class ApiException implements Exception {
+  const ApiException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
+const _htmlNamedEntities = {
+  'amp': '&',
+  'lt': '<',
+  'gt': '>',
+  'quot': '"',
+  'apos': "'",
+  'nbsp': ' ',
+  'rsquo': '’',
+  'lsquo': '‘',
+  'rdquo': '”',
+  'ldquo': '“',
+  'hellip': '…',
+  'agrave': 'à',
+  'egrave': 'è',
+  'igrave': 'ì',
+  'ograve': 'ò',
+  'ugrave': 'ù',
+  'aacute': 'á',
+  'eacute': 'é',
+  'iacute': 'í',
+  'oacute': 'ó',
+  'uacute': 'ú',
+};
+
+/// Decodes the small set of HTML entities the API's error messages actually
+/// use (Italian accented vowels, punctuation) - not a general HTML decoder,
+/// just enough for text meant for a web page to read cleanly in a plain
+/// Flutter `Text` widget.
+String _decodeHtmlEntities(String input) {
+  return input.replaceAllMapped(RegExp(r'&(#x?[0-9a-fA-F]+|[a-zA-Z]+);'), (
+    match,
+  ) {
+    final entity = match.group(1)!;
+    if (entity.startsWith('#x') || entity.startsWith('#X')) {
+      final code = int.tryParse(entity.substring(2), radix: 16);
+      return code == null ? match.group(0)! : String.fromCharCode(code);
+    }
+    if (entity.startsWith('#')) {
+      final code = int.tryParse(entity.substring(1));
+      return code == null ? match.group(0)! : String.fromCharCode(code);
+    }
+    return _htmlNamedEntities[entity] ?? match.group(0)!;
+  });
+}
 
 /// Typed client for the public `thespacecinema.it` showings/booking API.
 ///
@@ -25,6 +86,37 @@ class TheSpaceApiClient {
     _warmedUp = true;
   }
 
+  /// The API returns a JSON body with an `errorMessage` field even on error
+  /// responses (4xx/5xx) - e.g. `{"responseCode":339,"errorMessage":"..."}`
+  /// for a session whose seat data isn't available. That message is worth
+  /// showing as-is; retrying the same request never fixes it, so this
+  /// throws immediately instead of the previous retry-then-give-up dance,
+  /// which just made a real error look like it was hanging.
+  Never _throwFriendly(DioException e) {
+    final data = e.response?.data;
+    Object? decoded = data;
+    if (data is String) {
+      try {
+        decoded = json.decode(data);
+      } catch (_) {
+        decoded = null;
+      }
+    }
+    if (decoded is Map && decoded['errorMessage'] is String) {
+      final raw = decoded['errorMessage'] as String;
+      // Strip the API's HTML markup (<p>, <strong>, etc.) and decode its
+      // entities (it sends "c'&egrave; stato" literally) - it's meant for
+      // the official website, not a plain-text mobile UI.
+      final plain = _decodeHtmlEntities(
+        raw.replaceAll(RegExp('<[^>]*>'), ' '),
+      ).replaceAll(RegExp(r'\s+'), ' ').trim();
+      if (plain.isNotEmpty) throw ApiException(plain);
+    }
+    throw const ApiException(
+      'Impossibile completare la richiesta. Riprova più tardi.',
+    );
+  }
+
   Future<Map<String, dynamic>> _getJson(
     String path, {
     Map<String, dynamic>? query,
@@ -39,17 +131,7 @@ class TheSpaceApiClient {
       );
       return response.data!;
     } on DioException catch (e) {
-      final status = e.response?.statusCode;
-      if (status == 401 || status == 404) {
-        // Cookie may have expired or never took; re-warm once and retry.
-        await _warmUp();
-        final response = await _dio.get<Map<String, dynamic>>(
-          '/api/microservice$path',
-          queryParameters: query,
-        );
-        return response.data!;
-      }
-      rethrow;
+      _throwFriendly(e);
     }
   }
 
@@ -79,21 +161,14 @@ class TheSpaceApiClient {
     if (!_warmedUp) {
       await _warmUp();
     }
-    Future<Response<String>> request() => _dio.get<String>(
-      '/api/microservice/booking/Session/$cinemaId/$sessionId/seats',
-      options: Options(responseType: ResponseType.plain),
-    );
     try {
-      final response = await request();
+      final response = await _dio.get<String>(
+        '/api/microservice/booking/Session/$cinemaId/$sessionId/seats',
+        options: Options(responseType: ResponseType.plain),
+      );
       return response.data!;
     } on DioException catch (e) {
-      final status = e.response?.statusCode;
-      if (status == 401 || status == 404) {
-        await _warmUp();
-        final response = await request();
-        return response.data!;
-      }
-      rethrow;
+      _throwFriendly(e);
     }
   }
 }

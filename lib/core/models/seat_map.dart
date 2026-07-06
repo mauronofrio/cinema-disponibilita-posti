@@ -70,6 +70,15 @@ class SeatRow {
     required this.seats,
   });
 
+  /// The raw `columns` array is rendered in the exact order the API sends
+  /// it, with `null` entries preserved as same-sized gaps - deliberately
+  /// *not* reordered by `columnIndex`. An earlier version of this code
+  /// rebuilt each row by placing seats at their own `columnIndex`, assuming
+  /// array order was unreliable; that assumption was wrong and produced a
+  /// mirrored/incorrect layout. The reference implementation this app is
+  /// modeled on (github.com/mauronofrio/TheSpace_Fast_Seat_Check, a
+  /// userscript validated against the real site across many rooms) simply
+  /// trusts array order, and so does this.
   factory SeatRow.fromJson(Map<String, dynamic> json) {
     return SeatRow(
       rowLabel: (json['rowLabel'] as String?) ?? '',
@@ -131,6 +140,9 @@ class SeatMap {
       screenLabel: (seatingData['screenLabel'] as String?) ?? '',
       totalRows: (seatingData['totalRows'] as num).toInt(),
       totalColumns: (seatingData['totalColumns'] as num).toInt(),
+      // Rows are rendered in raw array order too, for the same reason as
+      // columns above - the reference userscript just does
+      // `seatRows.forEach(...)` with no sort.
       rows: (result['seatRows'] as List<dynamic>? ?? const [])
           .map((r) => SeatRow.fromJson(r as Map<String, dynamic>))
           .toList(),

@@ -32,29 +32,12 @@ class AppColors {
   /// chip, active nav, and other things that mean "this one, right now".
   static const marquee = Color(0xFFE8A23A);
 
-  /// The single saturated color in the app - reserved for available seats.
+  /// Fallback fill for an available seat whose category has no color of its
+  /// own; every non-available seat, regardless of category, shares this one
+  /// muted grey (see seat_grid.dart) - it can't be picked, so its category
+  /// no longer matters.
   static const seatAvailable = Color(0xFF45C7AE);
   static const seatOccupied = Color(0xFF322F3A);
-  static const seatReserved = Color(0xFF8A6A35);
-  static const seatSpecial = Color(0xFF7B62B0);
-  static const seatAccessibility = Color(0xFF4C7FA6);
-}
-
-Color colorForSeatStatus(SeatStatus status) {
-  switch (status) {
-    case SeatStatus.available:
-      return AppColors.seatAvailable;
-    case SeatStatus.occupied:
-      return AppColors.seatOccupied;
-    case SeatStatus.reserved:
-      return AppColors.seatReserved;
-    case SeatStatus.special:
-      return AppColors.seatSpecial;
-    case SeatStatus.accessibility:
-      return AppColors.seatAccessibility;
-    case SeatStatus.unknown:
-      return AppColors.hairline;
-  }
 }
 
 String labelForSeatStatus(SeatStatus status) {
@@ -72,6 +55,16 @@ String labelForSeatStatus(SeatStatus status) {
     case SeatStatus.unknown:
       return 'Non disponibile';
   }
+}
+
+/// Parses the API's `"#RRGGBB"` area color strings. Returns null for
+/// anything else so callers can fall back to a neutral color.
+Color? colorFromHex(String? hex) {
+  if (hex == null || hex.isEmpty) return null;
+  final cleaned = hex.replaceFirst('#', '');
+  final value = int.tryParse(cleaned, radix: 16);
+  if (value == null) return null;
+  return Color(0xFF000000 | value);
 }
 
 class AppTheme {

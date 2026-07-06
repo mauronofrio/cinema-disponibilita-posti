@@ -39,6 +39,40 @@ void main() {
       expect(seatStatusFromCode(999), SeatStatus.unknown);
     });
 
+    test(
+      'preserves the raw column array order rather than reordering by columnIndex',
+      () {
+        // The reference implementation (github.com/mauronofrio/TheSpace_Fast_Seat_Check,
+        // validated against the real site) trusts the API's array order as-is.
+        // The fixture's row A has columnIndex descending (20, 19, ..., 5) in
+        // raw array order, so the first element must still be the seat named
+        // "A20" - not reordered to array position 20.
+        final decoded = json.decode(rawJson) as Map<String, dynamic>;
+        final rawRowA = (decoded['result']['seatRows'] as List<dynamic>)
+            .firstWhere((r) => r['rowLabel'] == 'A');
+        final rawFirstSeatName = (rawRowA['columns'] as List<dynamic>)
+            .firstWhere((c) => c != null)['name'];
+        expect(rawFirstSeatName, 'A20');
+
+        final seatMap = SeatMap.fromApiResponseJson(rawJson);
+        final rowA = seatMap.rows.firstWhere((r) => r.rowLabel == 'A');
+        expect(rowA.seats.firstWhere((s) => s != null)?.name, 'A20');
+      },
+    );
+
+    test(
+      'preserves the raw seatRows array order rather than sorting by rowIndex',
+      () {
+        final decoded = json.decode(rawJson) as Map<String, dynamic>;
+        final rawLabels = (decoded['result']['seatRows'] as List<dynamic>)
+            .map((r) => r['rowLabel'])
+            .toList();
+
+        final seatMap = SeatMap.fromApiResponseJson(rawJson);
+        expect(seatMap.rows.map((r) => r.rowLabel).toList(), rawLabels);
+      },
+    );
+
     test('drops the redundant per-seat sitecoreSeatStatus payload', () {
       final decoded = json.decode(rawJson) as Map<String, dynamic>;
       final firstRowWithSeat = (decoded['result']['seatRows'] as List<dynamic>)
