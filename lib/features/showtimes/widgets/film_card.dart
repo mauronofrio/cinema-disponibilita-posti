@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/date/clock.dart';
 import '../../../core/models/cinema.dart';
 import '../../../core/models/film.dart';
 import '../../../core/theme/app_theme.dart';
@@ -41,6 +42,7 @@ class FilmCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final now = ref.watch(clockProvider).now();
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -96,6 +98,7 @@ class FilmCard extends ConsumerWidget {
                     children: sessions.map((session) {
                       return _SessionTimeChip(
                         session: session,
+                        isPast: now.isAfter(session.startTime),
                         onTap: () => _openSeatMap(context, ref, session),
                       );
                     }).toList(),
@@ -111,22 +114,32 @@ class FilmCard extends ConsumerWidget {
 }
 
 class _SessionTimeChip extends StatelessWidget {
-  const _SessionTimeChip({required this.session, required this.onTap});
+  const _SessionTimeChip({
+    required this.session,
+    required this.isPast,
+    required this.onTap,
+  });
 
   final Session session;
+  final bool isPast;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final soldOut = session.isSoldOut;
+    // Once a showtime has started, the seats endpoint stops returning
+    // availability for it - so the time is kept visible (still useful as a
+    // record of the day's programme) but is no longer tappable, distinct
+    // from "sold out" which is a different, still-relevant state.
+    final disabled = soldOut || isPast;
     return Material(
-      color: soldOut ? AppColors.surfaceElevated : AppColors.background,
+      color: disabled ? AppColors.surfaceElevated : AppColors.background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: const BorderSide(color: AppColors.hairline),
       ),
       child: InkWell(
-        onTap: soldOut ? null : onTap,
+        onTap: disabled ? null : onTap,
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -136,7 +149,7 @@ class _SessionTimeChip extends StatelessWidget {
                 : DateFormat.Hm().format(session.startTime),
             style: AppTheme.mono(context).copyWith(
               fontSize: 13,
-              color: soldOut ? AppColors.textMuted : AppColors.textPrimary,
+              color: disabled ? AppColors.textMuted : AppColors.textPrimary,
               decoration: soldOut ? TextDecoration.lineThrough : null,
             ),
           ),

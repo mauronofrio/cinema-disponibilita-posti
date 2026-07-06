@@ -78,7 +78,12 @@ class _CinemaPickerScreenState extends ConsumerState<CinemaPickerScreen> {
                   );
                 }
                 return ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: EdgeInsets.fromLTRB(
+                    0,
+                    8,
+                    0,
+                    8 + MediaQuery.paddingOf(context).bottom,
+                  ),
                   itemCount: filtered.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 4),
                   itemBuilder: (context, index) {

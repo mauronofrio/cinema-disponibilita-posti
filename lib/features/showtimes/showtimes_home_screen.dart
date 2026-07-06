@@ -166,7 +166,13 @@ class _CinemaShowtimes extends ConsumerWidget {
               );
             },
           ),
-        const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+        SliverPadding(
+          // See seat_map_screen.dart: edge-to-edge system nav bar floats
+          // over the content, so its inset must be added explicitly.
+          padding: EdgeInsets.only(
+            bottom: 24 + MediaQuery.paddingOf(context).bottom,
+          ),
+        ),
       ],
     );
   }
