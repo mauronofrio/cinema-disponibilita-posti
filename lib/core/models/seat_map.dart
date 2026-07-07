@@ -164,4 +164,28 @@ class SeatMap {
     }
     return null;
   }
+
+  /// Every real seat in the room (nulls are aisle gaps, not seats).
+  int get totalSeatCount =>
+      rows.fold(0, (sum, row) => sum + row.seats.whereType<Seat>().length);
+
+  /// Matches the reference implementation's own notion of "free": exactly
+  /// `status == available`, everything else (occupied, reserved, sold-out
+  /// areas, ...) counts against it.
+  int get availableSeatCount => rows.fold(
+    0,
+    (sum, row) =>
+        sum +
+        row.seats
+            .whereType<Seat>()
+            .where((s) => s.status == SeatStatus.available)
+            .length,
+  );
+
+  int get occupiedSeatCount => totalSeatCount - availableSeatCount;
+
+  /// 0.0-1.0, occupied over total; 0 for an empty/degenerate room rather
+  /// than dividing by zero.
+  double get occupancyRatio =>
+      totalSeatCount == 0 ? 0 : occupiedSeatCount / totalSeatCount;
 }

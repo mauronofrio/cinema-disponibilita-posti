@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/models/film.dart';
 import '../../core/models/seat_map.dart';
 import '../../core/network/api_client.dart';
 
@@ -11,20 +12,23 @@ typedef SeatMapKey = (String cinemaId, String sessionId);
 /// Arguments passed via the router when navigating to the seat map screen -
 /// the bits already known from the showtimes list, so the screen can render
 /// its header instantly instead of waiting on the seat fetch for anything.
+///
+/// Carries every showing day for this film, not just the one that was
+/// tapped: `getFilmsForCinema` already returns every day's sessions in one
+/// response (see films_provider.dart), so letting the screen itself switch
+/// day and showtime costs no extra request at all.
 class SeatMapArgs {
   const SeatMapArgs({
     required this.cinemaId,
-    required this.sessionId,
-    required this.screenName,
     required this.filmTitle,
-    required this.startTime,
+    required this.showingGroups,
+    required this.initialSessionId,
   });
 
   final String cinemaId;
-  final String sessionId;
-  final String screenName;
   final String filmTitle;
-  final DateTime startTime;
+  final List<ShowingGroup> showingGroups;
+  final String initialSessionId;
 }
 
 /// Seat availability for one session. Deliberately short-lived (unlike the

@@ -105,6 +105,31 @@ void main() {
       expect(category.code, isNotEmpty);
       expect(category.color, startsWith('#'));
     });
+
+    test(
+      'occupancy counters match a manual count and never double-count aisle gaps',
+      () {
+        final seatMap = SeatMap.fromApiResponseJson(rawJson);
+        final allSeats = seatMap.rows
+            .expand((r) => r.seats)
+            .whereType<Seat>()
+            .toList();
+
+        expect(seatMap.totalSeatCount, allSeats.length);
+        expect(
+          seatMap.availableSeatCount,
+          allSeats.where((s) => s.status == SeatStatus.available).length,
+        );
+        expect(
+          seatMap.occupiedSeatCount,
+          seatMap.totalSeatCount - seatMap.availableSeatCount,
+        );
+        expect(
+          seatMap.occupancyRatio,
+          seatMap.occupiedSeatCount / seatMap.totalSeatCount,
+        );
+      },
+    );
   });
 
   group('Film parsing', () {

@@ -81,9 +81,19 @@ class TheSpaceApiClient {
   final Dio _dio;
   bool _warmedUp = false;
 
-  Future<void> _warmUp() async {
-    await _dio.get<void>('/');
-    _warmedUp = true;
+  /// Runs once before the first real request. Wrapped in the same
+  /// friendly-error handling as every other call - a DNS/connectivity
+  /// failure here used to bypass `_throwFriendly` entirely (this call sat
+  /// outside any try/catch) and surface as a raw `DioException` stack dump
+  /// instead of a message a user could actually read.
+  Future<void> _ensureWarmedUp() async {
+    if (_warmedUp) return;
+    try {
+      await _dio.get<void>('/');
+      _warmedUp = true;
+    } on DioException catch (e) {
+      _throwFriendly(e);
+    }
   }
 
   /// The API returns a JSON body with an `errorMessage` field even on error
@@ -92,7 +102,18 @@ class TheSpaceApiClient {
   /// showing as-is; retrying the same request never fixes it, so this
   /// throws immediately instead of the previous retry-then-give-up dance,
   /// which just made a real error look like it was hanging.
+  ///
+  /// A connection-level failure (no DNS, no signal, timeout - confirmed on
+  /// a real device as `DioExceptionType.connectionError`, "no address
+  /// associated with hostname") never reaches a server at all, so there's
+  /// no response body to read a message from; that gets its own plain-
+  /// language message instead of the fallback meant for server errors.
   Never _throwFriendly(DioException e) {
+    if (e.response == null) {
+      throw const ApiException(
+        'Connessione a Internet non disponibile. Controlla la rete e riprova.',
+      );
+    }
     final data = e.response?.data;
     Object? decoded = data;
     if (data is String) {
@@ -121,9 +142,7 @@ class TheSpaceApiClient {
     String path, {
     Map<String, dynamic>? query,
   }) async {
-    if (!_warmedUp) {
-      await _warmUp();
-    }
+    await _ensureWarmedUp();
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         '/api/microservice$path',
@@ -158,9 +177,7 @@ class TheSpaceApiClient {
   /// single `compute()` call. The response can be several hundred KB and
   /// doing that work on the UI isolate is a real source of jank.
   Future<String> getSeatMapJson(String cinemaId, String sessionId) async {
-    if (!_warmedUp) {
-      await _warmUp();
-    }
+    await _ensureWarmedUp();
     try {
       final response = await _dio.get<String>(
         '/api/microservice/booking/Session/$cinemaId/$sessionId/seats',
