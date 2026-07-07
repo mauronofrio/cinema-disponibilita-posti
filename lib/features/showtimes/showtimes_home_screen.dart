@@ -97,7 +97,6 @@ class _CinemaShowtimes extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final daysAsync = ref.watch(showingDatesProvider(cinema));
-    final filmsAsync = ref.watch(filmsForCinemaProvider(cinema));
     final now = ref.watch(clockProvider).now();
     final t = AppLocalizations.of(context);
 
@@ -158,61 +157,63 @@ class _CinemaShowtimes extends ConsumerWidget {
           ),
         ),
         if (selectedDay != null)
-          filmsAsync.when(
-            loading: () => const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ),
-            error: (err, _) => SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text('${t.filmsLoadError} $err'),
-              ),
-            ),
-            data: (films) {
-              final day = selectedDay!;
-              final filmsToday = films
-                  .where((f) => f.sessionsOn(day).isNotEmpty)
-                  .toList();
-              if (filmsToday.isEmpty) {
-                return SliverToBoxAdapter(
+          ref
+              .watch(filmsForDayProvider((cinema, selectedDay!)))
+              .when(
+                loading: () => const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+                error: (err, _) => SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text(
-                      t.noFilmsForDay,
-                      style: const TextStyle(color: AppColors.textMuted),
-                    ),
+                    child: Text('${t.filmsLoadError} $err'),
                   ),
-                );
-              }
-              return SliverList.separated(
-                itemCount: filmsToday.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final film = filmsToday[index];
-                  return Padding(
-                    // Only the top gets extra space for the first card (a
-                    // little breathing room under the day chips) - giving
-                    // it bottom padding too would make the 1st-to-2nd gap
-                    // bigger than every other gap between cards.
-                    padding: EdgeInsets.fromLTRB(
-                      16,
-                      index == 0 ? 12 : 0,
-                      16,
-                      0,
-                    ),
-                    child: FilmCard(
-                      film: film,
-                      cinema: cinema,
-                      sessions: film.sessionsOn(day),
-                    ),
+                ),
+                data: (films) {
+                  final day = selectedDay!;
+                  final filmsToday = films
+                      .where((f) => f.sessionsOn(day).isNotEmpty)
+                      .toList();
+                  if (filmsToday.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          t.noFilmsForDay,
+                          style: const TextStyle(color: AppColors.textMuted),
+                        ),
+                      ),
+                    );
+                  }
+                  return SliverList.separated(
+                    itemCount: filmsToday.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final film = filmsToday[index];
+                      return Padding(
+                        // Only the top gets extra space for the first card (a
+                        // little breathing room under the day chips) - giving
+                        // it bottom padding too would make the 1st-to-2nd gap
+                        // bigger than every other gap between cards.
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          index == 0 ? 12 : 0,
+                          16,
+                          0,
+                        ),
+                        child: FilmCard(
+                          film: film,
+                          cinema: cinema,
+                          sessions: film.sessionsOn(day),
+                        ),
+                      );
+                    },
                   );
                 },
-              );
-            },
-          ),
+              ),
         SliverPadding(
           // See seat_map_screen.dart: edge-to-edge system nav bar floats
           // over the content, so its inset must be added explicitly.

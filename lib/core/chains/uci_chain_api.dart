@@ -34,7 +34,10 @@ class UciChainApi implements ChainApi {
   }
 
   @override
-  Future<List<Film>> getFilmsForCinema(Cinema cinema) async {
+  Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) async {
+    // [day] is unused - UCI has no per-day-cheap endpoint, so every
+    // published day is fetched and merged regardless of which one the
+    // caller actually wants shown right now (same one-time cost either way).
     final days = await _myUci.getProgrammingDays(cinema.cinemaId);
     // UCI has no single "every day at once" endpoint the way The Space
     // does, so every published day is fetched concurrently instead of one

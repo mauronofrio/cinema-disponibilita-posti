@@ -22,7 +22,10 @@ class TheSpaceChainApi implements ChainApi {
   }
 
   @override
-  Future<List<Film>> getFilmsForCinema(Cinema cinema) {
+  Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) {
+    // The Space's own endpoint already returns every day in one cheap
+    // response - [day] doesn't change what's fetched, only which of the
+    // returned films end up shown (the caller filters that).
     return _client.getFilmsForCinema(cinema.cinemaId);
   }
 

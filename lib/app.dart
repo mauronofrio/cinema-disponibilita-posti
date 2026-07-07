@@ -9,7 +9,6 @@ import 'core/localization/locale_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/no_stretch_scroll_behavior.dart';
 import 'features/cinema_picker/cinema_list_provider.dart';
-import 'features/showtimes/films_provider.dart';
 import 'features/showtimes/showing_dates_provider.dart';
 import 'routing/app_router.dart';
 
@@ -40,8 +39,14 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
   /// The actual fix for the official app's stale-"today" bug: every time the
   /// app comes back to the foreground, recompute the real calendar day from
   /// the device clock and compare it against the day we last saw. If it
-  /// changed, drop the cached showings/films for the current favorite so
+  /// changed, drop the cached showing dates for the current favorite so
   /// they're refetched rather than silently served from yesterday.
+  ///
+  /// Films are no longer invalidated here (see films_provider.dart):
+  /// they're now keyed by the literal calendar day being viewed, not by an
+  /// abstract "today", so a rollover can't cause the old mislabeling bug -
+  /// worst case a day's session list stays cached for up to its own TTL
+  /// past the rollover, which clears on its own.
   Future<void> _checkForDayRollover() async {
     final currentDayKey = todayKey(ref.read(clockProvider).now());
     if (currentDayKey == _lastKnownDayKey) return;
@@ -50,7 +55,6 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
     final activeCinema = await ref.read(activeCinemaProvider.future);
     if (activeCinema == null) return;
     ref.invalidate(showingDatesProvider(activeCinema));
-    ref.invalidate(filmsForCinemaProvider(activeCinema));
   }
 
   @override
