@@ -16,12 +16,23 @@ class AreaLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final presentCategoryCodes = <String>{};
-    var hasUnavailableSeat = false;
+    var hasGreyOccupiedSeat = false;
+    var hasAccessibilitySeat = false;
     for (final row in seatMap.rows) {
       for (final seat in row.seats) {
         if (seat == null) continue;
         presentCategoryCodes.add(seat.areaCategoryCode);
-        if (seat.status != SeatStatus.available) hasUnavailableSeat = true;
+        switch (seat.status) {
+          case SeatStatus.available:
+            break;
+          case SeatStatus.accessibility:
+            hasAccessibilitySeat = true;
+          case SeatStatus.occupied:
+          case SeatStatus.reserved:
+          case SeatStatus.special:
+          case SeatStatus.unknown:
+            hasGreyOccupiedSeat = true;
+        }
       }
     }
     final categories = seatMap.areaCategories
@@ -39,7 +50,13 @@ class AreaLegend extends StatelessWidget {
             color: colorFromHex(category.color) ?? AppColors.seatAvailable,
             label: category.name,
           ),
-        if (hasUnavailableSeat)
+        if (hasAccessibilitySeat)
+          _LegendEntry(
+            color: AppColors.seatAccessibility,
+            label: AppLocalizations.of(context).seatStatusAccessibility,
+            icon: Icons.accessible,
+          ),
+        if (hasGreyOccupiedSeat)
           _LegendEntry(
             color: AppColors.seatOccupied,
             label: AppLocalizations.of(context).seatStatusOccupied,
@@ -50,10 +67,11 @@ class AreaLegend extends StatelessWidget {
 }
 
 class _LegendEntry extends StatelessWidget {
-  const _LegendEntry({required this.color, required this.label});
+  const _LegendEntry({required this.color, required this.label, this.icon});
 
   final Color color;
   final String label;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +85,9 @@ class _LegendEntry extends StatelessWidget {
             color: color,
             borderRadius: BorderRadius.circular(3),
           ),
+          child: icon == null
+              ? null
+              : Icon(icon, size: 9, color: AppColors.background),
         ),
         const SizedBox(width: 6),
         Text(

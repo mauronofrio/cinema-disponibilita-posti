@@ -107,18 +107,23 @@ void main() {
     });
 
     test(
-      'occupancy counters match a manual count and never double-count aisle gaps',
+      'occupancy counters match a manual count, excluding accessibility seats, '
+      'and never double-count aisle gaps',
       () {
         final seatMap = SeatMap.fromApiResponseJson(rawJson);
-        final allSeats = seatMap.rows
+        // Accessibility seats are deliberately left out of both counters -
+        // see SeatMap.totalSeatCount - so the manual count here must match
+        // that, not every seat in the room.
+        final countedSeats = seatMap.rows
             .expand((r) => r.seats)
             .whereType<Seat>()
+            .where((s) => !s.isAccessibility)
             .toList();
 
-        expect(seatMap.totalSeatCount, allSeats.length);
+        expect(seatMap.totalSeatCount, countedSeats.length);
         expect(
           seatMap.availableSeatCount,
-          allSeats.where((s) => s.status == SeatStatus.available).length,
+          countedSeats.where((s) => s.status == SeatStatus.available).length,
         );
         expect(
           seatMap.occupiedSeatCount,

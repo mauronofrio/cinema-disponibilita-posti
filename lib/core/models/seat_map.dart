@@ -44,15 +44,18 @@ class Seat {
     required this.name,
     required this.status,
     required this.areaCategoryCode,
+    this.isAccessibility = false,
   });
 
   factory Seat.fromJson(Map<String, dynamic> json) {
+    final status = seatStatusFromCode((json['seatStatus'] as num).toInt());
     return Seat(
       rowIndex: json['rowIndex'] as int,
       columnIndex: json['columnIndex'] as int,
       name: (json['name'] as String?) ?? '',
-      status: seatStatusFromCode((json['seatStatus'] as num).toInt()),
+      status: status,
       areaCategoryCode: (json['areaCategoryCode'] as String?) ?? '',
+      isAccessibility: status == SeatStatus.accessibility,
     );
   }
 
@@ -61,6 +64,14 @@ class Seat {
   final String name;
   final SeatStatus status;
   final String areaCategoryCode;
+
+  /// Whether this seat is a wheelchair-accessible spot, as a fixed property
+  /// of the seat itself - independent of [status], which for UCI collapses
+  /// to plain `occupied` when an accessibility seat happens to be taken for
+  /// this particular showing (see uci_seat_map_parser.dart). Occupancy
+  /// counts need this separate flag to exclude accessibility seats
+  /// consistently, not just the ones that happen to still be free.
+  final bool isAccessibility;
 }
 
 class SeatRow {
@@ -165,20 +176,31 @@ class SeatMap {
     return null;
   }
 
-  /// Every real seat in the room (nulls are aisle gaps, not seats).
-  int get totalSeatCount =>
-      rows.fold(0, (sum, row) => sum + row.seats.whereType<Seat>().length);
+  /// Every real seat in the room (nulls are aisle gaps, not seats),
+  /// excluding accessibility seats - the "Occupati X/Y" summary is about
+  /// ordinary seat availability, and a handful of wheelchair spots would
+  /// skew both the count and the percentage without meaning much either
+  /// way for someone not booking one.
+  int get totalSeatCount => rows.fold(
+    0,
+    (sum, row) =>
+        sum +
+        row.seats.whereType<Seat>().where((s) => !s.isAccessibility).length,
+  );
 
   /// Matches the reference implementation's own notion of "free": exactly
   /// `status == available`, everything else (occupied, reserved, sold-out
-  /// areas, ...) counts against it.
+  /// areas, ...) counts against it. Accessibility seats are excluded here
+  /// too, same reasoning as [totalSeatCount].
   int get availableSeatCount => rows.fold(
     0,
     (sum, row) =>
         sum +
         row.seats
             .whereType<Seat>()
-            .where((s) => s.status == SeatStatus.available)
+            .where(
+              (s) => !s.isAccessibility && s.status == SeatStatus.available,
+            )
             .length,
   );
 

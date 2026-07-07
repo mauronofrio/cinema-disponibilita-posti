@@ -39,6 +39,16 @@ class AppColors {
   /// no longer matters.
   static const seatAvailable = Color(0xFF45C7AE);
   static const seatOccupied = Color(0xFF322F3A);
+
+  /// Accessibility seats get their own color rather than collapsing into
+  /// [seatOccupied] like every other non-available status - unlike category
+  /// (which stops mattering once a seat can't be picked), *where the
+  /// wheelchair-accessible seats are* stays useful to know regardless of
+  /// whether this particular showing still has one free. Deliberately a
+  /// violet far from both blue and red - UCI's own category colors are
+  /// often exactly those two (e.g. a blue "Normale", a red "VIP"), so
+  /// anything in that range would blend right back in.
+  static const seatAccessibility = Color(0xFF9B6BD6);
 }
 
 String labelForSeatStatus(SeatStatus status, BuildContext context) {

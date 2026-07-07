@@ -91,6 +91,10 @@ SeatMap parseUciSeatMap(UciSeatMapPayload payload) {
         name: (seatJson['SeatAlias'] as String?) ?? seatId,
         status: _statusFor(seatId, seatType, occupiedSeatIds),
         areaCategoryCode: (seatJson['SectorId'] as String?) ?? '',
+        // Independent of `status` above: a DISABILE seat that's currently
+        // taken still reports status == occupied (see _statusFor), but is
+        // still an accessibility seat for occupancy-count purposes.
+        isAccessibility: seatType == 'DISABILE',
       );
     }
     final rowLabel = seatsInRow.first['SeatId'].toString().split('/').first;

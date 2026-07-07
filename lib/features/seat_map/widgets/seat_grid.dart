@@ -180,13 +180,19 @@ class _SeatBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAvailable = seat.status == SeatStatus.available;
+    final isAccessibility = seat.status == SeatStatus.accessibility;
     // Available: filled with the seat's own category color (VIP/Standard/...
     // as defined by the venue itself), so category reads at a glance right
-    // where it's actionable. Anything else collapses to one muted grey - its
-    // category no longer matters since it can't be picked anyway.
+    // where it's actionable. Accessibility gets its own fixed color for the
+    // same reason (see AppColors.seatAccessibility). Everything else
+    // collapses to one muted grey - its category no longer matters since it
+    // can't be picked anyway.
     final color = isAvailable
         ? (colorFromHex(category?.color) ?? AppColors.seatAvailable)
+        : isAccessibility
+        ? AppColors.seatAccessibility
         : AppColors.seatOccupied;
+    final standsOut = isAvailable || isAccessibility;
     final categoryName = category?.name;
     return Tooltip(
       message: [
@@ -200,8 +206,8 @@ class _SeatBox extends StatelessWidget {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(size * 0.22),
-          border: isAvailable ? null : Border.all(color: AppColors.hairline),
-          boxShadow: isAvailable
+          border: standsOut ? null : Border.all(color: AppColors.hairline),
+          boxShadow: standsOut
               ? [
                   BoxShadow(
                     color: color.withValues(alpha: 0.55),
@@ -211,6 +217,13 @@ class _SeatBox extends StatelessWidget {
                 ]
               : null,
         ),
+        child: isAccessibility
+            ? Icon(
+                Icons.accessible,
+                size: size * 0.7,
+                color: AppColors.background,
+              )
+            : null,
       ),
     );
   }

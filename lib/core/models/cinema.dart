@@ -53,7 +53,7 @@ class Cinema {
   /// town names ("Casamassima", "Beinasco") with nothing marking the chain -
   /// prefixed here so a mixed list of both chains stays unambiguous.
   String get displayName => switch (chain) {
-    CinemaChain.theSpace => 'The Space · $name',
+    CinemaChain.theSpace => 'The Space $name',
     CinemaChain.uci => name,
   };
 
