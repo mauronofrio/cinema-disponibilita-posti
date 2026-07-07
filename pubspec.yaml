@@ -56,6 +56,18 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/cinema_icon_playstore_512x512.png"
+  adaptive_icon_background: "#141414"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  # The foreground image already has its own safe-zone padding baked in
+  # (see tools/build_adaptive_icon_foreground.py) - the default 16% here
+  # would shrink it again on top of that, reading as a small icon with a
+  # lot of bare background around it.
+  adaptive_icon_foreground_inset: 0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
