@@ -6,25 +6,6 @@ import 'package:thespace_companion/core/chains/redcarpet/redcarpet_seat_map_pars
 import 'package:thespace_companion/core/models/seat_map.dart';
 
 void main() {
-  group('parseRedCarpetFilmList', () {
-    test(
-      'reads title/id/poster out of each .movie--preview card, no duplicates',
-      () {
-        final html = File(
-          'test/fixtures/redcarpet_homepage_sample.html',
-        ).readAsStringSync();
-        final films = parseRedCarpetFilmList(html);
-        expect(films, isNotEmpty);
-        final minions = films.firstWhere((f) => f.filmId == '104288');
-        expect(minions.title, 'MINIONS & MONSTERS');
-        expect(minions.posterUrl, isNotNull);
-        // Each card's title link appears more than once (title + poster
-        // anchor) - must still only produce one entry per film id.
-        expect(films.where((f) => f.filmId == '104288'), hasLength(1));
-      },
-    );
-  });
-
   group('parseRedCarpetProgrammingDays', () {
     test('reads every day balloon, in order', () {
       final html = File(
@@ -40,36 +21,69 @@ void main() {
     });
   });
 
-  group('parseRedCarpetFilmOccupations', () {
+  group('parseRedCarpetFilmsForDay', () {
     late String html;
 
     setUpAll(() {
       html = File(
-        'test/fixtures/redcarpet_occupations_sample.html',
+        'test/fixtures/redcarpet_films_for_day_sample.html',
       ).readAsStringSync();
     });
 
+    test('reads every film shown that day, no duplicates', () {
+      final programming = parseRedCarpetFilmsForDay(html, DateTime(2026, 7, 8));
+      expect(programming.films, hasLength(11));
+      final minions = programming.films.firstWhere((f) => f.filmId == '104288');
+      expect(minions.title, 'MINIONS & MONSTERS');
+      expect(minions.posterUrl, isNotNull);
+      // "MINIONS & MONSTERS - 3D" is a distinct film id (104783), not a
+      // duplicate of the 2D version - both should show up separately.
+      expect(programming.films.any((f) => f.filmId == '104783'), isTrue);
+    });
+
+    test('reads every showtime for every film, with its own room and time', () {
+      final programming = parseRedCarpetFilmsForDay(html, DateTime(2026, 7, 8));
+      // MINIONS & MONSTERS has 5 showtimes that day, across rooms 7/1/7/7/1.
+      final minionsSessions = programming.sessions
+          .where((s) => s.filmId == '104288')
+          .toList();
+      expect(minionsSessions, hasLength(5));
+      final first = minionsSessions.firstWhere(
+        (s) => s.sessionId == 'c5257510-9f6e-4a1b-a5eb-3386ce1114c1',
+      );
+      expect(first.theaterName, 'Sala 7');
+      expect(first.startTime, DateTime(2026, 7, 8, 17, 0));
+    });
+
+    test('sessionId is unique across every film/showtime that day', () {
+      final programming = parseRedCarpetFilmsForDay(html, DateTime(2026, 7, 8));
+      expect(
+        programming.sessions.map((s) => s.sessionId).toSet(),
+        hasLength(programming.sessions.length),
+      );
+    });
+  });
+
+  group('parseRedCarpetTheaterIdForSession', () {
     test(
-      'reads every showtime with its session/theater ids and start time',
+      'finds the room for the matching session id, not just the first one on the page',
       () {
-        final sessions = parseRedCarpetFilmOccupations(html);
-        expect(sessions, hasLength(6));
-        // Confirmed against the real page: Sala 2, 17:00, on 2026-07-18.
-        final first = sessions.firstWhere(
-          (s) => s.sessionId == '62101f19-8432-4c57-b557-28ac546c0b32',
+        final html = File(
+          'test/fixtures/redcarpet_film_session_page_sample.html',
+        ).readAsStringSync();
+        final theaterId = parseRedCarpetTheaterIdForSession(
+          html,
+          'a25a4245-7ea1-471d-a162-48cb62340956',
         );
-        expect(first.theaterId, 'c54a8696-90b4-4621-a0df-0687b035a7e1');
-        expect(first.theaterName, 'Sala 2');
-        expect(first.startTime, DateTime(2026, 7, 18, 17, 0));
+        expect(theaterId, 'a6d7bb70-9793-4c32-bf5b-bedc866d30c9');
       },
     );
 
-    test('sessionId is unique per showtime', () {
-      final sessions = parseRedCarpetFilmOccupations(html);
-      expect(
-        sessions.map((s) => s.sessionId).toSet(),
-        hasLength(sessions.length),
-      );
+    test('returns null for a session id not present on the page', () {
+      final html = File(
+        'test/fixtures/redcarpet_film_session_page_sample.html',
+      ).readAsStringSync();
+      expect(parseRedCarpetTheaterIdForSession(html, 'not-a-real-id'), isNull);
     });
   });
 

@@ -49,21 +49,34 @@ class RedCarpetApiClient {
     }
   }
 
-  /// The cinema's homepage: embeds the full current playbill (one
-  /// `.movie--preview` block per film, with title/poster/director/cast) and
-  /// the list of days the day-picker offers (`data-target` on each
-  /// `.select-date` balloon) - but NOT showtimes themselves, those are
-  /// fetched separately per film per day.
+  /// The cinema's homepage - only used for the list of days the day-picker
+  /// offers (`data-target` on each `.select-date` balloon); its own static
+  /// film list is never read, `fetch_films` (below) gives richer data anyway.
   Future<String> getHomepage(String host) => _getHtml('https://$host/');
 
-  /// One film's showtimes on one specific day - there's no bulk "every day
-  /// at once" endpoint here either (same situation as UCI).
-  Future<String> getFilmOccupations(String host, String filmId, String date) {
+  /// Every film showing on one specific day, *with that day's own
+  /// showtimes already embedded* - one request covers every film for that
+  /// day, no per-film request needed (see PROJECT_NOTES.md - this replaced
+  /// an earlier "one request per film per day" design that got the app
+  /// rate-limited on this small site once a cinema had ~20 films).
+  Future<String> getFilmsForDay(String host, String date) {
     return _getHtml(
-      'https://$host/film/$filmId/fetch_film_occupations',
+      'https://$host/film/fetch_films',
       query: {'date': date},
       xhr: true,
     );
+  }
+
+  /// One specific showtime's own page - the only place this platform
+  /// exposes which room (`data-theater`) that showtime plays in; not worth
+  /// fetching for every showtime up front, only called lazily when the user
+  /// opens that one session's seat map (see `RedCarpetChainApi.getSeatMap`).
+  Future<String> getFilmSessionPage(
+    String host,
+    String filmId,
+    String sessionId,
+  ) {
+    return _getHtml('https://$host/film/$filmId/$sessionId');
   }
 
   /// Seat-by-seat occupancy for one showtime. Returns JSON as text (small

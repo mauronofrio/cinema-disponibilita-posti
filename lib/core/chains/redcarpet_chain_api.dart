@@ -20,16 +20,10 @@ class RedCarpetChainApi implements ChainApi {
   final RedCarpetApiClient _client;
 
   /// RedCarpet's own day picker offers a full month or more (23+ days
-  /// observed live, sometimes with a gap where nothing's scheduled yet) -
-  /// with no bulk endpoint, showing every film's sessions for every one of
-  /// those days would mean one request per film *per day*, easily 400+
-  /// requests for a single "open this cinema" action. Confirmed live: that
-  /// volume alone is enough to get rate-limited (HTTP 429, "Slow down! Too
-  /// many requests") by this small site's server, on top of just being an
-  /// unreasonable amount of load to put on it. Both [getShowingDates] and
-  /// [getFilmsForCinema] cap themselves to the same near window instead -
-  /// same days offered as fetched, so a day chip is never shown "empty"
-  /// just because it was never actually asked for.
+  /// observed live, sometimes with a gap where nothing's scheduled yet).
+  /// `getFilmsForDay` is one request per day now (see below), so this is
+  /// just about not fetching a month's worth of days most users never look
+  /// at, not about avoiding an excessive request count.
   static const _maxDays = 5;
 
   List<String> _limitedDays(String homepage) {
@@ -39,12 +33,7 @@ class RedCarpetChainApi implements ChainApi {
 
   /// Runs [action] over every item with at most [concurrency] in flight at
   /// once, and lets any individual failure just drop that one item instead
-  /// of aborting the whole batch. Both matter for [getFilmsForCinema]: it
-  /// has no bulk endpoint at all, so a whole cinema's film list means one
-  /// request per film per day - dozens to a couple hundred requests, enough
-  /// that firing them all at once (a plain `Future.wait`) was observed live
-  /// to make some of them time out, and without per-item error isolation a
-  /// single flaky one used to take the entire film list down with it.
+  /// of aborting the whole batch.
   Future<void> _forEachBounded<T>(
     List<T> items,
     int concurrency,
@@ -57,8 +46,8 @@ class RedCarpetChainApi implements ChainApi {
         try {
           await action(item);
         } catch (_) {
-          // Skip this one film+day combination; the rest of the batch
-          // still has value even if a handful of requests fail.
+          // Skip this one day; the rest of the batch still has value even
+          // if a handful of requests fail.
         }
       }
     }
@@ -84,28 +73,28 @@ class RedCarpetChainApi implements ChainApi {
   Future<List<Film>> getFilmsForCinema(Cinema cinema) async {
     final host = cinema.host!;
     final homepage = await _client.getHomepage(host);
-    final films = parseRedCarpetFilmList(homepage);
     final days = _limitedDays(homepage);
 
-    // One request per film per day - RedCarpet has no bulk endpoint at all
-    // (not even UCI's "one call per day for every film"). Even capped to
-    // _maxDays this can be dozens of requests, so still worth the bounded
-    // concurrency (see _forEachBounded) rather than firing them all at
-    // once: observed live to make some requests time out otherwise.
+    // One request per *day* - `fetch_films` embeds every film's own
+    // metadata and that day's showtimes in the same response (see
+    // PROJECT_NOTES.md; this replaced an earlier "one request per film per
+    // day" design that got the app rate-limited on this small site once a
+    // cinema had ~20 films to check).
+    final filmsById = <String, RedCarpetFilmSummary>{};
     final sessionsByFilm = <String, List<ParsedRedCarpetSession>>{};
-    final pairs = films
-        .expand((film) => days.map((day) => (film, day)))
-        .toList();
-    await _forEachBounded(pairs, 6, (pair) async {
-      final (film, day) = pair;
-      final html = await _client.getFilmOccupations(host, film.filmId, day);
-      final sessions = parseRedCarpetFilmOccupations(html);
-      if (sessions.isEmpty) return;
-      sessionsByFilm.putIfAbsent(film.filmId, () => []).addAll(sessions);
+    await _forEachBounded(days, 3, (day) async {
+      final html = await _client.getFilmsForDay(host, day);
+      final programming = parseRedCarpetFilmsForDay(html, DateTime.parse(day));
+      for (final film in programming.films) {
+        filmsById.putIfAbsent(film.filmId, () => film);
+      }
+      for (final session in programming.sessions) {
+        sessionsByFilm.putIfAbsent(session.filmId, () => []).add(session);
+      }
     });
 
     final result = <Film>[];
-    for (final film in films) {
+    for (final film in filmsById.values) {
       final sessions = sessionsByFilm[film.filmId];
       if (sessions == null || sessions.isEmpty) continue;
       final byDay = <DateTime, List<Session>>{};
@@ -121,8 +110,8 @@ class RedCarpetChainApi implements ChainApi {
               Session(
                 sessionId: parsed.sessionId,
                 startTime: parsed.startTime,
-                // The occupations feed never gives an end time - not shown
-                // anywhere sessions are rendered, so an estimate is fine.
+                // fetch_films never gives an end time - not shown anywhere
+                // sessions are rendered, so an estimate is fine.
                 endTime: parsed.startTime,
                 screenName: parsed.theaterName,
                 isSoldOut: false,
@@ -130,7 +119,7 @@ class RedCarpetChainApi implements ChainApi {
                 isPriceVisible: false,
                 attributes: const [],
                 bookingPath: null,
-                redCarpetTheaterId: parsed.theaterId,
+                redCarpetFilmId: film.filmId,
               ),
             );
       }
@@ -162,7 +151,18 @@ class RedCarpetChainApi implements ChainApi {
   @override
   Future<SeatMap> getSeatMap(Cinema cinema, Session session) async {
     final host = cinema.host!;
-    final theaterId = session.redCarpetTheaterId!;
+    final filmId = session.redCarpetFilmId!;
+    // The room a showtime plays in isn't known upfront on this platform -
+    // only its own page exposes it (see redcarpet_film_parser.dart).
+    final filmPage = await _client.getFilmSessionPage(
+      host,
+      filmId,
+      session.sessionId,
+    );
+    final theaterId = parseRedCarpetTheaterIdForSession(
+      filmPage,
+      session.sessionId,
+    )!;
     final results = await Future.wait([
       _client.getTheaterSvg(host, theaterId),
       _client.getSeatOccupancy(host, session.sessionId),
