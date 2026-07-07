@@ -19,6 +19,24 @@ class RedCarpetChainApi implements ChainApi {
 
   final RedCarpetApiClient _client;
 
+  /// RedCarpet's own day picker offers a full month or more (23+ days
+  /// observed live, sometimes with a gap where nothing's scheduled yet) -
+  /// with no bulk endpoint, showing every film's sessions for every one of
+  /// those days would mean one request per film *per day*, easily 400+
+  /// requests for a single "open this cinema" action. Confirmed live: that
+  /// volume alone is enough to get rate-limited (HTTP 429, "Slow down! Too
+  /// many requests") by this small site's server, on top of just being an
+  /// unreasonable amount of load to put on it. Both [getShowingDates] and
+  /// [getFilmsForCinema] cap themselves to the same near window instead -
+  /// same days offered as fetched, so a day chip is never shown "empty"
+  /// just because it was never actually asked for.
+  static const _maxDays = 5;
+
+  List<String> _limitedDays(String homepage) {
+    final days = parseRedCarpetProgrammingDays(homepage);
+    return days.length <= _maxDays ? days : days.sublist(0, _maxDays);
+  }
+
   /// Runs [action] over every item with at most [concurrency] in flight at
   /// once, and lets any individual failure just drop that one item instead
   /// of aborting the whole batch. Both matter for [getFilmsForCinema]: it
@@ -56,7 +74,7 @@ class RedCarpetChainApi implements ChainApi {
   @override
   Future<List<ShowingDate>> getShowingDates(Cinema cinema) async {
     final homepage = await _client.getHomepage(cinema.host!);
-    final days = parseRedCarpetProgrammingDays(homepage);
+    final days = _limitedDays(homepage);
     return days
         .map((d) => ShowingDate(date: DateTime.parse(d), hasShowings: true))
         .toList();
@@ -67,11 +85,11 @@ class RedCarpetChainApi implements ChainApi {
     final host = cinema.host!;
     final homepage = await _client.getHomepage(host);
     final films = parseRedCarpetFilmList(homepage);
-    final days = parseRedCarpetProgrammingDays(homepage);
+    final days = _limitedDays(homepage);
 
     // One request per film per day - RedCarpet has no bulk endpoint at all
-    // (not even UCI's "one call per day for every film"), so a whole
-    // cinema's film list can mean well over a hundred requests. Bounded
+    // (not even UCI's "one call per day for every film"). Even capped to
+    // _maxDays this can be dozens of requests, so still worth the bounded
     // concurrency (see _forEachBounded) rather than firing them all at
     // once: observed live to make some requests time out otherwise.
     final sessionsByFilm = <String, List<ParsedRedCarpetSession>>{};
