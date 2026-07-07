@@ -70,7 +70,7 @@ class SettingsScreen extends ConsumerWidget {
                               ? AppColors.marquee
                               : AppColors.textMuted,
                         ),
-                        title: Text(cinema.name),
+                        title: Text(cinema.displayName),
                         subtitle: Text(
                           cinema.address,
                           style: const TextStyle(color: AppColors.textMuted),

@@ -55,6 +55,7 @@ def parse_cinema(slug: str, html: str) -> dict | None:
             "address": cinema["cinemaAddress"]["value"],
             "lat": float(lat_str.strip()),
             "lng": float(lng_str.strip()),
+            "chain": "theSpace",
         }
     except (KeyError, ValueError, json.JSONDecodeError) as exc:
         print(f"  ! failed to parse cinema data for {slug}: {exc}", file=sys.stderr)
@@ -81,10 +82,18 @@ def main() -> None:
             cinemas.append(cinema)
         time.sleep(0.4)
 
-    cinemas.sort(key=lambda c: c["name"])
+    # Merge into the existing file rather than overwrite it outright - UCI
+    # Cinemas entries (written by scrape_uci_cinemas.py) live in the same
+    # file and must survive a re-run of this script.
+    existing: list[dict] = []
+    if OUTPUT_PATH.exists():
+        existing = json.loads(OUTPUT_PATH.read_text(encoding="utf-8"))
+    other_chains = [c for c in existing if c.get("chain", "theSpace") != "theSpace"]
+    merged = other_chains + cinemas
+    merged.sort(key=lambda c: c["name"])
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_PATH.write_text(json.dumps(cinemas, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"Wrote {len(cinemas)} cinemas to {OUTPUT_PATH}")
+    OUTPUT_PATH.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Wrote {len(cinemas)} The Space cinemas ({len(merged)} total) to {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

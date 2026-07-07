@@ -3,7 +3,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/film.dart';
-import '../../../core/network/dio_provider.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// Hands off to the official site's own booking flow for this exact
@@ -16,8 +15,10 @@ class BuyTicketsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final path = session.bookingPath;
-    if (path == null || path.isEmpty) return const SizedBox.shrink();
+    final bookingUrl = session.bookingPath;
+    if (bookingUrl == null || bookingUrl.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return SizedBox(
       width: double.infinity,
@@ -27,7 +28,7 @@ class BuyTicketsButton extends StatelessWidget {
           foregroundColor: const Color(0xFF211500),
         ),
         onPressed: () => launchUrl(
-          Uri.parse('$theSpaceBaseUrl$path'),
+          Uri.parse(bookingUrl),
           mode: LaunchMode.externalApplication,
         ),
         child: Text(

@@ -26,13 +26,11 @@ class FilmCard extends ConsumerWidget {
     // Fire off the seat-map fetch immediately, before the navigation
     // transition even starts, so it's often already resolved by the time
     // the seat map screen's own `ref.watch` runs.
-    ref
-        .read(seatMapProvider((cinema.cinemaId, session.sessionId)).future)
-        .ignore();
+    ref.read(seatMapProvider((cinema, session)).future).ignore();
     context.push(
       '/seat-map',
       extra: SeatMapArgs(
-        cinemaId: cinema.cinemaId,
+        cinema: cinema,
         filmTitle: film.title,
         showingGroups: film.showingGroups,
         initialSessionId: session.sessionId,

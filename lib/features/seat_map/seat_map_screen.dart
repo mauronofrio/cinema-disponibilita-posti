@@ -73,9 +73,7 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
     // Fire off the seat-map fetch immediately, before the chip even finishes
     // its selected-state animation, so it's often already resolved by the
     // time the rest of the screen rebuilds around it.
-    ref
-        .read(seatMapProvider((widget.args.cinemaId, session.sessionId)).future)
-        .ignore();
+    ref.read(seatMapProvider((widget.args.cinema, session)).future).ignore();
     setState(() {
       _selectedSessionId = session.sessionId;
       if (date != null) _selectedDate = date;
@@ -84,10 +82,10 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final key = (widget.args.cinemaId, _selectedSessionId);
+    final session = _selectedSession;
+    final key = (widget.args.cinema, session);
     final seatMapAsync = ref.watch(seatMapProvider(key));
     final now = ref.watch(clockProvider).now();
-    final session = _selectedSession;
 
     return Scaffold(
       appBar: AppBar(

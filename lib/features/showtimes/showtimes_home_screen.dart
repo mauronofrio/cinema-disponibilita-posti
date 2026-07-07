@@ -96,15 +96,15 @@ class _CinemaShowtimes extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final daysAsync = ref.watch(showingDatesProvider(cinema.cinemaId));
-    final filmsAsync = ref.watch(filmsForCinemaProvider(cinema.cinemaId));
+    final daysAsync = ref.watch(showingDatesProvider(cinema));
+    final filmsAsync = ref.watch(filmsForCinemaProvider(cinema));
     final now = ref.watch(clockProvider).now();
     final t = AppLocalizations.of(context);
 
     return CustomScrollView(
       slivers: [
         SliverAppBar(
-          title: Text(cinema.name),
+          title: Text(cinema.displayName),
           pinned: true,
           actions: [
             IconButton(

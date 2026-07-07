@@ -5,7 +5,8 @@
     "slug": "beinasco",
     "address": "Via Giovanni Falcone, 10149 Beinasco TO",
     "lat": 45.021899,
-    "lng": 7.594591
+    "lng": 7.594591,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1032",
@@ -13,7 +14,8 @@
     "slug": "belpasso",
     "address": "Via Valcorrente, 23, 95032 Belpasso CT",
     "lat": 37.543031,
-    "lng": 14.954819
+    "lng": 14.954819,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1003",
@@ -21,7 +23,8 @@
     "slug": "bologna",
     "address": "Viale Europa, 5 Bologna 40128",
     "lat": 44.511261,
-    "lng": 11.373616
+    "lng": 11.373616,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1024",
@@ -29,7 +32,8 @@
     "slug": "casamassima",
     "address": "Via Noicattaro, 2 Casamassima (Bari) 70010 - presso Parco Commerciale Casamassima",
     "lat": 40.96825967825999,
-    "lng": 16.925639738787776
+    "lng": 16.925639738787776,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1036",
@@ -37,7 +41,8 @@
     "slug": "catanzaro",
     "address": "Le Fontane Shopping Mall, 88100 Catanzaro CZ",
     "lat": 38.857518,
-    "lng": 16.631039
+    "lng": 16.631039,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1016",
@@ -45,7 +50,8 @@
     "slug": "cerro-maggiore",
     "address": "Via F. Turati, 72, 20023 Cerro Maggiore MI",
     "lat": 45.601465,
-    "lng": 8.95037
+    "lng": 8.95037,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1027",
@@ -53,7 +59,8 @@
     "slug": "corciano",
     "address": "Via Pierluigi Nervi Corciano 06073",
     "lat": 43.099126,
-    "lng": 12.315488
+    "lng": 12.315488,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1035",
@@ -61,7 +68,8 @@
     "slug": "firenze",
     "address": "Via di Novoli, 2, 50127 Firenze FI",
     "lat": 43.794760559533216,
-    "lng": 11.249314205356347
+    "lng": 11.249314205356347,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1008",
@@ -69,7 +77,8 @@
     "slug": "genova",
     "address": "Via Magazzini del Cotone Genova 16128",
     "lat": 44.4081936013936,
-    "lng": 8.922253371200085
+    "lng": 8.922253371200085,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1004",
@@ -77,7 +86,8 @@
     "slug": "grosseto",
     "address": "Via Canada, 80, 58100 Grosseto GR",
     "lat": 42.77999546508037,
-    "lng": 11.114116552105463
+    "lng": 11.114116552105463,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1007",
@@ -85,7 +95,8 @@
     "slug": "guidonia",
     "address": "Via Antonio De Curtis, 00012 Guidonia Montecelio RM",
     "lat": 41.95810992084777,
-    "lng": 12.709571755239326
+    "lng": 12.709571755239326,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1034",
@@ -93,7 +104,8 @@
     "slug": "lamezia",
     "address": "Località Comuni Condomini, 88046 Maida CZ",
     "lat": 38.89893161750952,
-    "lng": 16.350709642148427
+    "lng": 16.350709642148427,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1012",
@@ -101,7 +113,8 @@
     "slug": "limena",
     "address": "Via Vincenzo Stefano Breda, 11, 35010 Limena PD",
     "lat": 45.46381289234778,
-    "lng": 11.848565777363412
+    "lng": 11.848565777363412,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1017",
@@ -109,7 +122,8 @@
     "slug": "livorno",
     "address": "Via Antonio Bacchelli, 60, 57124 Livorno LI",
     "lat": 43.54774683892599,
-    "lng": 10.338412625145981
+    "lng": 10.338412625145981,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1002",
@@ -117,7 +131,8 @@
     "slug": "montebello",
     "address": "Via Mirabella, 6, 27054 Montebello della Battaglia PV",
     "lat": 45.00030463119429,
-    "lng": 9.071732473069174
+    "lng": 9.071732473069174,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1026",
@@ -125,7 +140,8 @@
     "slug": "montesilvano",
     "address": "Via Alberto D' Andrea, 1 Montesilvano 65015",
     "lat": 42.52217548845613,
-    "lng": 14.150756269278732
+    "lng": 14.150756269278732,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1019",
@@ -133,7 +149,8 @@
     "slug": "napoli",
     "address": "Viale Giochi del Mediterraneo, 80125 Napoli NA",
     "lat": 40.82186139945638,
-    "lng": 14.177437455716454
+    "lng": 14.177437455716454,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1033",
@@ -141,7 +158,8 @@
     "slug": "nola",
     "address": "Via Boscofangone, 80035 Località Gallo NA presso Centro Commerciale Vulcano Buono",
     "lat": 40.95319075010608,
-    "lng": 14.488031267958982
+    "lng": 14.488031267958982,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1013",
@@ -149,7 +167,8 @@
     "slug": "parma-campus",
     "address": "Largo Sergio Leone, 7/A, 43124 Parma PR",
     "lat": 44.76602255301333,
-    "lng": 10.322170404324613
+    "lng": 10.322170404324613,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1031",
@@ -157,7 +176,8 @@
     "slug": "parma-centro",
     "address": "Largo Fausto Bocchi, 29/A, 43121 Parma PR",
     "lat": 44.80068789271356,
-    "lng": 10.34660709756116
+    "lng": 10.34660709756116,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1010",
@@ -165,7 +185,8 @@
     "slug": "pradamano",
     "address": "Via Pier Paolo Pasolini, 6, 33040 Pradamano UD",
     "lat": 46.02174967001299,
-    "lng": 13.286029286608079
+    "lng": 13.286029286608079,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1029",
@@ -173,7 +194,8 @@
     "slug": "quartucciu",
     "address": "Via delle Serre presso Le Vele Shopping Center, 09044 Quartucciu CA",
     "lat": 39.24482707763826,
-    "lng": 9.163392370996153
+    "lng": 9.163392370996153,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1021",
@@ -181,7 +203,8 @@
     "slug": "roma-moderno",
     "address": "P.za della Repubblica, 43/45, 00184 Roma RM",
     "lat": 41.90220499251632,
-    "lng": 12.497232305465545
+    "lng": 12.497232305465545,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1020",
@@ -189,7 +212,8 @@
     "slug": "rozzano",
     "address": "Via Sandro Pertini, 20, 20089 Rozzano MI",
     "lat": 45.38982045616271,
-    "lng": 9.179129473085704
+    "lng": 9.179129473085704,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1015",
@@ -197,7 +221,8 @@
     "slug": "salerno",
     "address": "Viale Antonio Bandiera, 84131 Salerno SA",
     "lat": 40.64806177635783,
-    "lng": 14.821786184544607
+    "lng": 14.821786184544607,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1014",
@@ -205,7 +230,8 @@
     "slug": "sestu",
     "address": "Centro Commerciale La Corte del Sole, 09028 Sestu CA",
     "lat": 39.304785310438895,
-    "lng": 9.067493676530875
+    "lng": 9.067493676530875,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1009",
@@ -213,7 +239,8 @@
     "slug": "silea",
     "address": "Via Sile, 8, 31057 Silea TV",
     "lat": 45.65208496293912,
-    "lng": 12.293346710480975
+    "lng": 12.293346710480975,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1001",
@@ -221,7 +248,8 @@
     "slug": "surbo",
     "address": "Via Benzi, 5, 73010 Surbo LE",
     "lat": 40.37554439896252,
-    "lng": 18.146897744048108
+    "lng": 18.146897744048108,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1006",
@@ -229,7 +257,8 @@
     "slug": "terni",
     "address": "Viale Donato Bramante, Snc, 05100 Terni TR",
     "lat": 42.57265108903491,
-    "lng": 12.635527540445901
+    "lng": 12.635527540445901,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1011",
@@ -237,7 +266,338 @@
     "slug": "trieste",
     "address": "Via Italo Svevo, 14, 34100 Trieste TS",
     "lat": 45.63509979933124,
-    "lng": 13.780747354068323
+    "lng": 13.780747354068323,
+    "chain": "theSpace"
+  },
+  {
+    "cinemaId": "uci-cinemas-arezzo",
+    "name": "UCI Cinemas Arezzo",
+    "slug": "uci-cinemas-arezzo",
+    "address": "Via Turati, n. 2Arezzo",
+    "lat": 43.479041403496964,
+    "lng": 11.869633503004069,
+    "chain": "uci",
+    "webticLocalId": 5125
+  },
+  {
+    "cinemaId": "uci-cinemas-bicocca-milano",
+    "name": "UCI Cinemas Bicocca – Milano",
+    "slug": "uci-cinemas-bicocca-milano",
+    "address": "Viale Sarca, n. 336 angolo Via ChieseMilano",
+    "lat": 45.5217995,
+    "lng": 9.2161435,
+    "chain": "uci",
+    "webticLocalId": 5068
+  },
+  {
+    "cinemaId": "uci-cinemas-bolzano",
+    "name": "UCI Cinemas Bolzano",
+    "slug": "uci-cinemas-bolzano",
+    "address": "c/o TWENTYvia G. Galilei, 20 – 39100 Bolzano",
+    "lat": 46.4861284,
+    "lng": 11.3359108,
+    "chain": "uci",
+    "webticLocalId": 5319
+  },
+  {
+    "cinemaId": "uci-cinemas-casoria-napoli",
+    "name": "UCI Cinemas Casoria – Napoli",
+    "slug": "uci-cinemas-casoria-napoli",
+    "address": "Via San Salvatore,Circumvallazione EsternaCasoria",
+    "lat": 40.8976721,
+    "lng": 14.3152285,
+    "chain": "uci",
+    "webticLocalId": 5089
+  },
+  {
+    "cinemaId": "uci-cinemas-catania",
+    "name": "UCI Cinemas Catania",
+    "slug": "uci-cinemas-catania",
+    "address": "presso Centro Commerciale Centro SiciliaSP 54 Contrada CubbaMisterbianco Catania",
+    "lat": 37.4766874,
+    "lng": 15.012554,
+    "chain": "uci",
+    "webticLocalId": 5187
+  },
+  {
+    "cinemaId": "uci-cinemas-cinepolis-marcianise-caserta",
+    "name": "UCI Cinemas Cinepolis Marcianise – Caserta",
+    "slug": "uci-cinemas-cinepolis-marcianise-caserta",
+    "address": "Centro Commerciale Campania,81025 Aurno,Marcianise",
+    "lat": 41.0047876,
+    "lng": 14.3283839,
+    "chain": "uci",
+    "webticLocalId": 5286
+  },
+  {
+    "cinemaId": "uci-cinemas-firenze",
+    "name": "UCI Cinemas Firenze",
+    "slug": "uci-cinemas-firenze",
+    "address": "Via del CavallaccioFirenze",
+    "lat": 43.7723831,
+    "lng": 11.1887768,
+    "chain": "uci",
+    "webticLocalId": 5135
+  },
+  {
+    "cinemaId": "uci-cinemas-lissone-milano",
+    "name": "UCI Cinemas Lissone – Milano",
+    "slug": "uci-cinemas-lissone-milano",
+    "address": "Via Madre Teresa, S.S. ValassinaLissone - Monza e Brianza",
+    "lat": 45.6340226,
+    "lng": 9.2237574,
+    "chain": "uci",
+    "webticLocalId": 5046
+  },
+  {
+    "cinemaId": "uci-cinemas-meridiana-bologna",
+    "name": "UCI Cinemas Meridiana – Bologna",
+    "slug": "uci-cinemas-meridiana-bologna",
+    "address": "Via Aldo Moro, n. 14Casalecchio di Reno Bologna",
+    "lat": 44.4843443,
+    "lng": 11.2694446,
+    "chain": "uci",
+    "webticLocalId": 5134
+  },
+  {
+    "cinemaId": "uci-cinemas-milanofiori-milano",
+    "name": "UCI Cinemas MilanoFiori – Milano",
+    "slug": "uci-cinemas-milanofiori-milano",
+    "address": "Viale MilanoFioriAssago - Milano",
+    "lat": 45.4074932,
+    "lng": 9.1520513,
+    "chain": "uci",
+    "webticLocalId": 5037
+  },
+  {
+    "cinemaId": "uci-cinemas-molfetta-bari",
+    "name": "UCI Cinemas Molfetta – Bari",
+    "slug": "uci-cinemas-molfetta-bari",
+    "address": "Strada Statale 16 bis - Uscita Molfetta Z.I.Molfetta Bari",
+    "lat": 41.2166952,
+    "lng": 16.5470493,
+    "chain": "uci",
+    "webticLocalId": 5073
+  },
+  {
+    "cinemaId": "uci-cinemas-moncalieri-torino",
+    "name": "UCI Cinemas Moncalieri – Torino",
+    "slug": "uci-cinemas-moncalieri-torino",
+    "address": "Via Fortunato Postiglione Z.I. VadòMoncalieri Torino",
+    "lat": 44.9763862,
+    "lng": 7.7088444,
+    "chain": "uci",
+    "webticLocalId": 5110
+  },
+  {
+    "cinemaId": "uci-cinemas-orio-bergamo",
+    "name": "UCI Cinemas Orio – Bergamo",
+    "slug": "uci-cinemas-orio-bergamo",
+    "address": "Via Toscana, 2 - 24052 Azzano San Paolo (BG)",
+    "lat": 45.6613995,
+    "lng": 9.6972232,
+    "chain": "uci",
+    "webticLocalId": 5363
+  },
+  {
+    "cinemaId": "uci-cinemas-palermo",
+    "name": "UCI Cinemas Palermo",
+    "slug": "uci-cinemas-palermo",
+    "address": "presso il Centro Commerciale Forum Palermo - Via Filippo Pecoraino SNCPalermo",
+    "lat": 38.0901173,
+    "lng": 13.4124993,
+    "chain": "uci",
+    "webticLocalId": 5087
+  },
+  {
+    "cinemaId": "uci-cinemas-parco-leonardo-roma",
+    "name": "UCI Cinemas Parco Leonardo – Roma",
+    "slug": "uci-cinemas-parco-leonardo-roma",
+    "address": "Via Gian Lorenzo Bernini, n. 20/22Fiumicino - Roma",
+    "lat": 41.7983211,
+    "lng": 12.2954392,
+    "chain": "uci",
+    "webticLocalId": 5122
+  },
+  {
+    "cinemaId": "uci-cinemas-perugia",
+    "name": "UCI Cinemas Perugia",
+    "slug": "uci-cinemas-perugia",
+    "address": "Viale Centova, n. 1/DPerugia",
+    "lat": 43.0967406,
+    "lng": 12.3552844,
+    "chain": "uci",
+    "webticLocalId": 5111
+  },
+  {
+    "cinemaId": "uci-cinemas-pioltello-milano",
+    "name": "UCI Cinemas Pioltello – Milano",
+    "slug": "uci-cinemas-pioltello-milano",
+    "address": "Via San Francesco, n. 33Pioltello - Milano",
+    "lat": 45.5025942,
+    "lng": 9.3216659,
+    "chain": "uci",
+    "webticLocalId": 5088
+  },
+  {
+    "cinemaId": "uci-cinemas-porta-di-roma-roma",
+    "name": "UCI Cinemas Porta di Roma – Roma",
+    "slug": "uci-cinemas-porta-di-roma-roma",
+    "address": "c/o Centro Commerciale Porta di Roma - Via delle Vigne Nuove, sncZona Bufalotta - Roma",
+    "lat": 41.971355,
+    "lng": 12.5414713,
+    "chain": "uci",
+    "webticLocalId": 5119
+  },
+  {
+    "cinemaId": "uci-cinemas-redcarpet-matera",
+    "name": "UCI Cinemas Red Carpet – Matera",
+    "slug": "uci-cinemas-redcarpet-matera",
+    "address": "Via Enzo FerrariMatera",
+    "lat": 40.687714,
+    "lng": 16.54436,
+    "chain": "uci",
+    "webticLocalId": 5344
+  },
+  {
+    "cinemaId": "uci-cinemas-reggio-emilia",
+    "name": "UCI Cinemas Reggio Emilia",
+    "slug": "uci-cinemas-reggio-emilia",
+    "address": "Piazza Azzurri d&#039;Italia, n. 1Reggio Emilia",
+    "lat": 44.714828,
+    "lng": 10.6511025,
+    "chain": "uci",
+    "webticLocalId": 5096
+  },
+  {
+    "cinemaId": "uci-cinemas-romaest-roma",
+    "name": "UCI Cinemas Roma Est – Roma",
+    "slug": "uci-cinemas-romaest-roma",
+    "address": "Via Collatina, n. 858Roma",
+    "lat": 41.9159171,
+    "lng": 12.6617884,
+    "chain": "uci",
+    "webticLocalId": 5102
+  },
+  {
+    "cinemaId": "uci-cinemas-forli-cesena",
+    "name": "UCI Cinemas Romagna – Forlì Cesena",
+    "slug": "uci-cinemas-forli-cesena",
+    "address": "c/o Parco Commerciale Romagna - Piazza F.lli Lumière, n. 22Savignano sul Rubicone Forlì-Cesena",
+    "lat": 44.1585642,
+    "lng": 12.424129,
+    "chain": "uci",
+    "webticLocalId": 5126
+  },
+  {
+    "cinemaId": "uci-cinemas-seven-gioia-del-colle-bari",
+    "name": "UCI Cinemas Seven Gioia del Colle – Bari",
+    "slug": "uci-cinemas-seven-gioia-del-colle-bari",
+    "address": "Via Federico Fellini, 80, 70023 Gioia del Colle BA",
+    "lat": 40.8092105,
+    "lng": 16.9208035,
+    "chain": "uci",
+    "webticLocalId": 5399
+  },
+  {
+    "cinemaId": "uci-cinemas-showville-bari",
+    "name": "UCI Cinemas Showville – Bari",
+    "slug": "uci-cinemas-showville-bari",
+    "address": "Via Giannini 970125 BARI",
+    "lat": 41.0907676,
+    "lng": 16.8872041,
+    "chain": "uci",
+    "webticLocalId": 5326
+  },
+  {
+    "cinemaId": "uci-cinemas-torino-lingotto",
+    "name": "UCI Cinemas Torino Lingotto",
+    "slug": "uci-cinemas-torino-lingotto",
+    "address": "Via Nizza, n. 262Torino",
+    "lat": 45.0329223,
+    "lng": 7.6660891,
+    "chain": "uci",
+    "webticLocalId": 5123
+  },
+  {
+    "cinemaId": "uci-cinemas-verona",
+    "name": "UCI Cinemas Verona",
+    "slug": "uci-cinemas-verona",
+    "address": "Via Monte AmiataSan Giovanni Lupatoto Verona",
+    "lat": 45.3966662,
+    "lng": 11.0164011,
+    "chain": "uci",
+    "webticLocalId": 5116
+  },
+  {
+    "cinemaId": "uci-cinemas-villesse-gorizia",
+    "name": "UCI Cinemas Villesse – Gorizia",
+    "slug": "uci-cinemas-villesse-gorizia",
+    "address": "Località Maranuz, 2 - c/o Centro Commerciale Tiare ShoppingVillesse - Gorizia",
+    "lat": 45.8651614,
+    "lng": 13.4301854,
+    "chain": "uci",
+    "webticLocalId": 5226
+  },
+  {
+    "cinemaId": "uci-cinemas-campi-bisenzio-firenze",
+    "name": "UCI Luxe Campi Bisenzio",
+    "slug": "uci-cinemas-campi-bisenzio-firenze",
+    "address": "Via Fratelli Cervi, n. 9Campi Bisenzio Firenze",
+    "lat": 43.8435509,
+    "lng": 11.1373349,
+    "chain": "uci",
+    "webticLocalId": 5124
+  },
+  {
+    "cinemaId": "uci-cinemas-fiumara-genova",
+    "name": "UCI Luxe Fiumara – Genova",
+    "slug": "uci-cinemas-fiumara-genova",
+    "address": "Via MantovaniGenova Sampierdarena",
+    "lat": 44.4134152,
+    "lng": 8.8807726,
+    "chain": "uci",
+    "webticLocalId": 5107
+  },
+  {
+    "cinemaId": "uci-cinemas-venezia-marcon",
+    "name": "UCI Luxe Marcon",
+    "slug": "uci-cinemas-venezia-marcon",
+    "address": "Via Enrico MatteiMarcon Venezia",
+    "lat": 45.5487204,
+    "lng": 12.3051239,
+    "chain": "uci",
+    "webticLocalId": 5100
+  },
+  {
+    "cinemaId": "uci-luxe-maximo",
+    "name": "UCI Luxe Maximo – Roma",
+    "slug": "uci-luxe-maximo",
+    "address": "C/o Maximo ShoppingVia Laurentina 86500143 ROMA (RM)",
+    "lat": 41.8076205052,
+    "lng": 12.4851105826,
+    "chain": "uci",
+    "webticLocalId": 5547
+  },
+  {
+    "cinemaId": "uci-cinemas-megalo",
+    "name": "UCI Luxe Megalò – Chieti",
+    "slug": "uci-cinemas-megalo",
+    "address": "Località Santa Filomena, 66100 Chieti CH",
+    "lat": 42.3565,
+    "lng": 14.1279,
+    "chain": "uci",
+    "webticLocalId": 5664
+  },
+  {
+    "cinemaId": "uci-cinemas-vicenza-palladio",
+    "name": "UCI Luxe Palladio – Vicenza",
+    "slug": "uci-cinemas-vicenza-palladio",
+    "address": "Strada Padana verso Padova n. 6036100 Vicenza (VI)",
+    "lat": 45.5293024,
+    "lng": 11.5946512,
+    "chain": "uci",
+    "webticLocalId": 5533
   },
   {
     "cinemaId": "1023",
@@ -245,7 +605,8 @@
     "slug": "verona",
     "address": "Via Trentino, 1 Lugagnano presso La Grande Mela Shoppingland, 37060 Lugagnano VR",
     "lat": 45.439638395561225,
-    "lng": 10.864570521536777
+    "lng": 10.864570521536777,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1022",
@@ -253,7 +614,8 @@
     "slug": "vicenza",
     "address": "Via Brescia, 13, 36040 Torri di Quartesolo VI",
     "lat": 45.51066350453136,
-    "lng": 11.623372586586216
+    "lng": 11.623372586586216,
+    "chain": "theSpace"
   },
   {
     "cinemaId": "1030",
@@ -261,6 +623,7 @@
     "slug": "vimercate",
     "address": "Via Torri Bianche, 16, 20871 Vimercate MI",
     "lat": 45.6010418483577,
-    "lng": 9.35977668474591
+    "lng": 9.35977668474591,
+    "chain": "theSpace"
   }
 ]

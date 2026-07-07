@@ -1,3 +1,5 @@
+import '../network/dio_provider.dart' show theSpaceBaseUrl;
+
 class SessionAttribute {
   const SessionAttribute({
     required this.name,
@@ -29,6 +31,7 @@ class Session {
     required this.isPriceVisible,
     required this.attributes,
     required this.bookingPath,
+    this.webticScreenId,
   });
 
   factory Session.fromJson(Map<String, dynamic> json) {
@@ -44,11 +47,15 @@ class Session {
           .map((a) => SessionAttribute.fromJson(a as Map<String, dynamic>))
           .where((a) => a.name.isNotEmpty)
           .toList(),
-      // Relative path (e.g. "/prenotare-il-biglietto/summary/1024/HO.../52619")
-      // to the official site's own booking flow - this app never implements
-      // booking itself, it just hands off to the real site for this one
-      // session.
-      bookingPath: json['bookingUrl'] as String?,
+      // Full URL to the official site's own booking flow for this exact
+      // session - this app never implements booking itself, it just hands
+      // off to the real site. The API only gives a relative path (e.g.
+      // "/prenotare-il-biglietto/summary/1024/HO.../52619"); stored here as
+      // an absolute URL so callers (BuyTicketsButton) don't need to know
+      // which chain's own base domain it belongs to.
+      bookingPath: (json['bookingUrl'] as String?) == null
+          ? null
+          : '$theSpaceBaseUrl${json['bookingUrl']}',
     );
   }
 
@@ -61,6 +68,24 @@ class Session {
   final bool isPriceVisible;
   final List<SessionAttribute> attributes;
   final String? bookingPath;
+
+  /// UCI Cinemas only: WebTic's `ScreenId` for this session's room (the
+  /// myuci programming response calls it `room_id`) - needed alongside the
+  /// cinema's `webticLocalId` to fetch the seat layout/occupancy. Null for
+  /// The Space, which doesn't need it (its own `sessionId` is enough).
+  final int? webticScreenId;
+
+  /// A session is the same session iff same [sessionId] - it's already a
+  /// unique identifier for one specific showtime, so this is entity
+  /// identity, not a field-by-field value comparison. Used as (part of) a
+  /// Riverpod provider key for the seat map, so this needs to hold across
+  /// separately-parsed instances of "the same" session too.
+  @override
+  bool operator ==(Object other) =>
+      other is Session && other.sessionId == sessionId;
+
+  @override
+  int get hashCode => sessionId.hashCode;
 }
 
 class ShowingGroup {

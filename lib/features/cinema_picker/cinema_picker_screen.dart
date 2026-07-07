@@ -96,7 +96,7 @@ class _CinemaPickerScreenState extends ConsumerState<CinemaPickerScreen> {
                     final cinema = filtered[index];
                     return ListTile(
                       title: Text(
-                        cinema.name,
+                        cinema.displayName,
                         style: AppTheme.display(context).copyWith(fontSize: 20),
                       ),
                       subtitle: Text(

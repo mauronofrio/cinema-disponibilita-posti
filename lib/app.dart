@@ -47,10 +47,10 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
     if (currentDayKey == _lastKnownDayKey) return;
     _lastKnownDayKey = currentDayKey;
 
-    final activeId = await ref.read(activeCinemaIdProvider.future);
-    if (activeId == null) return;
-    ref.invalidate(showingDatesProvider(activeId));
-    ref.invalidate(filmsForCinemaProvider(activeId));
+    final activeCinema = await ref.read(activeCinemaProvider.future);
+    if (activeCinema == null) return;
+    ref.invalidate(showingDatesProvider(activeCinema));
+    ref.invalidate(filmsForCinemaProvider(activeCinema));
   }
 
   @override
