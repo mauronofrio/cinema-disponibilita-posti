@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/cinema.dart';
 import 'chain_api.dart';
+import 'redcarpet_chain_api.dart';
 import 'the_space_chain_api.dart';
 import 'uci_chain_api.dart';
 
@@ -15,5 +16,7 @@ final chainApiProvider = Provider.family<ChainApi, CinemaChain>((ref, chain) {
       return ref.watch(theSpaceChainApiProvider);
     case CinemaChain.uci:
       return ref.watch(uciChainApiProvider);
+    case CinemaChain.redCarpet:
+      return ref.watch(redCarpetChainApiProvider);
   }
 });

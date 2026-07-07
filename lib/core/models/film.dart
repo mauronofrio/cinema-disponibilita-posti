@@ -32,6 +32,7 @@ class Session {
     required this.attributes,
     required this.bookingPath,
     this.webticScreenId,
+    this.redCarpetTheaterId,
   });
 
   factory Session.fromJson(Map<String, dynamic> json) {
@@ -74,6 +75,11 @@ class Session {
   /// cinema's `webticLocalId` to fetch the seat layout/occupancy. Null for
   /// The Space, which doesn't need it (its own `sessionId` is enough).
   final int? webticScreenId;
+
+  /// RedCarpet only: the room's own id (`data-theater` on the showtime),
+  /// needed to fetch that room's `theater/{id}.svg` layout - a session's own
+  /// id alone only identifies the showtime, not which physical room it's in.
+  final String? redCarpetTheaterId;
 
   /// A session is the same session iff same [sessionId] - it's already a
   /// unique identifier for one specific showtime, so this is entity

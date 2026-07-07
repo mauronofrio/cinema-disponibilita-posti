@@ -198,6 +198,16 @@
     "chain": "theSpace"
   },
   {
+    "cinemaId": "monopoli",
+    "name": "Red Carpet Cinema - Monopoli",
+    "slug": "monopoli",
+    "address": "Via Baione, snc, 70043 Monopoli BA",
+    "lat": 40.9515,
+    "lng": 17.2939,
+    "chain": "redCarpet",
+    "host": "monopoli.redcarpetcinema.it"
+  },
+  {
     "cinemaId": "1021",
     "name": "Roma Moderno",
     "slug": "roma-moderno",

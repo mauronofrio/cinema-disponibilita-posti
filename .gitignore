@@ -48,6 +48,7 @@ app.*.map.json
 # raw API samples) - kept on disk as reference/test fixtures, not versioned.
 /research/
 /UciCinema/
+/RedCarpet/
 
 # Local-only project notes, not meant to be shared/versioned.
 /PROJECT_NOTES.md

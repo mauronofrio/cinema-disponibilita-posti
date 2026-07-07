@@ -2,10 +2,12 @@
 /// pair knows how to fetch its showtimes and seat maps.
 enum CinemaChain {
   theSpace,
-  uci;
+  uci,
+  redCarpet;
 
   static CinemaChain fromJson(String? value) => switch (value) {
     'uci' => CinemaChain.uci,
+    'redCarpet' => CinemaChain.redCarpet,
     _ => CinemaChain.theSpace,
   };
 }
@@ -20,6 +22,7 @@ class Cinema {
     required this.lng,
     this.chain = CinemaChain.theSpace,
     this.webticLocalId,
+    this.host,
   });
 
   factory Cinema.fromJson(Map<String, dynamic> json) {
@@ -32,6 +35,7 @@ class Cinema {
       lng: (json['lng'] as num).toDouble(),
       chain: CinemaChain.fromJson(json['chain'] as String?),
       webticLocalId: json['webticLocalId'] as int?,
+      host: json['host'] as String?,
     );
   }
 
@@ -48,13 +52,21 @@ class Cinema {
   /// slug for this chain). Needed for the `Screen`/`Occupancy` calls.
   final int? webticLocalId;
 
-  /// [name] alone for UCI Cinemas (already self-identifying, e.g. "UCI
-  /// Cinemas Seven Gioia del Colle"), but The Space's own names are bare
+  /// RedCarpet only: the per-venue hostname its 18tickets.net booking site
+  /// runs on (e.g. "monopoli.redcarpetcinema.it") - every call for this
+  /// chain (film list, showtimes, seat map) goes to this same host, so it's
+  /// the one piece of chain-specific routing info this cinema needs.
+  final String? host;
+
+  /// [name] alone for UCI Cinemas and RedCarpet (both already
+  /// self-identifying, e.g. "UCI Cinemas Seven Gioia del Colle" or
+  /// "Red Carpet Cinema - Monopoli"), but The Space's own names are bare
   /// town names ("Casamassima", "Beinasco") with nothing marking the chain -
-  /// prefixed here so a mixed list of both chains stays unambiguous.
+  /// prefixed here so a mixed list of all chains stays unambiguous.
   String get displayName => switch (chain) {
     CinemaChain.theSpace => 'The Space $name',
     CinemaChain.uci => name,
+    CinemaChain.redCarpet => name,
   };
 
   /// A cinema is the same cinema iff same id within the same chain (ids are
