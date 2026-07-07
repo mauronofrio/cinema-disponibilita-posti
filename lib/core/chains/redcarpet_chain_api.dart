@@ -21,10 +21,11 @@ class RedCarpetChainApi implements ChainApi {
 
   /// RedCarpet's own day picker offers a full month or more (23+ days
   /// observed live, sometimes with a gap where nothing's scheduled yet).
-  /// `getFilmsForDay` is one request per day now (see below), so this is
-  /// just about not fetching a month's worth of days most users never look
-  /// at, not about avoiding an excessive request count.
-  static const _maxDays = 5;
+  /// `getFilmsForDay` is one lightweight request per day (see below), not
+  /// one per film per day, so there's no load-avoidance reason to cap this
+  /// tightly anymore - just a generous safety bound in case the picker ever
+  /// offers something absurd (a year, say).
+  static const _maxDays = 35;
 
   List<String> _limitedDays(String homepage) {
     final days = parseRedCarpetProgrammingDays(homepage);
