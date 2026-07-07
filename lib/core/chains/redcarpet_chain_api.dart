@@ -20,12 +20,19 @@ class RedCarpetChainApi implements ChainApi {
   final RedCarpetApiClient _client;
 
   /// RedCarpet's own day picker offers a full month or more (23+ days
-  /// observed live, sometimes with a gap where nothing's scheduled yet).
-  /// `getFilmsForDay` is one lightweight request per day (see below), not
-  /// one per film per day, so there's no load-avoidance reason to cap this
-  /// tightly anymore - just a generous safety bound in case the picker ever
-  /// offers something absurd (a year, say).
-  static const _maxDays = 35;
+  /// observed live), but this site's server enforces a hard per-IP rate
+  /// limit that's much tighter than expected: confirmed live that even
+  /// plain *sequential* requests (no concurrency involved) start getting
+  /// HTTP 429 ("Slow down! Too many requests") after only about 4-5 total
+  /// requests in a short window (well under a minute), recovering roughly
+  /// a minute later. `getFilmsForDay` being one request per day (rather
+  /// than one per film per day) doesn't help here - the limiter counts
+  /// total requests, not per-film load - so this has to stay small
+  /// regardless of how cheap each individual request is. Kept deliberately
+  /// conservative (with the one homepage request that always precedes it,
+  /// this totals 4 requests per "open this cinema" action, at the edge of
+  /// what was confirmed to work reliably).
+  static const _maxDays = 3;
 
   List<String> _limitedDays(String homepage) {
     final days = parseRedCarpetProgrammingDays(homepage);
