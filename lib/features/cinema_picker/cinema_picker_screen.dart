@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/localization/app_localizations.dart';
 import '../../core/models/cinema.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/film_perforation_divider.dart';
@@ -25,17 +26,19 @@ class _CinemaPickerScreenState extends ConsumerState<CinemaPickerScreen> {
   }
 
   Future<void> _choose(Cinema cinema) async {
-    await ref.read(favoriteCinemaStoreProvider).write(cinema.cinemaId);
-    ref.invalidate(favoriteCinemaIdProvider);
+    await ref.read(favoriteCinemaStoreProvider).addAndActivate(cinema.cinemaId);
+    ref.invalidate(favoriteCinemaIdsProvider);
+    ref.invalidate(activeCinemaIdProvider);
     if (mounted) context.go('/');
   }
 
   @override
   Widget build(BuildContext context) {
     final cinemasAsync = ref.watch(cinemaListProvider);
+    final t = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Scegli il tuo The Space')),
+      appBar: AppBar(title: Text(t.pickCinemaTitle)),
       body: Column(
         children: [
           Padding(
@@ -43,9 +46,12 @@ class _CinemaPickerScreenState extends ConsumerState<CinemaPickerScreen> {
             child: TextField(
               controller: _searchController,
               onChanged: (value) => setState(() => _query = value),
-              decoration: const InputDecoration(
-                hintText: 'Cerca città o cinema…',
-                prefixIcon: Icon(Icons.search, color: AppColors.textMuted),
+              decoration: InputDecoration(
+                hintText: t.searchHint,
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.textMuted,
+                ),
               ),
             ),
           ),
@@ -55,7 +61,7 @@ class _CinemaPickerScreenState extends ConsumerState<CinemaPickerScreen> {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, _) => Center(
                 child: Text(
-                  'Impossibile caricare la lista cinema.\n$err',
+                  '${t.cinemaListLoadError}\n$err',
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -70,10 +76,10 @@ class _CinemaPickerScreenState extends ConsumerState<CinemaPickerScreen> {
                           )
                           .toList();
                 if (filtered.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'Nessun cinema trovato',
-                      style: TextStyle(color: AppColors.textMuted),
+                      t.noCinemaFound,
+                      style: const TextStyle(color: AppColors.textMuted),
                     ),
                   );
                 }

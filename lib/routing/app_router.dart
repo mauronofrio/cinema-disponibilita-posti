@@ -12,9 +12,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
     redirect: (context, state) async {
-      final favoriteId = await ref.read(favoriteCinemaIdProvider.future);
+      final activeId = await ref.read(activeCinemaIdProvider.future);
       final goingToPicker = state.matchedLocation == '/picker';
-      if (favoriteId == null && !goingToPicker) return '/picker';
+      if (activeId == null && !goingToPicker) return '/picker';
       return null;
     },
     routes: [

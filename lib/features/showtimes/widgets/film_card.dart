@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/date/clock.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/cinema.dart';
 import '../../../core/models/film.dart';
 import '../../../core/theme/app_theme.dart';
@@ -131,6 +132,7 @@ class _SessionTimeChip extends StatelessWidget {
     // record of the day's programme) but is no longer tappable, distinct
     // from "sold out" which is a different, still-relevant state.
     final disabled = soldOut || isPast;
+    final t = AppLocalizations.of(context);
     return Material(
       color: disabled ? AppColors.surfaceElevated : AppColors.background,
       shape: RoundedRectangleBorder(
@@ -144,7 +146,7 @@ class _SessionTimeChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           child: Text(
             soldOut
-                ? '${DateFormat.Hm().format(session.startTime)} · esaurito'
+                ? '${DateFormat.Hm().format(session.startTime)} · ${t.soldOut}'
                 : DateFormat.Hm().format(session.startTime),
             style: AppTheme.mono(context).copyWith(
               fontSize: 13,

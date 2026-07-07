@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/date/day_label.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/showing_date.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -27,10 +28,10 @@ class DaySelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final available = days.where((d) => d.hasShowings).toList();
     return SizedBox(
-      height: 64,
+      height: 44,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         itemCount: available.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
@@ -42,7 +43,7 @@ class DaySelector extends StatelessWidget {
           return ChoiceChip(
             selected: isSelected,
             onSelected: (_) => onSelect(day.date),
-            label: Text(_labelFor(day.date)),
+            label: Text(_labelFor(context, day.date)),
             labelStyle: TextStyle(
               color: isSelected
                   ? const Color(0xFF211500)
@@ -55,14 +56,15 @@ class DaySelector extends StatelessWidget {
     );
   }
 
-  String _labelFor(DateTime date) {
+  String _labelFor(BuildContext context, DateTime date) {
+    final t = AppLocalizations.of(context);
     switch (resolveDayLabel(date, now)) {
       case DayLabelKind.today:
-        return 'Oggi';
+        return t.today;
       case DayLabelKind.tomorrow:
-        return 'Domani';
+        return t.tomorrow;
       case DayLabelKind.other:
-        return DateFormat('EEE d MMM', 'it_IT').format(date);
+        return DateFormat('EEE d MMM', t.dateFormatLocale).format(date);
     }
   }
 }

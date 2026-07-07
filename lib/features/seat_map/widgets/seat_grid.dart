@@ -191,7 +191,7 @@ class _SeatBox extends StatelessWidget {
     return Tooltip(
       message: [
         seat.name,
-        labelForSeatStatus(seat.status),
+        labelForSeatStatus(seat.status, context),
         if (categoryName?.isNotEmpty ?? false) categoryName!,
       ].join(' · '),
       child: Container(

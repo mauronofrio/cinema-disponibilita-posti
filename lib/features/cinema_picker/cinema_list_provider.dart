@@ -19,14 +19,33 @@ final favoriteCinemaStoreProvider = Provider<FavoriteCinemaStore>(
   (ref) => FavoriteCinemaStore(),
 );
 
-/// The user's saved favorite cinema id, or null if none has been picked yet.
-final favoriteCinemaIdProvider = FutureProvider<String?>((ref) {
-  return ref.watch(favoriteCinemaStoreProvider).read();
+/// The user's saved favorite cinema ids, in the order they were added.
+final favoriteCinemaIdsProvider = FutureProvider<List<String>>((ref) {
+  return ref.watch(favoriteCinemaStoreProvider).readFavorites();
 });
 
-/// Resolves the favorite cinema id to its full [Cinema] record.
-final favoriteCinemaProvider = FutureProvider<Cinema?>((ref) async {
-  final id = await ref.watch(favoriteCinemaIdProvider.future);
+/// Which of the favorites is currently active (the one the home screen
+/// shows), or null if there are no favorites yet.
+final activeCinemaIdProvider = FutureProvider<String?>((ref) {
+  return ref.watch(favoriteCinemaStoreProvider).readActive();
+});
+
+/// The user's favorite cinemas resolved to full [Cinema] records, in the
+/// order they were added.
+final favoriteCinemasProvider = FutureProvider<List<Cinema>>((ref) async {
+  final ids = await ref.watch(favoriteCinemaIdsProvider.future);
+  final cinemas = await ref.watch(cinemaListProvider.future);
+  final byId = {for (final c in cinemas) c.cinemaId: c};
+  return [
+    for (final id in ids)
+      if (byId[id] != null) byId[id]!,
+  ];
+});
+
+/// The currently active favorite cinema, resolved to its full [Cinema]
+/// record - what the home screen actually shows showtimes for.
+final activeCinemaProvider = FutureProvider<Cinema?>((ref) async {
+  final id = await ref.watch(activeCinemaIdProvider.future);
   if (id == null) return null;
   final cinemas = await ref.watch(cinemaListProvider.future);
   for (final cinema in cinemas) {

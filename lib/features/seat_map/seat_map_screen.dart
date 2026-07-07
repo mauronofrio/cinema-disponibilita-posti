@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/date/clock.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/models/film.dart';
 import '../../core/theme/app_theme.dart';
 import 'seat_map_provider.dart';
 import 'widgets/area_legend.dart';
+import 'widgets/buy_tickets_button.dart';
 import 'widgets/date_switcher.dart';
 import 'widgets/occupancy_summary.dart';
 import 'widgets/seat_grid.dart';
@@ -107,7 +109,7 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
           // permanently hidden behind it.
           padding: EdgeInsets.fromLTRB(
             16,
-            16,
+            4,
             16,
             16 + MediaQuery.paddingOf(context).bottom,
           ),
@@ -118,14 +120,14 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
               now: now,
               onSelect: _selectDate,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 2),
             TimeSwitcher(
               sessions: _selectedGroup.sessions,
               selectedSessionId: _selectedSessionId,
               now: now,
               onSelect: _selectSession,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -141,7 +143,7 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             seatMapAsync.when(
               loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: 48),
@@ -151,7 +153,7 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 48),
                 child: Center(
                   child: Text(
-                    'Impossibile caricare i posti.\n$err',
+                    '${AppLocalizations.of(context).seatsLoadError}\n$err',
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -161,8 +163,10 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AreaLegend(seatMap: seatMap),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
                     SeatGrid(seatMap: seatMap),
+                    const SizedBox(height: 32),
+                    BuyTicketsButton(session: session),
                   ],
                 );
               },

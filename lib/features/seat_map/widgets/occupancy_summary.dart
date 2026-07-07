@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/seat_map.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -22,7 +23,7 @@ class OccupancySummary extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Occupati $occupied/$total',
+          '${AppLocalizations.of(context).occupiedSummary} $occupied/$total',
           style: AppTheme.mono(
             context,
           ).copyWith(fontSize: 13, color: AppColors.textMuted),

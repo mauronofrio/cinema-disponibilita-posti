@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'dio_provider.dart';
+import '../localization/app_localizations.dart';
 import '../models/film.dart';
 import '../models/showing_date.dart';
 import '../models/seat_map.dart';
@@ -110,9 +111,7 @@ class TheSpaceApiClient {
   /// language message instead of the fallback meant for server errors.
   Never _throwFriendly(DioException e) {
     if (e.response == null) {
-      throw const ApiException(
-        'Connessione a Internet non disponibile. Controlla la rete e riprova.',
-      );
+      throw ApiException(AppLocalizations.current.connectionError);
     }
     final data = e.response?.data;
     Object? decoded = data;
@@ -133,9 +132,7 @@ class TheSpaceApiClient {
       ).replaceAll(RegExp(r'\s+'), ' ').trim();
       if (plain.isNotEmpty) throw ApiException(plain);
     }
-    throw const ApiException(
-      'Impossibile completare la richiesta. Riprova più tardi.',
-    );
+    throw ApiException(AppLocalizations.current.requestFailedError);
   }
 
   Future<Map<String, dynamic>> _getJson(

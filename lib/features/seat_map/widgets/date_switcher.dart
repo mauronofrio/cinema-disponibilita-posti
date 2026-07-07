@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/date/day_label.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/film.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -9,7 +10,9 @@ import '../../../core/theme/app_theme.dart';
 /// doesn't mean leaving the seat map screen - the data is already at hand
 /// ([SeatMapArgs.showingGroups] covers every day in one response), so this
 /// costs nothing extra to offer.
-class DateSwitcher extends StatelessWidget {
+///
+/// Scrolls the selected day into view on its own, same as [TimeSwitcher].
+class DateSwitcher extends StatefulWidget {
   const DateSwitcher({
     super.key,
     required this.showingGroups,
@@ -24,26 +27,88 @@ class DateSwitcher extends StatelessWidget {
   final ValueChanged<DateTime> onSelect;
 
   @override
+  State<DateSwitcher> createState() => _DateSwitcherState();
+}
+
+class _DateSwitcherState extends State<DateSwitcher> {
+  // Labels vary more than time chips ("Oggi" vs "gio 9 lug"), so this is a
+  // rougher estimate - it only needs to be close enough that the real chip
+  // is already built (or built very soon after layout) for the precise
+  // `ensureVisible` correction below to have something to find.
+  static const _estimatedItemExtent = 100.0;
+
+  final _selectedKey = GlobalKey();
+  late final ScrollController _controller = ScrollController(
+    initialScrollOffset: _estimatedInitialOffset(),
+  );
+
+  double _estimatedInitialOffset() {
+    final available = widget.showingGroups
+        .where((g) => g.sessions.isNotEmpty)
+        .toList();
+    final index = available.indexWhere(
+      (g) =>
+          g.date.year == widget.selectedDate.year &&
+          g.date.month == widget.selectedDate.month &&
+          g.date.day == widget.selectedDate.day,
+    );
+    return index <= 0 ? 0 : index * _estimatedItemExtent;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollToSelected();
+  }
+
+  @override
+  void didUpdateWidget(DateSwitcher oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedDate != widget.selectedDate) _scrollToSelected();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _scrollToSelected() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final selectedContext = _selectedKey.currentContext;
+      if (selectedContext == null) return;
+      Scrollable.ensureVisible(
+        selectedContext,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final available = showingGroups
+    final available = widget.showingGroups
         .where((g) => g.sessions.isNotEmpty)
         .toList();
     return SizedBox(
-      height: 48,
+      height: 40,
       child: ListView.separated(
+        controller: _controller,
         scrollDirection: Axis.horizontal,
         itemCount: available.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final group = available[index];
           final isSelected =
-              group.date.year == selectedDate.year &&
-              group.date.month == selectedDate.month &&
-              group.date.day == selectedDate.day;
+              group.date.year == widget.selectedDate.year &&
+              group.date.month == widget.selectedDate.month &&
+              group.date.day == widget.selectedDate.day;
           return ChoiceChip(
+            key: isSelected ? _selectedKey : null,
             selected: isSelected,
-            onSelected: (_) => onSelect(group.date),
-            label: Text(_labelFor(group.date)),
+            onSelected: (_) => widget.onSelect(group.date),
+            label: Text(_labelFor(context, group.date)),
             labelStyle: AppTheme.body(context).copyWith(
               color: isSelected
                   ? const Color(0xFF211500)
@@ -57,14 +122,15 @@ class DateSwitcher extends StatelessWidget {
     );
   }
 
-  String _labelFor(DateTime date) {
-    switch (resolveDayLabel(date, now)) {
+  String _labelFor(BuildContext context, DateTime date) {
+    final t = AppLocalizations.of(context);
+    switch (resolveDayLabel(date, widget.now)) {
       case DayLabelKind.today:
-        return 'Oggi';
+        return t.today;
       case DayLabelKind.tomorrow:
-        return 'Domani';
+        return t.tomorrow;
       case DayLabelKind.other:
-        return DateFormat('EEE d MMM', 'it_IT').format(date);
+        return DateFormat('EEE d MMM', t.dateFormatLocale).format(date);
     }
   }
 }

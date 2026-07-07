@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../localization/app_localizations.dart';
 import '../models/seat_map.dart';
 
 /// Design tokens for "The Space (non ufficiale)".
@@ -40,20 +41,21 @@ class AppColors {
   static const seatOccupied = Color(0xFF322F3A);
 }
 
-String labelForSeatStatus(SeatStatus status) {
+String labelForSeatStatus(SeatStatus status, BuildContext context) {
+  final t = AppLocalizations.of(context);
   switch (status) {
     case SeatStatus.available:
-      return 'Disponibile';
+      return t.seatStatusAvailable;
     case SeatStatus.occupied:
-      return 'Occupato';
+      return t.seatStatusOccupied;
     case SeatStatus.reserved:
-      return 'Riservato';
+      return t.seatStatusReserved;
     case SeatStatus.special:
-      return 'Speciale';
+      return t.seatStatusSpecial;
     case SeatStatus.accessibility:
-      return 'Accessibilità';
+      return t.seatStatusAccessibility;
     case SeatStatus.unknown:
-      return 'Non disponibile';
+      return t.seatStatusUnavailable;
   }
 }
 

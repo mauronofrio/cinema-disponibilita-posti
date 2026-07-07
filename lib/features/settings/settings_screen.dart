@@ -2,18 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/localization/app_localizations.dart';
+import '../../core/localization/locale_provider.dart';
+import '../../core/models/cinema.dart';
 import '../../core/theme/app_theme.dart';
 import '../cinema_picker/cinema_list_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
+  Future<void> _setActive(WidgetRef ref, Cinema cinema) async {
+    await ref.read(favoriteCinemaStoreProvider).setActive(cinema.cinemaId);
+    ref.invalidate(activeCinemaIdProvider);
+  }
+
+  Future<void> _remove(WidgetRef ref, Cinema cinema) async {
+    await ref.read(favoriteCinemaStoreProvider).remove(cinema.cinemaId);
+    ref.invalidate(favoriteCinemaIdsProvider);
+    ref.invalidate(activeCinemaIdProvider);
+  }
+
+  Future<void> _setLanguage(WidgetRef ref, String languageCode) async {
+    await ref.read(languageStoreProvider).setOverride(languageCode);
+    ref.invalidate(languageOverrideProvider);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favoriteAsync = ref.watch(favoriteCinemaProvider);
+    final favoritesAsync = ref.watch(favoriteCinemasProvider);
+    final activeIdAsync = ref.watch(activeCinemaIdProvider);
+    final locale = ref.watch(effectiveLocaleProvider);
+    final t = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Impostazioni')),
+      appBar: AppBar(title: Text(t.settingsTitle)),
       body: ListView(
         padding: EdgeInsets.fromLTRB(
           16,
@@ -23,37 +45,85 @@ class SettingsScreen extends ConsumerWidget {
         ),
         children: [
           Text(
-            'Il tuo cinema',
+            t.yourCinemas,
             style: AppTheme.display(context).copyWith(fontSize: 20),
           ),
           const SizedBox(height: 8),
-          favoriteAsync.when(
-            loading: () => const CircularProgressIndicator(),
-            error: (err, _) => Text('Errore: $err'),
-            data: (cinema) => Card(
-              child: ListTile(
-                title: Text(cinema?.name ?? 'Nessun cinema selezionato'),
-                subtitle: cinema == null
-                    ? null
-                    : Text(
-                        cinema.address,
-                        style: const TextStyle(color: AppColors.textMuted),
+          favoritesAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, _) => Text('${t.genericError} $err'),
+            data: (cinemas) {
+              final activeId = activeIdAsync.value;
+              if (cinemas.isEmpty) {
+                return Card(child: ListTile(title: Text(t.noCinemaSelected)));
+              }
+              return Column(
+                children: [
+                  for (final cinema in cinemas) ...[
+                    Card(
+                      child: ListTile(
+                        leading: Icon(
+                          cinema.cinemaId == activeId
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_off,
+                          color: cinema.cinemaId == activeId
+                              ? AppColors.marquee
+                              : AppColors.textMuted,
+                        ),
+                        title: Text(cinema.name),
+                        subtitle: Text(
+                          cinema.address,
+                          style: const TextStyle(color: AppColors.textMuted),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          tooltip: t.removeCinema,
+                          onPressed: () => _remove(ref, cinema),
+                        ),
+                        onTap: cinema.cinemaId == activeId
+                            ? null
+                            : () => _setActive(ref, cinema),
                       ),
-              ),
-            ),
+                    ),
+                    if (cinema != cinemas.last) const SizedBox(height: 8),
+                  ],
+                ],
+              );
+            },
           ),
           const SizedBox(height: 12),
           FilledButton.tonal(
             onPressed: () => context.push('/picker'),
-            child: const Text('Cambia cinema'),
+            child: Text(t.addCinema),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            t.language,
+            style: AppTheme.display(context).copyWith(fontSize: 20),
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('EN'),
+                  Switch(
+                    value: locale.languageCode == 'it',
+                    onChanged: (isItalian) =>
+                        _setLanguage(ref, isItalian ? 'it' : 'en'),
+                  ),
+                  const Text('IT'),
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: 32),
           const Divider(),
           const SizedBox(height: 16),
           Text(
-            'App non ufficiale, senza alcun legame con The Space Cinema o Vue International. '
-            'Non gestisce account, pagamenti, biglietti o prenotazioni: mostra soltanto '
-            'programmazione e disponibilità posti, dati pubblicamente visibili sul sito ufficiale.',
+            t.disclaimer,
             style: AppTheme.body(
               context,
             ).copyWith(color: AppColors.textMuted, fontSize: 12),

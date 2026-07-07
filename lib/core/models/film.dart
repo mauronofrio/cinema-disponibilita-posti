@@ -28,6 +28,7 @@ class Session {
     required this.formattedPrice,
     required this.isPriceVisible,
     required this.attributes,
+    required this.bookingPath,
   });
 
   factory Session.fromJson(Map<String, dynamic> json) {
@@ -43,6 +44,11 @@ class Session {
           .map((a) => SessionAttribute.fromJson(a as Map<String, dynamic>))
           .where((a) => a.name.isNotEmpty)
           .toList(),
+      // Relative path (e.g. "/prenotare-il-biglietto/summary/1024/HO.../52619")
+      // to the official site's own booking flow - this app never implements
+      // booking itself, it just hands off to the real site for this one
+      // session.
+      bookingPath: json['bookingUrl'] as String?,
     );
   }
 
@@ -54,6 +60,7 @@ class Session {
   final String? formattedPrice;
   final bool isPriceVisible;
   final List<SessionAttribute> attributes;
+  final String? bookingPath;
 }
 
 class ShowingGroup {

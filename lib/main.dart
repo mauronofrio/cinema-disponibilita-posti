@@ -7,5 +7,6 @@ import 'app.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('it_IT');
+  await initializeDateFormatting('en_US');
   runApp(const ProviderScope(child: TheSpaceApp()));
 }

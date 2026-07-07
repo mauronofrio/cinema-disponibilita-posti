@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/seat_map.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -39,7 +40,10 @@ class AreaLegend extends StatelessWidget {
             label: category.name,
           ),
         if (hasUnavailableSeat)
-          const _LegendEntry(color: AppColors.seatOccupied, label: 'Occupato'),
+          _LegendEntry(
+            color: AppColors.seatOccupied,
+            label: AppLocalizations.of(context).seatStatusOccupied,
+          ),
       ],
     );
   }

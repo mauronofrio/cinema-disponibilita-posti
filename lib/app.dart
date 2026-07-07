@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/date/clock.dart';
 import 'core/date/day_label.dart';
+import 'core/localization/app_localizations.dart';
+import 'core/localization/locale_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/no_stretch_scroll_behavior.dart';
 import 'features/cinema_picker/cinema_list_provider.dart';
@@ -45,24 +47,26 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
     if (currentDayKey == _lastKnownDayKey) return;
     _lastKnownDayKey = currentDayKey;
 
-    final favoriteId = await ref.read(favoriteCinemaIdProvider.future);
-    if (favoriteId == null) return;
-    ref.invalidate(showingDatesProvider(favoriteId));
-    ref.invalidate(filmsForCinemaProvider(favoriteId));
+    final activeId = await ref.read(activeCinemaIdProvider.future);
+    if (activeId == null) return;
+    ref.invalidate(showingDatesProvider(activeId));
+    ref.invalidate(filmsForCinemaProvider(activeId));
   }
 
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
+    final locale = ref.watch(effectiveLocaleProvider);
     return MaterialApp.router(
-      title: 'The Space (non ufficiale)',
+      title: 'Cinema: Disponibilità & Posti',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       scrollBehavior: const NoStretchScrollBehavior(),
       routerConfig: router,
-      locale: const Locale('it'),
-      supportedLocales: const [Locale('it')],
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
+        AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
