@@ -6,11 +6,12 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 
 ## Cosa fa
 
-- Scegli il tuo cinema preferito da una lista ricercabile (o più di uno, e passa dall'uno all'altro dalle impostazioni)
+- Scegli il tuo cinema preferito da una lista ricercabile per nome, catena o città (o più di uno, e passa dall'uno all'altro dalle impostazioni)
 - Vedi gli spettacoli divisi per giorno, con locandina e orari
 - Apri uno spettacolo e vedi subito la mappa posti: liberi, occupati, riservati, accessibilità - con legenda
 - Da lì puoi cambiare giorno o orario senza tornare indietro alla lista film
 - Un tasto ti manda alla pagina ufficiale se vuoi comprare davvero il biglietto
+- Ti avvisa in automatico quando è disponibile una versione più recente (l'app non passa da nessuno store)
 
 ## Cinema supportati
 
@@ -18,7 +19,7 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 |---|---|
 | The Space Cinema | 33 sale in tutta Italia |
 | UCI Cinemas | 33 sale in tutta Italia |
-| RedCarpet Cinema (Monopoli) e Multicinema Galleria (Bari) | cinema indipendenti sulla stessa piattaforma "18tickets.net" |
+| Cinema indipendenti sulla piattaforma "18tickets.net" | RedCarpet Cinema (Monopoli), Multicinema Galleria (Bari), Anteo spazioCinema (Lombardia), Circuito Cinema (Bologna, Roma, Napoli, Firenze, Torino), Pop Up Cinema (Bologna), Multisala Impero (Varese), Multisala Massimo (Lecce) |
 
 Ognuna di queste catene parla un'API diversa (alcune un JSON pulito, altre solo HTML/SVG server-renderizzato) - vedi `PROJECT_NOTES.md` (locale, non versionato) per i dettagli del reverse engineering di ciascuna.
 
@@ -44,4 +45,4 @@ flutter build apk --release
 
 ## Disclaimer
 
-App non ufficiale, senza alcun legame con The Space Cinema, Vue International, UCI Cinemas, RedCarpet Cinema o Multicinema Galleria. Non gestisce account, pagamenti, biglietti o prenotazioni: mostra soltanto programmazione e disponibilità posti, dati già pubblicamente visibili sui siti ufficiali.
+App non ufficiale, senza alcun legame con The Space Cinema, Vue International, UCI Cinemas o con nessuno dei cinema indipendenti elencati sopra. Non gestisce account, pagamenti, biglietti o prenotazioni: mostra soltanto programmazione e disponibilità posti, dati già pubblicamente visibili sui siti ufficiali.
