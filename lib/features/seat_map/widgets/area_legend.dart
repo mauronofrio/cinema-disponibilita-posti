@@ -40,6 +40,18 @@ class AreaLegend extends StatelessWidget {
           (c) => presentCategoryCodes.contains(c.code) && c.name.isNotEmpty,
         )
         .toList();
+    // Chains with real per-category names/colors (The Space, UCI) already
+    // convey "this color is available, in this pricing tier" through those
+    // entries, so a separate generic one would be redundant. Chains with no
+    // such data at all (RedCarpet - see PROJECT_NOTES.md, the SVG's own
+    // fill is just a placeholder gray, not a real category color) never
+    // populate `categories`, so without this fallback there would be no
+    // legend entry at all explaining what the plain available color means.
+    final hasUncategorizedAvailableSeat =
+        categories.isEmpty &&
+        seatMap.rows.any(
+          (row) => row.seats.any((s) => s?.status == SeatStatus.available),
+        );
 
     return Wrap(
       spacing: 14,
@@ -49,6 +61,11 @@ class AreaLegend extends StatelessWidget {
           _LegendEntry(
             color: colorFromHex(category.color) ?? AppColors.seatAvailable,
             label: category.name,
+          ),
+        if (hasUncategorizedAvailableSeat)
+          _LegendEntry(
+            color: AppColors.seatAvailable,
+            label: AppLocalizations.of(context).seatStatusAvailable,
           ),
         if (hasAccessibilitySeat)
           _LegendEntry(
