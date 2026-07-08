@@ -66,13 +66,14 @@ class _CinemaPickerScreenState extends ConsumerState<CinemaPickerScreen> {
                 ),
               ),
               data: (cinemas) {
-                final filtered = _query.isEmpty
+                final query = _query.toLowerCase();
+                final filtered = query.isEmpty
                     ? cinemas
                     : cinemas
                           .where(
-                            (c) => c.name.toLowerCase().contains(
-                              _query.toLowerCase(),
-                            ),
+                            (c) =>
+                                c.displayName.toLowerCase().contains(query) ||
+                                c.address.toLowerCase().contains(query),
                           )
                           .toList();
                 if (filtered.isEmpty) {
