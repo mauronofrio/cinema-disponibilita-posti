@@ -67,6 +67,16 @@
     "host": "capitol.spaziocinema.18tickets.it"
   },
   {
+    "cinemaId": "cinemazero-pordenone",
+    "name": "Cinemazero - Pordenone",
+    "slug": "cinemazero-pordenone",
+    "address": "Piazza Maestri del Lavoro 3, 33170 Pordenone PN",
+    "lat": 45.9633703,
+    "lng": 12.6571161,
+    "chain": "eighteenTickets",
+    "host": "multisala.cinemazero.18tickets.it"
+  },
+  {
     "cinemaId": "1024",
     "name": "Casamassima Bari",
     "slug": "casamassima",
