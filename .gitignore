@@ -45,6 +45,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Built APKs kept for manual installs, not versioned source.
+/releases/
+
 # Reverse-engineering research artifacts (decompiled APK, saved web pages,
 # raw API samples) - kept on disk as reference/test fixtures, not versioned.
 /research/

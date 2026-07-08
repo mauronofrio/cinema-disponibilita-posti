@@ -22,7 +22,6 @@ class _RawSeat {
     required this.seatNumber,
     required this.area,
     required this.x,
-    required this.y,
     required this.isAccessibility,
   });
 
@@ -31,7 +30,6 @@ class _RawSeat {
   final String seatNumber;
   final String area;
   final double x;
-  final double y;
 
   /// Accessibility/wheelchair seats carry an extra `special userhide` class
   /// alongside `posto` (confirmed live: always the two seats at either end
@@ -44,7 +42,7 @@ class _RawSeat {
 }
 
 final _seatGroupRe = RegExp(
-  r"""<g class=['"]([^'"]*)['"][^>]*data-area=['"]([^'"]*)['"][^>]*data-row=['"]([^'"]*)['"][^>]*data-seat=['"]([^'"]*)['"][^>]*>\s*<rect[^>]*id=['"]([^'"]+)['"][^>]*x=['"]([\d.]+)['"][^>]*y=['"]([\d.]+)['"]""",
+  r"""<g class=['"]([^'"]*)['"][^>]*data-area=['"]([^'"]*)['"][^>]*data-row=['"]([^'"]*)['"][^>]*data-seat=['"]([^'"]*)['"][^>]*>\s*<rect[^>]*id=['"]([^'"]+)['"][^>]*x=['"]([\d.]+)['"]""",
 );
 
 /// Categories the occupancy JSON's own arrays use (see PROJECT_NOTES.md) -
@@ -61,6 +59,22 @@ const _busyKeys = [
   'mine',
   'preemption',
 ];
+
+/// Every busy-category array holds either a plain seat-id string (confirmed
+/// on RedCarpet, e.g. `"11_7"`) or an object `{"sid": 31706, "x": 6, "y": 10}`
+/// (confirmed on Multicinema Galleria, on a real reserved seat) - `sid` is
+/// some other internal id not seen anywhere else, but `x`/`y` are the same
+/// two numbers that make up the SVG `<rect>`'s own `id` (`"${y}_${x}"`, row
+/// grid index first) - reconstructing it that way matches a real seat
+/// (verified live: `{"x": 6, "y": 10}` for a session with row A seats 3/4/5
+/// reserved matched rect ids "10_6"/"10_7"/"10_8", the same seats). Without
+/// this, `.toString()`-ing the object produced a garbage string that could
+/// never match any real seat id, so every seat silently read as available
+/// regardless of true occupancy.
+String _busySeatId(dynamic entry) {
+  if (entry is Map) return '${entry['y']}_${entry['x']}';
+  return entry.toString();
+}
 
 /// `reserved` gets its own [SeatStatus] (this platform's own legend calls it
 /// "Prenotati in cassa", counter-booked rather than fully sold) - everything
@@ -93,16 +107,27 @@ SeatStatus _statusFor(
 /// for the other two chains.
 ///
 /// The SVG gives each seat's exact x/y position rather than discrete
-/// row/column numbers - both column order (by x) and row order (by y) are
-/// derived from real position rather than trusting a label, the same rule
-/// already applied to columns and now extended to rows too: alphabetical
-/// row-label order turned out to run screen-to-back backwards in the one
-/// real room checked (row "A" sits at the *highest* y, i.e. the row
-/// farthest from the screen, confirmed live - not the front row the
-/// alphabetical assumption implied). `data-seat` itself is not reliable for
-/// column ordering either: observed to *decrease* left-to-right in at
+/// row/column numbers - column order is derived from real x position rather
+/// than trusting `data-seat` (observed to *decrease* left-to-right in at
 /// least one real room, so it's only ever used for the visible label, never
-/// for placement.
+/// for placement).
+///
+/// Row order is the row label itself, descending (I, H, G, ... down to A) -
+/// *not* real y, despite the column-order rule right above it. Real y was
+/// the original approach and does agree with this in most rooms checked
+/// (one RedCarpet room and two Multicinema Galleria rooms all have row "A"
+/// at the *highest* y, matching "A last" here already), but a third
+/// Galleria room (a Backrooms screening, confirmed live) has *every* row's
+/// real y running the opposite direction (row "A" lowest, each later letter
+/// higher) - not just row "A" out of place, the whole room's y is flipped
+/// relative to its own row labels. Since row "A" is always the back row on
+/// this platform regardless (confirmed by the user for this venue), the
+/// label itself is the one thing that's consistent across rooms, so it's
+/// what's trusted, not the geometry. A "DD" row label, seen in a couple of
+/// rooms, isn't a real row at all (confirmed by the user) - just a
+/// companion/accessible seat sitting on the same physical line as row A -
+/// so it's merged into "A" before any of this rather than kept as its own
+/// phantom row.
 SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
   final rawSeats = <_RawSeat>[];
   for (final match in _seatGroupRe.allMatches(payload.theaterSvg)) {
@@ -114,7 +139,6 @@ SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
         seatNumber: match.group(4)!,
         seatId: match.group(5)!,
         x: double.parse(match.group(6)!),
-        y: double.parse(match.group(7)!),
         isAccessibility:
             classAttr.contains('special') || classAttr.contains('userhide'),
       ),
@@ -125,7 +149,7 @@ SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
   final busyBySeatId = <String, Set<String>>{
     for (final key in _busyKeys)
       key: ((occupancy[key] as List<dynamic>?) ?? const [])
-          .map((e) => e.toString())
+          .map(_busySeatId)
           .toSet(),
   };
 
@@ -137,24 +161,39 @@ SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
 
   final byRow = <String, List<_RawSeat>>{};
   for (final seat in rawSeats) {
-    byRow.putIfAbsent(seat.row, () => []).add(seat);
+    // "DD" isn't a real row of its own (confirmed by the user) - every
+    // example seen is a single companion/accessible seat sitting right next
+    // to row A on the exact same physical line, just labelled separately in
+    // the raw data. Merged into "A" here so it renders as part of that row
+    // instead of as its own phantom row.
+    final rowKey = seat.row == 'DD' ? 'A' : seat.row;
+    byRow.putIfAbsent(rowKey, () => []).add(seat);
   }
-  // Every seat in a row shares the same y in practice, but average defends
-  // against a room where that's not quite exact.
-  double averageY(List<_RawSeat> seats) =>
-      seats.map((s) => s.y).reduce((a, b) => a + b) / seats.length;
-  final rowLabels = byRow.keys.toList()
-    ..sort((a, b) => averageY(byRow[a]!).compareTo(averageY(byRow[b]!)));
+  final rowLabels = byRow.keys.toList()..sort((a, b) => b.compareTo(a));
 
   final rows = rowLabels.map((rowLabel) {
     final rowIndex = rowLabel.isEmpty ? 0 : rowLabel.codeUnitAt(0);
     final slots = List<Seat?>.filled(totalColumns, null);
-    for (final raw in byRow[rowLabel]!) {
+    final seatsInRow = byRow[rowLabel]!;
+    // The merged-in "DD" seat always carries its own raw seat number "1",
+    // which can collide with a real seat already numbered "1" in the row it
+    // merges into - detected here (rather than assumed only for merges) so
+    // any other room with a genuine duplicate is covered too. When that
+    // happens, the whole row falls back to a left-to-right position number
+    // instead of the raw (colliding) one.
+    final numbersCollide =
+        seatsInRow.map((s) => s.seatNumber).toSet().length < seatsInRow.length;
+    final byX = [...seatsInRow]..sort((a, b) => a.x.compareTo(b.x));
+    final positionForSeat = {
+      for (var i = 0; i < byX.length; i++) byX[i]: i + 1,
+    };
+    for (final raw in seatsInRow) {
       final column = columnForX[raw.x]!;
+      final label = numbersCollide ? '${positionForSeat[raw]}' : raw.seatNumber;
       slots[column - 1] = Seat(
         rowIndex: rowIndex,
         columnIndex: column,
-        name: '$rowLabel${raw.seatNumber}',
+        name: '$rowLabel$label',
         status: _statusFor(raw.seatId, busyBySeatId, raw.isAccessibility),
         areaCategoryCode: raw.area,
         isAccessibility: raw.isAccessibility,

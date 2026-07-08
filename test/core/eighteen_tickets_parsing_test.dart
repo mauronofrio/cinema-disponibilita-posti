@@ -156,21 +156,18 @@ void main() {
       },
     );
 
-    test(
-      'rows are ordered by real distance from the screen, not alphabetically',
-      () {
-        final seatMap = parseEighteenTicketsSeatMap(
-          EighteenTicketsSeatMapPayload(
-            theaterSvg: svg,
-            occupancyJson: emptyOccupancy,
-          ),
-        );
-        // Row "A" sits at the highest y in the real SVG (farthest from the
-        // screen) - it must render last, not first, in the returned row list.
-        expect(seatMap.rows.first.rowLabel, isNot('A'));
-        expect(seatMap.rows.last.rowLabel, 'A');
-      },
-    );
+    test('rows are ordered by label, descending, screen-side first', () {
+      final seatMap = parseEighteenTicketsSeatMap(
+        EighteenTicketsSeatMapPayload(
+          theaterSvg: svg,
+          occupancyJson: emptyOccupancy,
+        ),
+      );
+      // Row "A" is always the back row on this platform - it must render
+      // last, not first, in the returned row list.
+      expect(seatMap.rows.first.rowLabel, isNot('A'));
+      expect(seatMap.rows.last.rowLabel, 'A');
+    });
 
     test(
       'seat labels combine row letter and seat number, not the raw grid id',
@@ -231,6 +228,90 @@ void main() {
         final indexOfA15 = rowA.seats.indexWhere((s) => s?.name == 'A15');
         final indexOfA14 = rowA.seats.indexWhere((s) => s?.name == 'A14');
         expect(indexOfA15, lessThan(indexOfA14));
+      },
+    );
+
+    test(
+      'row order follows the label, descending, even in a room whose real y runs the opposite way for every row',
+      () {
+        // A real Multicinema Galleria room (a Backrooms screening) where
+        // *every* row's real y runs the opposite direction from every other
+        // room checked (row "A" lowest/closest, each later letter higher) -
+        // not just row "A" out of place. Real y can't be trusted
+        // platform-wide, so row order always follows the label itself
+        // (descending) regardless of what the SVG's own geometry says.
+        final reversedSvg = File(
+          'test/fixtures/eighteen_tickets_theater_reversed_row_a_sample.svg',
+        ).readAsStringSync();
+        final seatMap = parseEighteenTicketsSeatMap(
+          EighteenTicketsSeatMapPayload(
+            theaterSvg: reversedSvg,
+            occupancyJson: emptyOccupancy,
+          ),
+        );
+        expect(seatMap.rows.map((r) => r.rowLabel).toList(), [
+          'H',
+          'G',
+          'F',
+          'E',
+          'D',
+          'C',
+          'B',
+          'A',
+        ]);
+      },
+    );
+
+    test(
+      'a "DD" row label is merged into "A" instead of rendered as its own row',
+      () {
+        // A real room where a lone companion/accessible seat is labelled
+        // "DD" in the raw SVG despite sitting on the exact same physical
+        // line as row A - not a real row of its own.
+        final ddSvg = File(
+          'test/fixtures/eighteen_tickets_theater_dd_row_sample.svg',
+        ).readAsStringSync();
+        final seatMap = parseEighteenTicketsSeatMap(
+          EighteenTicketsSeatMapPayload(
+            theaterSvg: ddSvg,
+            occupancyJson: emptyOccupancy,
+          ),
+        );
+        expect(seatMap.rows.any((r) => r.rowLabel == 'DD'), isFalse);
+        final rowA = seatMap.rows.firstWhere((r) => r.rowLabel == 'A');
+        final seats = rowA.seats.whereType<Seat>().toList();
+        // The merged-in seat always carries the raw number "1", which
+        // collides with the row's own real seat "1" - every seat in the row
+        // must still get a unique name once merged.
+        expect(seats.map((s) => s.name).toSet(), hasLength(seats.length));
+      },
+    );
+
+    test(
+      'a busy-array entry shaped as {"sid", "x", "y"} matches the seat whose SVG rect id is "y_x"',
+      () {
+        // Confirmed live on Multicinema Galleria: unlike RedCarpet's plain
+        // seat-id strings (e.g. "11_7"), this room's occupancy response
+        // lists reserved seats as objects - {"x": 6, "y": 10} here matches
+        // real rect id "10_6" (row A, third seat), the same seat the user
+        // reported as reserved.
+        const occupancy =
+            '{"bought":[],"locked":[],"reserved":[{"sid":31706,"x":6,"y":10}],"quarantined":[],"reselling":[],"mine":[],"preemption":[]}';
+        final ddSvg = File(
+          'test/fixtures/eighteen_tickets_theater_dd_row_sample.svg',
+        ).readAsStringSync();
+        final seatMap = parseEighteenTicketsSeatMap(
+          EighteenTicketsSeatMapPayload(
+            theaterSvg: ddSvg,
+            occupancyJson: occupancy,
+          ),
+        );
+        final busySeats = seatMap.rows
+            .expand((r) => r.seats)
+            .whereType<Seat>()
+            .where((s) => s.status == SeatStatus.reserved)
+            .toList();
+        expect(busySeats, hasLength(1));
       },
     );
   });
