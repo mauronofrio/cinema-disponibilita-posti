@@ -9,10 +9,11 @@ import '../../core/models/film.dart';
 /// Films playing at a cinema with sessions on one specific day. The Space
 /// and UCI fetch every day at once regardless (cheap for them, see their
 /// own [ChainApi] implementations), so in practice this is served from one
-/// shared cached response no matter which day is asked for; RedCarpet
-/// genuinely fetches just this one day, lazily, only when it's actually
-/// asked for - see PROJECT_NOTES.md for why (an aggressive per-IP rate
-/// limit on that site makes pre-fetching several days upfront unsafe).
+/// shared cached response no matter which day is asked for; 18tickets-
+/// platform cinemas (RedCarpet, Multicinema Galleria, ...) genuinely fetch
+/// just this one day, lazily, only when it's actually asked for - see
+/// PROJECT_NOTES.md for why (an aggressive per-IP rate limit on that
+/// platform makes pre-fetching several days upfront unsafe).
 ///
 /// Short in-memory TTL, never persisted. Not force-invalidated on day
 /// rollover the way [showingDatesProvider] is: since this is keyed by the

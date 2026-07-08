@@ -11,17 +11,19 @@ Never _throwFriendly(DioException e) {
   throw ApiException(AppLocalizations.current.requestFailedError);
 }
 
-/// Typed client for RedCarpet Cinema's own booking site - a small,
-/// independent cinema (not a chain) built on the "18tickets.net" platform,
-/// which serves plain server-rendered HTML/SVG rather than a JSON API (see
-/// PROJECT_NOTES.md). No auth of any kind on any of these, confirmed live.
+/// Typed client for the "18tickets.net" platform - shared by every
+/// independent cinema built on it (confirmed live: RedCarpet Cinema -
+/// Monopoli and Multicinema Galleria - Bari are the same backend, just a
+/// different venue each), which serves plain server-rendered HTML/SVG
+/// rather than a JSON API (see PROJECT_NOTES.md). No auth of any kind on any
+/// of these, confirmed live.
 ///
 /// Every call takes the venue's own `host` (`Cinema.host`, e.g.
 /// "monopoli.redcarpetcinema.it") rather than a fixed base URL: unlike
 /// UCI/WebTic, this platform is one deployment per cinema, so there's no
 /// single shared host to bake into the client.
-class RedCarpetApiClient {
-  RedCarpetApiClient(this._dio);
+class EighteenTicketsApiClient {
+  EighteenTicketsApiClient(this._dio);
 
   final Dio _dio;
 
@@ -70,7 +72,8 @@ class RedCarpetApiClient {
   /// One specific showtime's own page - the only place this platform
   /// exposes which room (`data-theater`) that showtime plays in; not worth
   /// fetching for every showtime up front, only called lazily when the user
-  /// opens that one session's seat map (see `RedCarpetChainApi.getSeatMap`).
+  /// opens that one session's seat map (see
+  /// `EighteenTicketsChainApi.getSeatMap`).
   Future<String> getFilmSessionPage(
     String host,
     String filmId,
@@ -97,6 +100,8 @@ class RedCarpetApiClient {
   }
 }
 
-final redCarpetApiClientProvider = Provider<RedCarpetApiClient>((ref) {
-  return RedCarpetApiClient(Dio());
+final eighteenTicketsApiClientProvider = Provider<EighteenTicketsApiClient>((
+  ref,
+) {
+  return EighteenTicketsApiClient(Dio());
 });

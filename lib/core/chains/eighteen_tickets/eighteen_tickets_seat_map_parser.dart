@@ -5,8 +5,8 @@ import '../../models/seat_map.dart';
 /// Bundles both raw responses into one argument so parsing can still happen
 /// in a single `compute()` call if the SVG turns out large enough to
 /// warrant it (same reasoning as the other two chains' seat map payloads).
-class RedCarpetSeatMapPayload {
-  const RedCarpetSeatMapPayload({
+class EighteenTicketsSeatMapPayload {
+  const EighteenTicketsSeatMapPayload({
     required this.theaterSvg,
     required this.occupancyJson,
   });
@@ -62,7 +62,7 @@ const _busyKeys = [
   'preemption',
 ];
 
-/// `reserved` gets its own [SeatStatus] (RedCarpet's own legend calls it
+/// `reserved` gets its own [SeatStatus] (this platform's own legend calls it
 /// "Prenotati in cassa", counter-booked rather than fully sold) - everything
 /// else busy collapses to plain `occupied`, same simplification The Space's
 /// own status codes already make for several distinct server states.
@@ -103,7 +103,7 @@ SeatStatus _statusFor(
 /// column ordering either: observed to *decrease* left-to-right in at
 /// least one real room, so it's only ever used for the visible label, never
 /// for placement.
-SeatMap parseRedCarpetSeatMap(RedCarpetSeatMapPayload payload) {
+SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
   final rawSeats = <_RawSeat>[];
   for (final match in _seatGroupRe.allMatches(payload.theaterSvg)) {
     final classAttr = match.group(1)!;

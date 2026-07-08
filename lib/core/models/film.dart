@@ -32,7 +32,7 @@ class Session {
     required this.attributes,
     required this.bookingPath,
     this.webticScreenId,
-    this.redCarpetFilmId,
+    this.eighteenTicketsFilmId,
   });
 
   factory Session.fromJson(Map<String, dynamic> json) {
@@ -76,12 +76,13 @@ class Session {
   /// The Space, which doesn't need it (its own `sessionId` is enough).
   final int? webticScreenId;
 
-  /// RedCarpet only: the film's own id, needed alongside [sessionId] to
-  /// fetch that one showtime's own page (`/film/{filmId}/{sessionId}`) -
-  /// the only place this platform exposes which room a showtime plays in,
-  /// resolved lazily from there rather than known upfront (see
-  /// RedCarpetChainApi.getSeatMap).
-  final String? redCarpetFilmId;
+  /// 18tickets-platform cinemas only (RedCarpet, Multicinema Galleria, ...):
+  /// the film's own id, needed alongside [sessionId] to fetch that one
+  /// showtime's own page (`/film/{filmId}/{sessionId}`) - the only place
+  /// this platform exposes which room a showtime plays in, resolved lazily
+  /// from there rather than known upfront (see
+  /// EighteenTicketsChainApi.getSeatMap).
+  final String? eighteenTicketsFilmId;
 
   /// A session is the same session iff same [sessionId] - it's already a
   /// unique identifier for one specific showtime, so this is entity

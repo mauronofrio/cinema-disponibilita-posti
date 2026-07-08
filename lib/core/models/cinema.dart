@@ -3,11 +3,18 @@
 enum CinemaChain {
   theSpace,
   uci,
-  redCarpet;
+
+  /// Not a chain in the branding sense: every cinema with this value is its
+  /// own small, independent venue that happens to run its booking site on
+  /// the shared "18tickets.net" platform (e.g. RedCarpet Cinema - Monopoli,
+  /// Multicinema Galleria - Bari) - confirmed live to be byte-for-byte
+  /// compatible with the same parsing code, so one [ChainApi] implementation
+  /// serves all of them, distinguished only by their own [Cinema.host].
+  eighteenTickets;
 
   static CinemaChain fromJson(String? value) => switch (value) {
     'uci' => CinemaChain.uci,
-    'redCarpet' => CinemaChain.redCarpet,
+    'eighteenTickets' => CinemaChain.eighteenTickets,
     _ => CinemaChain.theSpace,
   };
 }
@@ -52,13 +59,14 @@ class Cinema {
   /// slug for this chain). Needed for the `Screen`/`Occupancy` calls.
   final int? webticLocalId;
 
-  /// RedCarpet only: the per-venue hostname its 18tickets.net booking site
-  /// runs on (e.g. "monopoli.redcarpetcinema.it") - every call for this
-  /// chain (film list, showtimes, seat map) goes to this same host, so it's
-  /// the one piece of chain-specific routing info this cinema needs.
+  /// [CinemaChain.eighteenTickets] only: the per-venue hostname its
+  /// 18tickets.net booking site runs on (e.g. "monopoli.redcarpetcinema.it",
+  /// "multicinemagalleria.18tickets.it") - every call for this cinema (film
+  /// list, showtimes, seat map) goes to this same host, so it's the one
+  /// piece of chain-specific routing info it needs.
   final String? host;
 
-  /// [name] alone for UCI Cinemas and RedCarpet (both already
+  /// [name] alone for UCI Cinemas and every 18tickets venue (both already
   /// self-identifying, e.g. "UCI Cinemas Seven Gioia del Colle" or
   /// "Red Carpet Cinema - Monopoli"), but The Space's own names are bare
   /// town names ("Casamassima", "Beinasco") with nothing marking the chain -
@@ -66,7 +74,7 @@ class Cinema {
   String get displayName => switch (chain) {
     CinemaChain.theSpace => 'The Space $name',
     CinemaChain.uci => name,
-    CinemaChain.redCarpet => name,
+    CinemaChain.eighteenTickets => name,
   };
 
   /// A cinema is the same cinema iff same id within the same chain (ids are

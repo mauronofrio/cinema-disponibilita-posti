@@ -17,9 +17,10 @@ typedef SeatMapKey = (Cinema cinema, Session session);
 /// the one that was tapped: for The Space/UCI that's every day (their own
 /// [ChainApi.getFilmsForDay] returns everything regardless of which day was
 /// asked for, so this already covers the whole run and switching costs
-/// nothing extra); for RedCarpet it's just the one day the user came from -
-/// switching to a day not in here means [SeatMapScreen] fetches it lazily
-/// itself, keyed by [filmId] to find the same film in that day's response.
+/// nothing extra); for 18tickets-platform cinemas (RedCarpet, Multicinema
+/// Galleria, ...) it's just the one day the user came from - switching to a
+/// day not in here means [SeatMapScreen] fetches it lazily itself, keyed by
+/// [filmId] to find the same film in that day's response.
 class SeatMapArgs {
   const SeatMapArgs({
     required this.cinema,

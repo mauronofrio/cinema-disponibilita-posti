@@ -1,8 +1,12 @@
-/// Parsers for RedCarpet's plain server-rendered HTML (no JSON API - see
-/// PROJECT_NOTES.md). Regex-based rather than a full HTML DOM parser: every
-/// element this needs to read is a single, consistently-quoted tag with a
-/// fixed (alphabetical) attribute order, so targeted patterns are simpler
-/// and just as reliable here as a general parser would be.
+/// Parsers for the "18tickets.net" platform's plain server-rendered HTML (no
+/// JSON API - see PROJECT_NOTES.md). Shared by every independent cinema that
+/// happens to run on this same platform (confirmed live: RedCarpet Cinema -
+/// Monopoli and Multicinema Galleria - Bari are byte-for-byte compatible
+/// with the same regexes, different venues on the same booking backend, not
+/// a chain in the branding sense). Regex-based rather than a full HTML DOM
+/// parser: every element this needs to read is a single, consistently-quoted
+/// tag with a fixed (alphabetical) attribute order, so targeted patterns are
+/// simpler and just as reliable here as a general parser would be.
 ///
 /// Quote handling has two wrinkles: plain page loads use double quotes,
 /// while the AJAX fragment endpoints (`fetch_films`/`fetch_film_occupations`)
@@ -45,9 +49,9 @@ String _decodeHtmlEntities(String input) {
 }
 
 /// One film as listed for a given day - metadata only, no showtimes (those
-/// are the sibling `sessions` list in [RedCarpetDayProgramming]).
-class RedCarpetFilmSummary {
-  const RedCarpetFilmSummary({
+/// are the sibling `sessions` list in [EighteenTicketsDayProgramming]).
+class EighteenTicketsFilmSummary {
+  const EighteenTicketsFilmSummary({
     required this.filmId,
     required this.title,
     required this.posterUrl,
@@ -72,15 +76,15 @@ final _dayBalloonRe = RegExp(
 
 /// Every day the date-picker offers, from either the homepage or a
 /// `fetch_films` response - both carry the same balloon carousel.
-List<String> parseRedCarpetProgrammingDays(String html) {
+List<String> parseEighteenTicketsProgrammingDays(String html) {
   final normalized = _normalizeEscapedNewlines(html);
   return _dayBalloonRe.allMatches(normalized).map((m) => m.group(1)!).toList();
 }
 
-/// One showtime for one film, on the one day [parseRedCarpetFilmsForDay]
-/// was called for.
-class ParsedRedCarpetSession {
-  const ParsedRedCarpetSession({
+/// One showtime for one film, on the one day
+/// [parseEighteenTicketsFilmsForDay] was called for.
+class ParsedEighteenTicketsSession {
+  const ParsedEighteenTicketsSession({
     required this.filmId,
     required this.sessionId,
     required this.theaterName,
@@ -96,13 +100,16 @@ class ParsedRedCarpetSession {
 /// A day's full film list *and* every film's showtimes that day, together -
 /// see PROJECT_NOTES.md: `GET /film/fetch_films?date=...` embeds both, so
 /// one request per day covers every film, unlike the naive "one request per
-/// film per day" approach it replaced (which got the app rate-limited on
-/// this small site once a cinema had ~20 films to check).
-class RedCarpetDayProgramming {
-  const RedCarpetDayProgramming({required this.films, required this.sessions});
+/// film per day" approach it replaced (which got the app rate-limited once a
+/// cinema had ~20 films to check).
+class EighteenTicketsDayProgramming {
+  const EighteenTicketsDayProgramming({
+    required this.films,
+    required this.sessions,
+  });
 
-  final List<RedCarpetFilmSummary> films;
-  final List<ParsedRedCarpetSession> sessions;
+  final List<EighteenTicketsFilmSummary> films;
+  final List<ParsedEighteenTicketsSession> sessions;
 }
 
 final _sessionAnchorRe = RegExp(
@@ -114,10 +121,13 @@ final _timeRoomRe = RegExp(r"(\d{2}):(\d{2})\s*<br\s*/?>\s*([^<]+)");
 /// same date requested - the response's own showtimes only ever carry a
 /// bare `HH:MM`, no date, so the caller's request date is trusted rather
 /// than re-parsed from a "Mercoledì 08/07/2026"-style label in the markup.
-RedCarpetDayProgramming parseRedCarpetFilmsForDay(String html, DateTime date) {
+EighteenTicketsDayProgramming parseEighteenTicketsFilmsForDay(
+  String html,
+  DateTime date,
+) {
   final blocks = _normalizeEscapedNewlines(html).split(_filmBlockSplitter);
-  final films = <RedCarpetFilmSummary>[];
-  final sessions = <ParsedRedCarpetSession>[];
+  final films = <EighteenTicketsFilmSummary>[];
+  final sessions = <ParsedEighteenTicketsSession>[];
   final seenIds = <String>{};
   for (final block in blocks.skip(1)) {
     final linkMatch = _filmLinkRe.firstMatch(block);
@@ -126,7 +136,7 @@ RedCarpetDayProgramming parseRedCarpetFilmsForDay(String html, DateTime date) {
     if (seenIds.add(filmId)) {
       final posterMatch = _posterRe.firstMatch(block);
       films.add(
-        RedCarpetFilmSummary(
+        EighteenTicketsFilmSummary(
           filmId: filmId,
           title: _decodeHtmlEntities(linkMatch.group(2)!.trim()),
           posterUrl: posterMatch?.group(1),
@@ -138,7 +148,7 @@ RedCarpetDayProgramming parseRedCarpetFilmsForDay(String html, DateTime date) {
       final timeRoom = _timeRoomRe.firstMatch(anchorMatch.group(2)!);
       if (timeRoom == null) continue;
       sessions.add(
-        ParsedRedCarpetSession(
+        ParsedEighteenTicketsSession(
           filmId: filmId,
           sessionId: sessionId,
           theaterName: timeRoom.group(3)!.trim(),
@@ -153,7 +163,7 @@ RedCarpetDayProgramming parseRedCarpetFilmsForDay(String html, DateTime date) {
       );
     }
   }
-  return RedCarpetDayProgramming(films: films, sessions: sessions);
+  return EighteenTicketsDayProgramming(films: films, sessions: sessions);
 }
 
 final _projectionTagRe = RegExp("<a class=${_q}film-projection[^>]*>");
@@ -168,15 +178,15 @@ String? _attr(String tag, String name) {
 }
 
 /// The room a specific session plays in, read off its own `/film/{filmId}/
-/// {sessionId}` page. Not known upfront (unlike The Space/UCI, RedCarpet's
-/// `fetch_films` response gives every session id but never its room's own
-/// uuid, only the room's display name) - resolved lazily, only when the
-/// user actually opens that session's seat map (see `RedCarpetChainApi`).
-/// A film's own page can list several of its showtimes at once, each
-/// potentially in a different room, so this matches the one `film-projection`
-/// tag whose own `data-id` is [sessionId] rather than assuming the first
-/// one found on the page is the right one.
-String? parseRedCarpetTheaterIdForSession(
+/// {sessionId}` page. Not known upfront (unlike The Space/UCI, this
+/// platform's `fetch_films` response gives every session id but never its
+/// room's own uuid, only the room's display name) - resolved lazily, only
+/// when the user actually opens that session's seat map (see
+/// `EighteenTicketsChainApi`). A film's own page can list several of its
+/// showtimes at once, each potentially in a different room, so this matches
+/// the one `film-projection` tag whose own `data-id` is [sessionId] rather
+/// than assuming the first one found on the page is the right one.
+String? parseEighteenTicketsTheaterIdForSession(
   String filmPageHtml,
   String sessionId,
 ) {

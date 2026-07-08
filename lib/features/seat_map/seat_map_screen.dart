@@ -24,12 +24,14 @@ import 'widgets/time_switcher.dart';
 /// Switching to another day or showtime of the same film happens right
 /// here via [DateSwitcher]/[TimeSwitcher] instead of forcing a trip back to
 /// the film list. For The Space/UCI this is always free - their own
-/// `showingGroups` already covers every day in one response. For RedCarpet
-/// it's only free for the one day the user came from; picking any other
-/// day this cinema has showings for (from [showingDatesProvider], already
-/// cached from the home screen) fetches just that one day lazily via
+/// `showingGroups` already covers every day in one response. For
+/// 18tickets-platform cinemas (RedCarpet, Multicinema Galleria, ...) it's
+/// only free for the one day the user came from; picking any other day this
+/// cinema has showings for (from [showingDatesProvider], already cached
+/// from the home screen) fetches just that one day lazily via
 /// [filmsForDayProvider] and merges it in - see PROJECT_NOTES.md for why
-/// RedCarpet can't just fetch every day up front the way the other two do.
+/// this platform can't just fetch every day up front the way the other two
+/// do.
 class SeatMapScreen extends ConsumerStatefulWidget {
   const SeatMapScreen({super.key, required this.args});
 
@@ -79,8 +81,9 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
       return;
     }
 
-    // Not already known (RedCarpet only - see class doc): fetch just this
-    // one day, find the same film in it by id, and merge its sessions in.
+    // Not already known (18tickets-platform cinemas only - see class doc):
+    // fetch just this one day, find the same film in it by id, and merge
+    // its sessions in.
     setState(() => _loadingDate = date);
     ShowingGroup? fetchedGroup;
     var failed = false;
@@ -134,9 +137,10 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
     final now = ref.watch(clockProvider).now();
     // Same cached provider the home screen already populated - for The
     // Space/UCI this is a strict superset of `_groupsByDay`'s keys anyway
-    // (both come from the same one-shot fetch), for RedCarpet it's the
-    // whole cinema's calendar even though only one of its days has this
-    // film's sessions loaded yet. Falls back to what's already known from
+    // (both come from the same one-shot fetch), for 18tickets-platform
+    // cinemas it's the whole cinema's calendar even though only one of its
+    // days has this film's sessions loaded yet. Falls back to what's already
+    // known from
     // the nav args if this hasn't resolved yet, so the switcher never shows
     // fewer days than it did a moment ago on the home screen.
     final availableDates = ref

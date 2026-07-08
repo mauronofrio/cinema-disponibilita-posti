@@ -50,6 +50,7 @@ app.*.map.json
 /research/
 /UciCinema/
 /RedCarpet/
+/Galleria/
 
 # Local-only project notes, not meant to be shared/versioned.
 /PROJECT_NOTES.md

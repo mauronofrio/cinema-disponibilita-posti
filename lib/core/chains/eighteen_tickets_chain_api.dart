@@ -5,28 +5,32 @@ import '../models/cinema.dart';
 import '../models/film.dart';
 import '../models/seat_map.dart';
 import '../models/showing_date.dart';
-import '../network/redcarpet_api_client.dart';
+import '../network/eighteen_tickets_api_client.dart';
 import 'chain_api.dart';
-import 'redcarpet/redcarpet_film_parser.dart';
-import 'redcarpet/redcarpet_seat_map_parser.dart';
+import 'eighteen_tickets/eighteen_tickets_film_parser.dart';
+import 'eighteen_tickets/eighteen_tickets_seat_map_parser.dart';
 
-/// [ChainApi] for RedCarpet Cinema - a small independent cinema (not a
-/// multi-location chain) on the "18tickets.net" platform. See
+/// [ChainApi] for the "18tickets.net" platform - shared by every small,
+/// independent cinema built on it (not a chain in the branding sense: each
+/// one is its own venue with its own `Cinema.host`, confirmed live that
+/// RedCarpet Cinema - Monopoli and Multicinema Galleria - Bari are
+/// byte-for-byte compatible with the same parsing code). See
 /// PROJECT_NOTES.md: no JSON API here, everything is scraped from plain
 /// server-rendered HTML/SVG.
 ///
-/// This site's server enforces a surprisingly aggressive per-IP rate limit -
-/// confirmed live that even plain *sequential* requests (no concurrency
-/// involved) start getting HTTP 429 ("Slow down! Too many requests") after
-/// only about 4-5 total requests in a short window, recovering roughly a
-/// minute later. That's what makes [getFilmsForDay] genuinely lazy here
-/// (unlike The Space/UCI, which fetch every day up front because it's
-/// cheap for them): only the one day a caller actually asks for is ever
-/// fetched, never pre-loaded for days nobody's looking at yet.
-class RedCarpetChainApi implements ChainApi {
-  RedCarpetChainApi(this._client);
+/// This platform's servers enforce a surprisingly aggressive per-IP rate
+/// limit - confirmed live that even plain *sequential* requests (no
+/// concurrency involved) start getting HTTP 429 ("Slow down! Too many
+/// requests") after only about 4-5 total requests in a short window,
+/// recovering roughly a minute later. That's what makes [getFilmsForDay]
+/// genuinely lazy here (unlike The Space/UCI, which fetch every day up
+/// front because it's cheap for them): only the one day a caller actually
+/// asks for is ever fetched, never pre-loaded for days nobody's looking at
+/// yet.
+class EighteenTicketsChainApi implements ChainApi {
+  EighteenTicketsChainApi(this._client);
 
-  final RedCarpetApiClient _client;
+  final EighteenTicketsApiClient _client;
 
   String _dateKey(DateTime day) {
     String two(int n) => n.toString().padLeft(2, '0');
@@ -40,7 +44,7 @@ class RedCarpetChainApi implements ChainApi {
     // one page load. Only fetching a specific day's *films* (below) has a
     // real per-request cost, so there's no reason to trim this list.
     final homepage = await _client.getHomepage(cinema.host!);
-    final days = parseRedCarpetProgrammingDays(homepage);
+    final days = parseEighteenTicketsProgrammingDays(homepage);
     return days
         .map((d) => ShowingDate(date: DateTime.parse(d), hasShowings: true))
         .toList();
@@ -50,9 +54,9 @@ class RedCarpetChainApi implements ChainApi {
   Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) async {
     final host = cinema.host!;
     final html = await _client.getFilmsForDay(host, _dateKey(day));
-    final programming = parseRedCarpetFilmsForDay(html, day);
+    final programming = parseEighteenTicketsFilmsForDay(html, day);
 
-    final sessionsByFilm = <String, List<ParsedRedCarpetSession>>{};
+    final sessionsByFilm = <String, List<ParsedEighteenTicketsSession>>{};
     for (final session in programming.sessions) {
       sessionsByFilm.putIfAbsent(session.filmId, () => []).add(session);
     }
@@ -84,7 +88,7 @@ class RedCarpetChainApi implements ChainApi {
                     // Completa"/the time chip's own href.
                     bookingPath:
                         'https://$host/film/${film.filmId}/${parsed.sessionId}#theater-init',
-                    redCarpetFilmId: film.filmId,
+                    eighteenTicketsFilmId: film.filmId,
                   ),
                 )
                 .toList()
@@ -107,15 +111,15 @@ class RedCarpetChainApi implements ChainApi {
   @override
   Future<SeatMap> getSeatMap(Cinema cinema, Session session) async {
     final host = cinema.host!;
-    final filmId = session.redCarpetFilmId!;
+    final filmId = session.eighteenTicketsFilmId!;
     // The room a showtime plays in isn't known upfront on this platform -
-    // only its own page exposes it (see redcarpet_film_parser.dart).
+    // only its own page exposes it (see eighteen_tickets_film_parser.dart).
     final filmPage = await _client.getFilmSessionPage(
       host,
       filmId,
       session.sessionId,
     );
-    final theaterId = parseRedCarpetTheaterIdForSession(
+    final theaterId = parseEighteenTicketsTheaterIdForSession(
       filmPage,
       session.sessionId,
     )!;
@@ -124,8 +128,8 @@ class RedCarpetChainApi implements ChainApi {
       _client.getSeatOccupancy(host, session.sessionId),
     ]);
     return compute(
-      parseRedCarpetSeatMap,
-      RedCarpetSeatMapPayload(
+      parseEighteenTicketsSeatMap,
+      EighteenTicketsSeatMapPayload(
         theaterSvg: results[0],
         occupancyJson: results[1],
       ),
@@ -133,6 +137,8 @@ class RedCarpetChainApi implements ChainApi {
   }
 }
 
-final redCarpetChainApiProvider = Provider<RedCarpetChainApi>((ref) {
-  return RedCarpetChainApi(ref.watch(redCarpetApiClientProvider));
+final eighteenTicketsChainApiProvider = Provider<EighteenTicketsChainApi>((
+  ref,
+) {
+  return EighteenTicketsChainApi(ref.watch(eighteenTicketsApiClientProvider));
 });

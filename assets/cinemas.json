@@ -204,8 +204,18 @@
     "address": "Via Baione, snc, 70043 Monopoli BA",
     "lat": 40.9515,
     "lng": 17.2939,
-    "chain": "redCarpet",
+    "chain": "eighteenTickets",
     "host": "monopoli.redcarpetcinema.it"
+  },
+  {
+    "cinemaId": "multicinema-galleria",
+    "name": "Multicinema Galleria - Bari",
+    "slug": "multicinema-galleria",
+    "address": "Corso Italia 15/17, 70123 Bari BA",
+    "lat": 41.1187254,
+    "lng": 16.8686424,
+    "chain": "eighteenTickets",
+    "host": "multicinemagalleria.18tickets.it"
   },
   {
     "cinemaId": "1021",

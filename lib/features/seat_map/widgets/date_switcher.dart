@@ -9,8 +9,9 @@ import '../../../core/theme/app_theme.dart';
 /// PROJECT_NOTES.md: for The Space/UCI this film's sessions are already
 /// known for every one of these days ([SeatMapArgs.showingGroups] covers
 /// everything in one response), so selecting any of them is instant; for
-/// RedCarpet only the day the user came from is known upfront, so selecting
-/// any other one triggers [SeatMapScreen] to fetch it lazily - [loadingDate]
+/// 18tickets-platform cinemas (RedCarpet, Multicinema Galleria, ...) only
+/// the day the user came from is known upfront, so selecting any other one
+/// triggers [SeatMapScreen] to fetch it lazily - [loadingDate]
 /// is which one (if any) is currently in flight, shown as a small spinner
 /// on that one chip, with every chip disabled meanwhile so a second tap
 /// can't start an overlapping fetch.
