@@ -22,6 +22,8 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 
 Ognuna di queste catene parla un'API diversa (alcune un JSON pulito, altre solo HTML/SVG server-renderizzato) - vedi `PROJECT_NOTES.md` (locale, non versionato) per i dettagli del reverse engineering di ciascuna.
 
+**Manca il tuo cinema?** Segnalalo con [questo form](https://forms.gle/ZvtR5KVo3nEwKaGP9).
+
 ## Com'è fatta
 
 Flutter, nessun backend proprio: l'app chiama direttamente le API/i siti pubblici delle catene supportate.
