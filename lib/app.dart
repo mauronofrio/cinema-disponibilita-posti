@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'core/date/clock.dart';
 import 'core/date/day_label.dart';
@@ -10,6 +9,7 @@ import 'core/localization/locale_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/no_stretch_scroll_behavior.dart';
 import 'core/update/update_checker.dart';
+import 'core/update/update_dialog.dart';
 import 'features/cinema_picker/cinema_list_provider.dart';
 import 'features/showtimes/showing_dates_provider.dart';
 import 'routing/app_router.dart';
@@ -124,33 +124,7 @@ class _UpdateCheckGateState extends ConsumerState<_UpdateCheckGate> {
     if (update == null || navigatorContext == null || !navigatorContext.mounted) {
       return;
     }
-
-    final t = AppLocalizations.of(navigatorContext);
-    final download = await showDialog<bool>(
-      context: navigatorContext,
-      builder: (context) => AlertDialog(
-        title: Text(t.updateAvailableTitle),
-        content: Text(
-          t.updateAvailableMessage(update.latestVersion, update.currentVersion),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(t.updateLater),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(t.updateDownload),
-          ),
-        ],
-      ),
-    );
-    if (download == true) {
-      await launchUrl(
-        Uri.parse(update.downloadUrl),
-        mode: LaunchMode.externalApplication,
-      );
-    }
+    await showUpdateDialog(navigatorContext, update);
   }
 
   @override

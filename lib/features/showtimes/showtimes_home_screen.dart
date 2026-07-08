@@ -8,6 +8,8 @@ import '../../core/localization/app_localizations.dart';
 import '../../core/models/cinema.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/film_perforation_divider.dart';
+import '../../core/update/update_checker.dart';
+import '../../core/update/update_dialog.dart';
 import '../cinema_picker/cinema_list_provider.dart';
 import 'films_provider.dart';
 import 'showing_dates_provider.dart';
@@ -99,6 +101,12 @@ class _CinemaShowtimes extends ConsumerWidget {
     final daysAsync = ref.watch(showingDatesProvider(cinema));
     final now = ref.watch(clockProvider).now();
     final t = AppLocalizations.of(context);
+    // The on-start prompt (see _UpdateCheckGate in app.dart) only ever shows
+    // once per app session - dismissing it with "Later" would otherwise
+    // leave no way back to it short of restarting the app. Reading the
+    // same cached provider here costs nothing extra (already resolved by
+    // the time this screen is up) and gives that a permanent way back in.
+    final availableUpdate = ref.watch(updateCheckProvider).value;
 
     return CustomScrollView(
       slivers: [
@@ -106,6 +114,12 @@ class _CinemaShowtimes extends ConsumerWidget {
           title: Text(cinema.displayName),
           pinned: true,
           actions: [
+            if (availableUpdate != null)
+              IconButton(
+                icon: const Icon(Icons.system_update),
+                tooltip: t.updateAvailableTitle,
+                onPressed: () => showUpdateDialog(context, availableUpdate),
+              ),
             IconButton(
               icon: const Icon(Icons.directions),
               tooltip: t.getDirections,
