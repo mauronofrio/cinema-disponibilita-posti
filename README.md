@@ -17,7 +17,7 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 
 | Catena | Copertura |
 |---|---|
-| The Space Cinema | 33 sale in tutta Italia |
+| The Space Cinema | 35 sale in tutta Italia |
 | UCI Cinemas | 33 sale in tutta Italia |
 | Cinema indipendenti sulla piattaforma "18tickets.net" | RedCarpet Cinema (Monopoli), Multicinema Galleria (Bari), Anteo spazioCinema (Lombardia), Circuito Cinema (Bologna, Roma, Napoli, Firenze, Torino), Pop Up Cinema (Bologna), Multisala Impero (Varese), Multisala Massimo (Lecce) |
 

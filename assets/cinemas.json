@@ -1,5 +1,35 @@
 [
   {
+    "cinemaId": "anteo-palazzo-del-cinema",
+    "name": "Anteo Palazzo del Cinema - Milano",
+    "slug": "anteo-palazzo-del-cinema",
+    "address": "Via Milazzo 9, 20121 Milano MI",
+    "lat": 45.479449,
+    "lng": 9.1875565,
+    "chain": "eighteenTickets",
+    "host": "anteo.spaziocinema.18tickets.it"
+  },
+  {
+    "cinemaId": "anteo-spaziocinema-cremona-po",
+    "name": "Anteo spazioCinema Cremona Po - Cremona",
+    "slug": "anteo-spaziocinema-cremona-po",
+    "address": "Via Castelleone 108, 26100 Cremona CR",
+    "lat": 45.1498921,
+    "lng": 9.9969002,
+    "chain": "eighteenTickets",
+    "host": "cremona.spaziocinema.18tickets.it"
+  },
+  {
+    "cinemaId": "ariosto-anteo-spaziocinema",
+    "name": "Ariosto Anteo spazioCinema - Milano",
+    "slug": "ariosto-anteo-spaziocinema",
+    "address": "Via Ariosto 16, 20145 Milano MI",
+    "lat": 45.4690603,
+    "lng": 9.1660225,
+    "chain": "eighteenTickets",
+    "host": "ariosto.spaziocinema.18tickets.it"
+  },
+  {
     "cinemaId": "1028",
     "name": "Beinasco",
     "slug": "beinasco",
@@ -25,6 +55,16 @@
     "lat": 44.511261,
     "lng": 11.373616,
     "chain": "theSpace"
+  },
+  {
+    "cinemaId": "capitol-anteo-spaziocinema",
+    "name": "Capitol Anteo spazioCinema - Monza",
+    "slug": "capitol-anteo-spaziocinema",
+    "address": "Via Alessandro Pennati 10, 20900 Monza MB",
+    "lat": 45.5865467,
+    "lng": 9.2743548,
+    "chain": "eighteenTickets",
+    "host": "capitol.spaziocinema.18tickets.it"
   },
   {
     "cinemaId": "1024",
@@ -54,6 +94,36 @@
     "chain": "theSpace"
   },
   {
+    "cinemaId": "cinema-fossolo-bologna",
+    "name": "Cinema Fossolo - Bologna",
+    "slug": "cinema-fossolo-bologna",
+    "address": "Viale Abramo Lincoln 3, 40139 Bologna BO",
+    "lat": 44.4821084,
+    "lng": 11.3878299,
+    "chain": "eighteenTickets",
+    "host": "fossolo.ccroma.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-roma-bologna",
+    "name": "Cinema Roma - Bologna",
+    "slug": "cinema-roma-bologna",
+    "address": "Via Fondazza 4, 40125 Bologna BO",
+    "lat": 44.4902049,
+    "lng": 11.3558012,
+    "chain": "eighteenTickets",
+    "host": "roma.ccb.18tickets.it"
+  },
+  {
+    "cinemaId": "citylife-anteo",
+    "name": "CityLife Anteo - Milano",
+    "slug": "citylife-anteo",
+    "address": "Piazza Tre Torri 1/L, 20145 Milano MI",
+    "lat": 45.4782164,
+    "lng": 9.1547246,
+    "chain": "eighteenTickets",
+    "host": "citylife.spaziocinema.18tickets.it"
+  },
+  {
     "cinemaId": "1027",
     "name": "Corciano",
     "slug": "corciano",
@@ -61,6 +131,56 @@
     "lat": 43.099126,
     "lng": 12.315488,
     "chain": "theSpace"
+  },
+  {
+    "cinemaId": "due-giardini-torino",
+    "name": "Due Giardini - Torino",
+    "slug": "due-giardini-torino",
+    "address": "Via Monfalcone 62, 10134 Torino TO",
+    "lat": 45.0503061,
+    "lng": 7.6422743,
+    "chain": "eighteenTickets",
+    "host": "duegiardini.cctorino.18tickets.it"
+  },
+  {
+    "cinemaId": "eliseo-torino",
+    "name": "Eliseo - Torino",
+    "slug": "eliseo-torino",
+    "address": "Via Monginevro 42, 10139 Torino TO",
+    "lat": 45.0651309,
+    "lng": 7.6501406,
+    "chain": "eighteenTickets",
+    "host": "eliseo.cctorino.18tickets.it"
+  },
+  {
+    "cinemaId": "eurcine-roma",
+    "name": "Eurcine - Roma",
+    "slug": "eurcine-roma",
+    "address": "Via Liszt 32, 00144 Roma RM",
+    "lat": 41.8338771,
+    "lng": 12.4684719,
+    "chain": "eighteenTickets",
+    "host": "eurcine.ccroma.18tickets.it"
+  },
+  {
+    "cinemaId": "europa-bologna",
+    "name": "Europa - Bologna",
+    "slug": "europa-bologna",
+    "address": "Via Pietralata 55/A, 40122 Bologna BO",
+    "lat": 44.496151,
+    "lng": 11.3312543,
+    "chain": "eighteenTickets",
+    "host": "europa.ccb.18tickets.it"
+  },
+  {
+    "cinemaId": "fiorella-firenze",
+    "name": "Fiorella - Firenze",
+    "slug": "fiorella-firenze",
+    "address": "Via Gabriele D'Annunzio 15, 50135 Firenze FI",
+    "lat": 43.7751159,
+    "lng": 11.2887588,
+    "chain": "eighteenTickets",
+    "host": "fiorella.ccroma.18tickets.it"
   },
   {
     "cinemaId": "1035",
@@ -72,6 +192,16 @@
     "chain": "theSpace"
   },
   {
+    "cinemaId": "fratelli-marx-torino",
+    "name": "Fratelli Marx - Torino",
+    "slug": "fratelli-marx-torino",
+    "address": "Corso Belgio 53, 10153 Torino TO",
+    "lat": 45.0724487,
+    "lng": 7.7094207,
+    "chain": "eighteenTickets",
+    "host": "fratellimarx.cctorino.18tickets.it"
+  },
+  {
     "cinemaId": "1008",
     "name": "Genova",
     "slug": "genova",
@@ -79,6 +209,16 @@
     "lat": 44.4081936013936,
     "lng": 8.922253371200085,
     "chain": "theSpace"
+  },
+  {
+    "cinemaId": "giulio-cesare-roma",
+    "name": "Giulio Cesare - Roma",
+    "slug": "giulio-cesare-roma",
+    "address": "Viale Giulio Cesare 229, 00192 Roma RM",
+    "lat": 41.9115841,
+    "lng": 12.4675688,
+    "chain": "eighteenTickets",
+    "host": "giuliocesare.ccroma.18tickets.it"
   },
   {
     "cinemaId": "1004",
@@ -126,6 +266,16 @@
     "chain": "theSpace"
   },
   {
+    "cinemaId": "metropolitan-napoli",
+    "name": "Metropolitan - Napoli",
+    "slug": "metropolitan-napoli",
+    "address": "Via Chiaia 149, 80121 Napoli NA",
+    "lat": 40.835956,
+    "lng": 14.2429496,
+    "chain": "eighteenTickets",
+    "host": "metropolitan.ccroma.18tickets.it"
+  },
+  {
     "cinemaId": "1002",
     "name": "Montebello",
     "slug": "montebello",
@@ -144,6 +294,37 @@
     "chain": "theSpace"
   },
   {
+    "cinemaId": "multicinema-galleria",
+    "name": "Multicinema Galleria - Bari",
+    "slug": "multicinema-galleria",
+    "address": "Corso Italia 15/17, 70123 Bari BA",
+    "lat": 41.1187254,
+    "lng": 16.8686424,
+    "chain": "eighteenTickets",
+    "host": "multicinemagalleria.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-impero-varese",
+    "name": "Multisala Impero - Varese",
+    "slug": "multisala-impero-varese",
+    "address": "Via Giuseppe Bernascone 13, 21100 Varese VA",
+    "lat": 45.8166714,
+    "lng": 8.8266415,
+    "chain": "eighteenTickets",
+    "host": "multisala.impero.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-massimo-lecce",
+    "name": "Multisala Massimo - Lecce",
+    "slug": "multisala-massimo-lecce",
+    "address": "Viale Lo Re 3, 73100 Lecce LE",
+    "lat": 40.351478,
+    "lng": 18.1741564,
+    "chain": "eighteenTickets",
+    "host": "multisalamassimo.18tickets.it",
+    "scheduleFromFilmPages": true
+  },
+  {
     "cinemaId": "1019",
     "name": "Napoli",
     "slug": "napoli",
@@ -153,6 +334,16 @@
     "chain": "theSpace"
   },
   {
+    "cinemaId": "nazionale-torino",
+    "name": "Nazionale - Torino",
+    "slug": "nazionale-torino",
+    "address": "Via Giuseppe Pomba 7, 10123 Torino TO",
+    "lat": 45.0626637,
+    "lng": 7.6834351,
+    "chain": "eighteenTickets",
+    "host": "nazionale.cctorino.18tickets.it"
+  },
+  {
     "cinemaId": "1033",
     "name": "Nola",
     "slug": "nola",
@@ -160,6 +351,26 @@
     "lat": 40.95319075010608,
     "lng": 14.488031267958982,
     "chain": "theSpace"
+  },
+  {
+    "cinemaId": "nuovo-olimpia-roma",
+    "name": "Nuovo Olimpia - Roma",
+    "slug": "nuovo-olimpia-roma",
+    "address": "Via in Lucina 16, 00186 Roma RM",
+    "lat": 41.9028344,
+    "lng": 12.4790391,
+    "chain": "eighteenTickets",
+    "host": "nuovoolimpia.ccroma.18tickets.it"
+  },
+  {
+    "cinemaId": "odeon-bologna",
+    "name": "Odeon - Bologna",
+    "slug": "odeon-bologna",
+    "address": "Via Mascarella 3, 40126 Bologna BO",
+    "lat": 44.4980352,
+    "lng": 11.3492584,
+    "chain": "eighteenTickets",
+    "host": "odeon.ccb.18tickets.it"
   },
   {
     "cinemaId": "1013",
@@ -180,262 +391,24 @@
     "chain": "theSpace"
   },
   {
-    "cinemaId": "1010",
-    "name": "Pradamano",
-    "slug": "pradamano",
-    "address": "Via Pier Paolo Pasolini, 6, 33040 Pradamano UD",
-    "lat": 46.02174967001299,
-    "lng": 13.286029286608079,
-    "chain": "theSpace"
-  },
-  {
-    "cinemaId": "1029",
-    "name": "Quartucciu",
-    "slug": "quartucciu",
-    "address": "Via delle Serre presso Le Vele Shopping Center, 09044 Quartucciu CA",
-    "lat": 39.24482707763826,
-    "lng": 9.163392370996153,
-    "chain": "theSpace"
-  },
-  {
-    "cinemaId": "monopoli",
-    "name": "Red Carpet Cinema - Monopoli",
-    "slug": "monopoli",
-    "address": "Via Baione, snc, 70043 Monopoli BA",
-    "lat": 40.9515,
-    "lng": 17.2939,
+    "cinemaId": "pop-up-cinema-arlecchino",
+    "name": "Pop Up Cinema Arlecchino - Bologna",
+    "slug": "pop-up-cinema-arlecchino",
+    "address": "Via delle Lame 59/A, 40122 Bologna BO",
+    "lat": 44.4993997,
+    "lng": 11.3352745,
     "chain": "eighteenTickets",
-    "host": "monopoli.redcarpetcinema.it"
+    "host": "arlecchino.popupcinema.18tickets.it"
   },
   {
-    "cinemaId": "multicinema-galleria",
-    "name": "Multicinema Galleria - Bari",
-    "slug": "multicinema-galleria",
-    "address": "Corso Italia 15/17, 70123 Bari BA",
-    "lat": 41.1187254,
-    "lng": 16.8686424,
+    "cinemaId": "pop-up-cinema-bristol",
+    "name": "Pop Up Cinema Bristol - Bologna",
+    "slug": "pop-up-cinema-bristol",
+    "address": "Via Toscana 146, 40141 Bologna BO",
+    "lat": 44.4571493,
+    "lng": 11.3704946,
     "chain": "eighteenTickets",
-    "host": "multicinemagalleria.18tickets.it"
-  },
-  {
-    "cinemaId": "anteo-palazzo-del-cinema",
-    "name": "Anteo Palazzo del Cinema - Milano",
-    "slug": "anteo-palazzo-del-cinema",
-    "address": "Via Milazzo 9, 20121 Milano MI",
-    "lat": 45.4794490,
-    "lng": 9.1875565,
-    "chain": "eighteenTickets",
-    "host": "anteo.spaziocinema.18tickets.it"
-  },
-  {
-    "cinemaId": "ariosto-anteo-spaziocinema",
-    "name": "Ariosto Anteo spazioCinema - Milano",
-    "slug": "ariosto-anteo-spaziocinema",
-    "address": "Via Ariosto 16, 20145 Milano MI",
-    "lat": 45.4690603,
-    "lng": 9.1660225,
-    "chain": "eighteenTickets",
-    "host": "ariosto.spaziocinema.18tickets.it"
-  },
-  {
-    "cinemaId": "capitol-anteo-spaziocinema",
-    "name": "Capitol Anteo spazioCinema - Monza",
-    "slug": "capitol-anteo-spaziocinema",
-    "address": "Via Alessandro Pennati 10, 20900 Monza MB",
-    "lat": 45.5865467,
-    "lng": 9.2743548,
-    "chain": "eighteenTickets",
-    "host": "capitol.spaziocinema.18tickets.it"
-  },
-  {
-    "cinemaId": "citylife-anteo",
-    "name": "CityLife Anteo - Milano",
-    "slug": "citylife-anteo",
-    "address": "Piazza Tre Torri 1/L, 20145 Milano MI",
-    "lat": 45.4782164,
-    "lng": 9.1547246,
-    "chain": "eighteenTickets",
-    "host": "citylife.spaziocinema.18tickets.it"
-  },
-  {
-    "cinemaId": "anteo-spaziocinema-cremona-po",
-    "name": "Anteo spazioCinema Cremona Po - Cremona",
-    "slug": "anteo-spaziocinema-cremona-po",
-    "address": "Via Castelleone 108, 26100 Cremona CR",
-    "lat": 45.1498921,
-    "lng": 9.9969002,
-    "chain": "eighteenTickets",
-    "host": "cremona.spaziocinema.18tickets.it"
-  },
-  {
-    "cinemaId": "treviglio-anteo-spaziocinema",
-    "name": "Treviglio Anteo spazioCinema - Treviglio",
-    "slug": "treviglio-anteo-spaziocinema",
-    "address": "Via Torriani, 24047 Treviglio BG",
-    "lat": 45.5187513,
-    "lng": 9.5830995,
-    "chain": "eighteenTickets",
-    "host": "treviglio.spaziocinema.18tickets.it"
-  },
-  {
-    "cinemaId": "odeon-bologna",
-    "name": "Odeon - Bologna",
-    "slug": "odeon-bologna",
-    "address": "Via Mascarella 3, 40126 Bologna BO",
-    "lat": 44.4980352,
-    "lng": 11.3492584,
-    "chain": "eighteenTickets",
-    "host": "odeon.ccb.18tickets.it"
-  },
-  {
-    "cinemaId": "rialto-bologna",
-    "name": "Rialto - Bologna",
-    "slug": "rialto-bologna",
-    "address": "Via Rialto 19, 40124 Bologna BO",
-    "lat": 44.4884504,
-    "lng": 11.3491087,
-    "chain": "eighteenTickets",
-    "host": "rialto.ccb.18tickets.it"
-  },
-  {
-    "cinemaId": "cinema-roma-bologna",
-    "name": "Cinema Roma - Bologna",
-    "slug": "cinema-roma-bologna",
-    "address": "Via Fondazza 4, 40125 Bologna BO",
-    "lat": 44.4902049,
-    "lng": 11.3558012,
-    "chain": "eighteenTickets",
-    "host": "roma.ccb.18tickets.it"
-  },
-  {
-    "cinemaId": "europa-bologna",
-    "name": "Europa - Bologna",
-    "slug": "europa-bologna",
-    "address": "Via Pietralata 55/A, 40122 Bologna BO",
-    "lat": 44.4961510,
-    "lng": 11.3312543,
-    "chain": "eighteenTickets",
-    "host": "europa.ccb.18tickets.it"
-  },
-  {
-    "cinemaId": "eurcine-roma",
-    "name": "Eurcine - Roma",
-    "slug": "eurcine-roma",
-    "address": "Via Liszt 32, 00144 Roma RM",
-    "lat": 41.8338771,
-    "lng": 12.4684719,
-    "chain": "eighteenTickets",
-    "host": "eurcine.ccroma.18tickets.it"
-  },
-  {
-    "cinemaId": "quattro-fontane-roma",
-    "name": "Quattro Fontane - Roma",
-    "slug": "quattro-fontane-roma",
-    "address": "Via delle Quattro Fontane 23, 00184 Roma RM",
-    "lat": 41.9013274,
-    "lng": 12.4919985,
-    "chain": "eighteenTickets",
-    "host": "quattrofontane.ccroma.18tickets.it"
-  },
-  {
-    "cinemaId": "giulio-cesare-roma",
-    "name": "Giulio Cesare - Roma",
-    "slug": "giulio-cesare-roma",
-    "address": "Viale Giulio Cesare 229, 00192 Roma RM",
-    "lat": 41.9115841,
-    "lng": 12.4675688,
-    "chain": "eighteenTickets",
-    "host": "giuliocesare.ccroma.18tickets.it"
-  },
-  {
-    "cinemaId": "nuovo-olimpia-roma",
-    "name": "Nuovo Olimpia - Roma",
-    "slug": "nuovo-olimpia-roma",
-    "address": "Via in Lucina 16, 00186 Roma RM",
-    "lat": 41.9028344,
-    "lng": 12.4790391,
-    "chain": "eighteenTickets",
-    "host": "nuovoolimpia.ccroma.18tickets.it"
-  },
-  {
-    "cinemaId": "metropolitan-napoli",
-    "name": "Metropolitan - Napoli",
-    "slug": "metropolitan-napoli",
-    "address": "Via Chiaia 149, 80121 Napoli NA",
-    "lat": 40.8359560,
-    "lng": 14.2429496,
-    "chain": "eighteenTickets",
-    "host": "metropolitan.ccroma.18tickets.it"
-  },
-  {
-    "cinemaId": "cinema-fossolo-bologna",
-    "name": "Cinema Fossolo - Bologna",
-    "slug": "cinema-fossolo-bologna",
-    "address": "Viale Abramo Lincoln 3, 40139 Bologna BO",
-    "lat": 44.4821084,
-    "lng": 11.3878299,
-    "chain": "eighteenTickets",
-    "host": "fossolo.ccroma.18tickets.it"
-  },
-  {
-    "cinemaId": "fiorella-firenze",
-    "name": "Fiorella - Firenze",
-    "slug": "fiorella-firenze",
-    "address": "Via Gabriele D'Annunzio 15, 50135 Firenze FI",
-    "lat": 43.7751159,
-    "lng": 11.2887588,
-    "chain": "eighteenTickets",
-    "host": "fiorella.ccroma.18tickets.it"
-  },
-  {
-    "cinemaId": "nazionale-torino",
-    "name": "Nazionale - Torino",
-    "slug": "nazionale-torino",
-    "address": "Via Giuseppe Pomba 7, 10123 Torino TO",
-    "lat": 45.0626637,
-    "lng": 7.6834351,
-    "chain": "eighteenTickets",
-    "host": "nazionale.cctorino.18tickets.it"
-  },
-  {
-    "cinemaId": "romano-torino",
-    "name": "Romano - Torino",
-    "slug": "romano-torino",
-    "address": "Piazza Castello 9, 10124 Torino TO",
-    "lat": 45.0699416,
-    "lng": 7.6868764,
-    "chain": "eighteenTickets",
-    "host": "romano.cctorino.18tickets.it"
-  },
-  {
-    "cinemaId": "eliseo-torino",
-    "name": "Eliseo - Torino",
-    "slug": "eliseo-torino",
-    "address": "Via Monginevro 42, 10139 Torino TO",
-    "lat": 45.0651309,
-    "lng": 7.6501406,
-    "chain": "eighteenTickets",
-    "host": "eliseo.cctorino.18tickets.it"
-  },
-  {
-    "cinemaId": "fratelli-marx-torino",
-    "name": "Fratelli Marx - Torino",
-    "slug": "fratelli-marx-torino",
-    "address": "Corso Belgio 53, 10153 Torino TO",
-    "lat": 45.0724487,
-    "lng": 7.7094207,
-    "chain": "eighteenTickets",
-    "host": "fratellimarx.cctorino.18tickets.it"
-  },
-  {
-    "cinemaId": "due-giardini-torino",
-    "name": "Due Giardini - Torino",
-    "slug": "due-giardini-torino",
-    "address": "Via Monfalcone 62, 10134 Torino TO",
-    "lat": 45.0503061,
-    "lng": 7.6422743,
-    "chain": "eighteenTickets",
-    "host": "duegiardini.cctorino.18tickets.it"
+    "host": "bristol.popupcinema.18tickets.it"
   },
   {
     "cinemaId": "pop-up-cinema-jolly",
@@ -458,45 +431,52 @@
     "host": "medica.popupcinema.18tickets.it"
   },
   {
-    "cinemaId": "pop-up-cinema-bristol",
-    "name": "Pop Up Cinema Bristol - Bologna",
-    "slug": "pop-up-cinema-bristol",
-    "address": "Via Toscana 146, 40141 Bologna BO",
-    "lat": 44.4571493,
-    "lng": 11.3704946,
-    "chain": "eighteenTickets",
-    "host": "bristol.popupcinema.18tickets.it"
+    "cinemaId": "1010",
+    "name": "Pradamano",
+    "slug": "pradamano",
+    "address": "Via Pier Paolo Pasolini, 6, 33040 Pradamano UD",
+    "lat": 46.02174967001299,
+    "lng": 13.286029286608079,
+    "chain": "theSpace"
   },
   {
-    "cinemaId": "pop-up-cinema-arlecchino",
-    "name": "Pop Up Cinema Arlecchino - Bologna",
-    "slug": "pop-up-cinema-arlecchino",
-    "address": "Via delle Lame 59/A, 40122 Bologna BO",
-    "lat": 44.4993997,
-    "lng": 11.3352745,
-    "chain": "eighteenTickets",
-    "host": "arlecchino.popupcinema.18tickets.it"
+    "cinemaId": "1029",
+    "name": "Quartucciu",
+    "slug": "quartucciu",
+    "address": "Via delle Serre presso Le Vele Shopping Center, 09044 Quartucciu CA",
+    "lat": 39.24482707763826,
+    "lng": 9.163392370996153,
+    "chain": "theSpace"
   },
   {
-    "cinemaId": "multisala-impero-varese",
-    "name": "Multisala Impero - Varese",
-    "slug": "multisala-impero-varese",
-    "address": "Via Giuseppe Bernascone 13, 21100 Varese VA",
-    "lat": 45.8166714,
-    "lng": 8.8266415,
+    "cinemaId": "quattro-fontane-roma",
+    "name": "Quattro Fontane - Roma",
+    "slug": "quattro-fontane-roma",
+    "address": "Via delle Quattro Fontane 23, 00184 Roma RM",
+    "lat": 41.9013274,
+    "lng": 12.4919985,
     "chain": "eighteenTickets",
-    "host": "multisala.impero.18tickets.it"
+    "host": "quattrofontane.ccroma.18tickets.it"
   },
   {
-    "cinemaId": "multisala-massimo-lecce",
-    "name": "Multisala Massimo - Lecce",
-    "slug": "multisala-massimo-lecce",
-    "address": "Viale Lo Re 3, 73100 Lecce LE",
-    "lat": 40.3514780,
-    "lng": 18.1741564,
+    "cinemaId": "monopoli",
+    "name": "Red Carpet Cinema - Monopoli",
+    "slug": "monopoli",
+    "address": "Via Baione, snc, 70043 Monopoli BA",
+    "lat": 40.9515,
+    "lng": 17.2939,
     "chain": "eighteenTickets",
-    "host": "multisalamassimo.18tickets.it",
-    "scheduleFromFilmPages": true
+    "host": "monopoli.redcarpetcinema.it"
+  },
+  {
+    "cinemaId": "rialto-bologna",
+    "name": "Rialto - Bologna",
+    "slug": "rialto-bologna",
+    "address": "Via Rialto 19, 40124 Bologna BO",
+    "lat": 44.4884504,
+    "lng": 11.3491087,
+    "chain": "eighteenTickets",
+    "host": "rialto.ccb.18tickets.it"
   },
   {
     "cinemaId": "1021",
@@ -506,6 +486,25 @@
     "lat": 41.90220499251632,
     "lng": 12.497232305465545,
     "chain": "theSpace"
+  },
+  {
+    "cinemaId": "1025",
+    "name": "Roma Parco de' Medici",
+    "slug": "roma-parco-de'medici",
+    "address": "Via Salvatore Rebecchini, 3, 00148 Roma RM",
+    "lat": 41.816060904838,
+    "lng": 12.412205744104044,
+    "chain": "theSpace"
+  },
+  {
+    "cinemaId": "romano-torino",
+    "name": "Romano - Torino",
+    "slug": "romano-torino",
+    "address": "Piazza Castello 9, 10124 Torino TO",
+    "lat": 45.0699416,
+    "lng": 7.6868764,
+    "chain": "eighteenTickets",
+    "host": "romano.cctorino.18tickets.it"
   },
   {
     "cinemaId": "1020",
@@ -560,6 +559,25 @@
     "lat": 42.57265108903491,
     "lng": 12.635527540445901,
     "chain": "theSpace"
+  },
+  {
+    "cinemaId": "1018",
+    "name": "Torino",
+    "slug": "torino",
+    "address": "Salita Michelangelo Garove, 24, 10144 Torino TO",
+    "lat": 45.087662916640674,
+    "lng": 7.66843626812666,
+    "chain": "theSpace"
+  },
+  {
+    "cinemaId": "treviglio-anteo-spaziocinema",
+    "name": "Treviglio Anteo spazioCinema - Treviglio",
+    "slug": "treviglio-anteo-spaziocinema",
+    "address": "Via Torriani, 24047 Treviglio BG",
+    "lat": 45.5187513,
+    "lng": 9.5830995,
+    "chain": "eighteenTickets",
+    "host": "treviglio.spaziocinema.18tickets.it"
   },
   {
     "cinemaId": "1011",

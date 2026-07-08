@@ -24,10 +24,18 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 )
 SITEMAP_URL = "https://www.thespacecinema.it/sitemap.xml"
-CINEMA_PAGE_RE = re.compile(r"https://www\.thespacecinema\.it/cinema/([a-z0-9-]+)/al-cinema")
+# Slug charset includes "'" - the Roma Parco de' Medici page's own slug is
+# "roma-parco-de'medici" (confirmed live), which the old [a-z0-9-]+ charset
+# silently dropped even though the URL was present in the sitemap.
+CINEMA_PAGE_RE = re.compile(r"https://www\.thespacecinema\.it/cinema/([a-z0-9'-]+)/al-cinema")
 NEXT_DATA_RE = re.compile(
     r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', re.S
 )
+
+# Known cinema pages that are live but, confirmed live, not linked from the
+# sitemap at all (e.g. the Torino/Parco Dora location) - fetched in addition
+# to whatever the sitemap yields so a re-run doesn't silently drop them again.
+EXTRA_SLUGS = ["torino"]
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_PATH = REPO_ROOT / "assets" / "cinemas.json"
@@ -65,7 +73,7 @@ def parse_cinema(slug: str, html: str) -> dict | None:
 def main() -> None:
     print(f"Fetching sitemap: {SITEMAP_URL}")
     sitemap = fetch(SITEMAP_URL)
-    slugs = sorted(set(CINEMA_PAGE_RE.findall(sitemap)))
+    slugs = sorted(set(CINEMA_PAGE_RE.findall(sitemap)) | set(EXTRA_SLUGS))
     print(f"Found {len(slugs)} cinema pages")
 
     cinemas = []
