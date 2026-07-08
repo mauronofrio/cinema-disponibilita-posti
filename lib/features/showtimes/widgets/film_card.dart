@@ -98,6 +98,7 @@ class FilmCard extends ConsumerWidget {
                       return _SessionTimeChip(
                         session: session,
                         isPast: now.isAfter(session.startTime),
+                        canOpenSeatMap: cinema.hasSeatMap,
                         onTap: () => _openSeatMap(context, ref, session),
                       );
                     }).toList(),
@@ -116,11 +117,13 @@ class _SessionTimeChip extends StatelessWidget {
   const _SessionTimeChip({
     required this.session,
     required this.isPast,
+    required this.canOpenSeatMap,
     required this.onTap,
   });
 
   final Session session;
   final bool isPast;
+  final bool canOpenSeatMap;
   final VoidCallback onTap;
 
   @override
@@ -129,8 +132,10 @@ class _SessionTimeChip extends StatelessWidget {
     // Once a showtime has started, the seats endpoint stops returning
     // availability for it - so the time is kept visible (still useful as a
     // record of the day's programme) but is no longer tappable, distinct
-    // from "sold out" which is a different, still-relevant state.
-    final disabled = soldOut || isPast;
+    // from "sold out" which is a different, still-relevant state. A cinema
+    // with no seat map at all (see Cinema.hasSeatMap) disables every chip
+    // the same way, for the same reason: nothing to usefully tap through to.
+    final disabled = soldOut || isPast || !canOpenSeatMap;
     final t = AppLocalizations.of(context);
     return Material(
       color: disabled ? AppColors.surfaceElevated : AppColors.background,

@@ -495,7 +495,8 @@
     "lat": 40.3514780,
     "lng": 18.1741564,
     "chain": "eighteenTickets",
-    "host": "multisalamassimo.18tickets.it"
+    "host": "multisalamassimo.18tickets.it",
+    "scheduleFromFilmPages": true
   },
   {
     "cinemaId": "1021",

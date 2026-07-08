@@ -22,7 +22,9 @@ class _RawSeat {
     required this.seatNumber,
     required this.area,
     required this.x,
+    required this.y,
     required this.isAccessibility,
+    required this.isNotForSale,
   });
 
   final String seatId;
@@ -31,18 +33,56 @@ class _RawSeat {
   final String area;
   final double x;
 
+  /// Only used to sort rows by real distance from the screen (see
+  /// [_screenYRe]) - never for column placement, that's [x].
+  final double y;
+
   /// Accessibility/wheelchair seats carry an extra `special userhide` class
-  /// alongside `posto` (confirmed live: always the two seats at either end
-  /// of the row farthest from the screen) - not offered through the normal
-  /// booking flow at all ("userhide"). The old class match required the
-  /// attribute to be *exactly* `posto`, which silently dropped every one of
-  /// these seats from the parsed room entirely (a gap in the grid, not just
-  /// a wrong color) since their real class value never matched.
+  /// alongside `posto`, with an empty `data-note` (confirmed live: always
+  /// the two seats at either end of the row farthest from the screen) - not
+  /// offered through the normal booking flow at all ("userhide"). The old
+  /// class match required the attribute to be *exactly* `posto`, which
+  /// silently dropped every one of these seats from the parsed room
+  /// entirely (a gap in the grid, not just a wrong color) since their real
+  /// class value never matched.
   final bool isAccessibility;
+
+  /// True for a seat carrying that same `special userhide` class but a
+  /// *non-empty* `data-note` - confirmed live on Multisala Massimo - Lecce's
+  /// largest room: 253 of its 701 seats carry it, tagged
+  /// `data-note='Galleria'`, an entire upper-gallery section reused this
+  /// same "hidden from booking" class for, not individual accessibility
+  /// seats. Left out of the parsed room entirely (see
+  /// [parseEighteenTicketsSeatMap]) rather than rendered with any status at
+  /// all - these were never real bookable seats to begin with, and a
+  /// seat-shaped placeholder there reads as "taken", not "not really part
+  /// of this room".
+  final bool isNotForSale;
 }
 
 final _seatGroupRe = RegExp(
-  r"""<g class=['"]([^'"]*)['"][^>]*data-area=['"]([^'"]*)['"][^>]*data-row=['"]([^'"]*)['"][^>]*data-seat=['"]([^'"]*)['"][^>]*>\s*<rect[^>]*id=['"]([^'"]+)['"][^>]*x=['"]([\d.]+)['"]""",
+  r"""<g class=['"]([^'"]*)['"][^>]*data-area=['"]([^'"]*)['"][^>]*data-row=['"]([^'"]*)['"][^>]*data-seat=['"]([^'"]*)['"][^>]*>\s*<rect[^>]*id=['"]([^'"]+)['"][^>]*x=['"]([\d.]+)['"][^>]*y=['"]([\d.]+)['"]""",
+);
+
+/// [_seatGroupRe] doesn't capture this itself (adding a group would shift
+/// every existing group index) - looked up separately, only to tell a real
+/// accessibility seat's `special userhide` class apart from Multisala
+/// Massimo - Lecce's *reuse* of that exact same class for its whole
+/// upper-gallery section (confirmed live: 253 of that one room's 701 seats
+/// carry it, spanning nearly every row - far too many and far too
+/// spread-out to be individual companion seats - each one tagged
+/// `data-note='Galleria'`, unlike a real accessibility seat's always-empty
+/// `data-note`). Without this check, that entire gallery section would
+/// render - and count - as accessibility seating.
+final _noteRe = RegExp(r"""data-note=['"]([^'"]*)['"]""");
+
+/// The room's own screen indicator - always present as a `<rect
+/// class='m18-th-screen' .../>`, its `y` is the one fixed point every row's
+/// distance is measured from (see the row-order comment on
+/// [parseEighteenTicketsSeatMap] for why this replaced trusting the row
+/// label itself).
+final _screenYRe = RegExp(
+  r"""class=['"]m18-th-screen['"][^>]*y=['"]([\d.]+)['"]""",
 );
 
 /// Categories the occupancy JSON's own arrays use (see PROJECT_NOTES.md) -
@@ -112,26 +152,30 @@ SeatStatus _statusFor(
 /// least one real room, so it's only ever used for the visible label, never
 /// for placement).
 ///
-/// Row order is the row label itself, descending (I, H, G, ... down to A) -
-/// *not* real y, despite the column-order rule right above it. Real y was
-/// the original approach and does agree with this in most rooms checked
-/// (one RedCarpet room and two Multicinema Galleria rooms all have row "A"
-/// at the *highest* y, matching "A last" here already), but a third
-/// Galleria room (a Backrooms screening, confirmed live) has *every* row's
-/// real y running the opposite direction (row "A" lowest, each later letter
-/// higher) - not just row "A" out of place, the whole room's y is flipped
-/// relative to its own row labels. Since row "A" is always the back row on
-/// this platform regardless (confirmed by the user for this venue), the
-/// label itself is the one thing that's consistent across rooms, so it's
-/// what's trusted, not the geometry. A "DD" row label, seen in a couple of
-/// rooms, isn't a real row at all (confirmed by the user) - just a
-/// companion/accessible seat sitting on the same physical line as row A -
-/// so it's merged into "A" before any of this rather than kept as its own
-/// phantom row.
+/// Row order is by real distance from the room's own screen indicator
+/// (closest first), not the row label. A label-based rule ("A is always the
+/// back row") was tried first and briefly shipped, on the strength of a
+/// Multicinema Galleria "Backrooms" room whose SVG *geometry* put row "A"
+/// nearest the screen while the room's real layout has it at the back - but
+/// that turned out to be the user misremembering that one room, not a
+/// platform quirk (confirmed live once checked against the actual booking
+/// page). Multisala Massimo - Lecce then surfaced a real room built the
+/// opposite way on purpose (screen at the *bottom* of its SVG, row "A"
+/// genuinely closest) - proof "A is always the back row" was never true
+/// platform-wide. Measuring real distance from each room's own screen
+/// element gets both right without hardcoding either one, because it's
+/// just reading what that room's own SVG actually draws. A "DD" row label,
+/// seen in a couple of rooms, isn't a real row at all (confirmed by the
+/// user) - just a companion/accessible seat sitting on the same physical
+/// line as row A - so it's merged into "A" before any of this rather than
+/// kept as its own phantom row.
 SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
   final rawSeats = <_RawSeat>[];
   for (final match in _seatGroupRe.allMatches(payload.theaterSvg)) {
     final classAttr = match.group(1)!;
+    final note = _noteRe.firstMatch(match.group(0)!)?.group(1) ?? '';
+    final hasSpecialClass =
+        classAttr.contains('special') || classAttr.contains('userhide');
     rawSeats.add(
       _RawSeat(
         area: match.group(2)!,
@@ -139,11 +183,13 @@ SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
         seatNumber: match.group(4)!,
         seatId: match.group(5)!,
         x: double.parse(match.group(6)!),
-        isAccessibility:
-            classAttr.contains('special') || classAttr.contains('userhide'),
+        y: double.parse(match.group(7)!),
+        isAccessibility: hasSpecialClass && note.isEmpty,
+        isNotForSale: hasSpecialClass && note.isNotEmpty,
       ),
     );
   }
+  final screenY = double.parse(_screenYRe.firstMatch(payload.theaterSvg)!.group(1)!);
 
   final occupancy = json.decode(payload.occupancyJson) as Map<String, dynamic>;
   final busyBySeatId = <String, Set<String>>{
@@ -169,12 +215,26 @@ SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
     final rowKey = seat.row == 'DD' ? 'A' : seat.row;
     byRow.putIfAbsent(rowKey, () => []).add(seat);
   }
-  final rowLabels = byRow.keys.toList()..sort((a, b) => b.compareTo(a));
+  final distanceFromScreen = {
+    for (final entry in byRow.entries)
+      entry.key:
+          (entry.value.map((s) => s.y).reduce((a, b) => a + b) /
+                  entry.value.length -
+              screenY)
+              .abs(),
+  };
+  final rowLabels = byRow.keys.toList()
+    ..sort((a, b) => distanceFromScreen[a]!.compareTo(distanceFromScreen[b]!));
 
   final rows = rowLabels.map((rowLabel) {
     final rowIndex = rowLabel.isEmpty ? 0 : rowLabel.codeUnitAt(0);
     final slots = List<Seat?>.filled(totalColumns, null);
-    final seatsInRow = byRow[rowLabel]!;
+    // Not-for-sale seats (see _RawSeat.isNotForSale) are left out of the row
+    // entirely - not rendered as a grey/occupied-looking seat, just an
+    // empty gap, same as a real aisle. They were never real bookable seats
+    // to begin with, so a seat-shaped placeholder there would only read as
+    // "taken" rather than "not part of this room's real seating".
+    final seatsInRow = byRow[rowLabel]!.where((s) => !s.isNotForSale).toList();
     // The merged-in "DD" seat always carries its own raw seat number "1",
     // which can collide with a real seat already numbered "1" in the row it
     // merges into - detected here (rather than assumed only for merges) so

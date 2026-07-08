@@ -177,21 +177,31 @@ class SeatMap {
   }
 
   /// Every real seat in the room (nulls are aisle gaps, not seats),
-  /// excluding accessibility seats - the "Occupati X/Y" summary is about
-  /// ordinary seat availability, and a handful of wheelchair spots would
-  /// skew both the count and the percentage without meaning much either
-  /// way for someone not booking one.
+  /// excluding accessibility and [SeatStatus.special] seats - the
+  /// "Occupati X/Y" summary is about ordinary seat availability, and a
+  /// handful of wheelchair or restricted/not-for-sale spots would skew both
+  /// the count and the percentage without meaning much either way for
+  /// someone not booking one. [SeatStatus.special] seats are never actually
+  /// bookable regardless of chain (confirmed live on Multisala Massimo -
+  /// Lecce: 253 of one room's 701 seats are a whole upper-gallery section
+  /// permanently marked this way, not individually occupied/free) - without
+  /// this they'd always count as "occupied" (`totalSeatCount -
+  /// availableSeatCount`), making a room using them look far busier than it
+  /// really is even when genuinely empty.
   int get totalSeatCount => rows.fold(
     0,
     (sum, row) =>
         sum +
-        row.seats.whereType<Seat>().where((s) => !s.isAccessibility).length,
+        row.seats
+            .whereType<Seat>()
+            .where((s) => !s.isAccessibility && s.status != SeatStatus.special)
+            .length,
   );
 
   /// Matches the reference implementation's own notion of "free": exactly
   /// `status == available`, everything else (occupied, reserved, sold-out
-  /// areas, ...) counts against it. Accessibility seats are excluded here
-  /// too, same reasoning as [totalSeatCount].
+  /// areas, ...) counts against it. Accessibility and [SeatStatus.special]
+  /// seats are excluded here too, same reasoning as [totalSeatCount].
   int get availableSeatCount => rows.fold(
     0,
     (sum, row) =>

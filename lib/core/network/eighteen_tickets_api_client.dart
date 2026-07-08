@@ -82,6 +82,26 @@ class EighteenTicketsApiClient {
     return _getHtml('https://$host/film/$filmId/$sessionId');
   }
 
+  /// Every real showtime a film has, on any date, in one request - an empty
+  /// `date` is the same "+ Tutte le Date" (All Dates) selection its own
+  /// date-balloon picker offers, confirmed live to return every one of a
+  /// film's real showtimes across every day at once (e.g. two today, two
+  /// tomorrow), unlike the film's bare overview page (`/film/{filmId}`,
+  /// this call's own params omitted entirely), which only ever renders one
+  /// narrower, undocumented default window and silently drops other real,
+  /// bookable days. Only used for `Cinema.scheduleFromFilmPages` cinemas
+  /// (see `EighteenTicketsChainApi`) as a fallback when `fetch_films` itself
+  /// never renders any time slots for any day - a normal 18tickets venue
+  /// never needs this, `fetch_films` already gives every day's showtimes in
+  /// one request.
+  Future<String> getAllFilmOccupations(String host, String filmId) {
+    return _getHtml(
+      'https://$host/film/$filmId/fetch_film_occupations',
+      query: {'date': '', 'invite_code': ''},
+      xhr: true,
+    );
+  }
+
   /// Seat-by-seat occupancy for one showtime. Returns JSON as text (small
   /// enough that decoding inline is fine, no need for the compute()
   /// treatment The Space's much larger seat responses need).

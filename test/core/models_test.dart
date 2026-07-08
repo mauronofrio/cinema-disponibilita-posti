@@ -2,10 +2,41 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:thespace_companion/core/models/cinema.dart';
 import 'package:thespace_companion/core/models/film.dart';
 import 'package:thespace_companion/core/models/seat_map.dart';
 
 void main() {
+  group('Cinema.fromJson', () {
+    Map<String, dynamic> baseJson() => {
+      'cinemaId': 'x',
+      'name': 'X',
+      'slug': 'x',
+      'address': 'Via X 1, Città',
+      'lat': 0.0,
+      'lng': 0.0,
+      'chain': 'eighteenTickets',
+    };
+
+    test('hasSeatMap defaults to true when absent from the JSON', () {
+      expect(Cinema.fromJson(baseJson()).hasSeatMap, isTrue);
+    });
+
+    test('hasSeatMap reads false for a programme-only cinema', () {
+      final json = baseJson()..['hasSeatMap'] = false;
+      expect(Cinema.fromJson(json).hasSeatMap, isFalse);
+    });
+
+    test('scheduleFromFilmPages defaults to false when absent from the JSON', () {
+      expect(Cinema.fromJson(baseJson()).scheduleFromFilmPages, isFalse);
+    });
+
+    test('scheduleFromFilmPages reads true for a broken-calendar cinema', () {
+      final json = baseJson()..['scheduleFromFilmPages'] = true;
+      expect(Cinema.fromJson(json).scheduleFromFilmPages, isTrue);
+    });
+  });
+
   group('SeatMap.fromApiResponseJson', () {
     late String rawJson;
 
@@ -133,6 +164,56 @@ void main() {
           seatMap.occupancyRatio,
           seatMap.occupiedSeatCount / seatMap.totalSeatCount,
         );
+      },
+    );
+
+    test(
+      'SeatStatus.special seats are excluded from both counters, like accessibility seats',
+      () {
+        // A SeatStatus.special seat is never actually bookable regardless of
+        // chain (confirmed live on an 18tickets room where a whole
+        // upper-gallery section is permanently marked this way) - without
+        // this exclusion it would always count as "occupied"
+        // (totalSeatCount - availableSeatCount), making a room using it
+        // look far busier than it really is even when genuinely empty.
+        const seatMap = SeatMap(
+          screenLabel: '',
+          totalRows: 1,
+          totalColumns: 3,
+          areaCategories: [],
+          rows: [
+            SeatRow(
+              rowLabel: 'A',
+              rowIndex: 1,
+              seats: [
+                Seat(
+                  rowIndex: 1,
+                  columnIndex: 1,
+                  name: 'A1',
+                  status: SeatStatus.available,
+                  areaCategoryCode: 'PT',
+                ),
+                Seat(
+                  rowIndex: 1,
+                  columnIndex: 2,
+                  name: 'A2',
+                  status: SeatStatus.occupied,
+                  areaCategoryCode: 'PT',
+                ),
+                Seat(
+                  rowIndex: 1,
+                  columnIndex: 3,
+                  name: 'A3',
+                  status: SeatStatus.special,
+                  areaCategoryCode: 'PT',
+                ),
+              ],
+            ),
+          ],
+        );
+        expect(seatMap.totalSeatCount, 2);
+        expect(seatMap.availableSeatCount, 1);
+        expect(seatMap.occupiedSeatCount, 1);
       },
     );
   });

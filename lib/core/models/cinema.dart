@@ -30,6 +30,8 @@ class Cinema {
     this.chain = CinemaChain.theSpace,
     this.webticLocalId,
     this.host,
+    this.hasSeatMap = true,
+    this.scheduleFromFilmPages = false,
   });
 
   factory Cinema.fromJson(Map<String, dynamic> json) {
@@ -43,6 +45,8 @@ class Cinema {
       chain: CinemaChain.fromJson(json['chain'] as String?),
       webticLocalId: json['webticLocalId'] as int?,
       host: json['host'] as String?,
+      hasSeatMap: json['hasSeatMap'] as bool? ?? true,
+      scheduleFromFilmPages: json['scheduleFromFilmPages'] as bool? ?? false,
     );
   }
 
@@ -65,6 +69,31 @@ class Cinema {
   /// list, showtimes, seat map) goes to this same host, so it's the one
   /// piece of chain-specific routing info it needs.
   final String? host;
+
+  /// False for a cinema whose site only exposes the film programme (titles,
+  /// days, and - when present - showtimes), with no working seat-level
+  /// booking to send the user on to. Not currently set for any cinema (see
+  /// [scheduleFromFilmPages] for the one 18tickets venue that looked like
+  /// this at first but turned out to have real, bookable seat maps once its
+  /// showtimes were found the right way) - kept for a genuinely booking-less
+  /// venue if one ever turns up. The app still shows the programme for
+  /// these, just without a seat map to open (a session's time chip is
+  /// informational only, not tappable).
+  final bool hasSeatMap;
+
+  /// [CinemaChain.eighteenTickets] only, and only Multisala Massimo - Lecce
+  /// so far: true for a venue whose `fetch_films` day-by-day calendar never
+  /// renders any showtime markup at all (confirmed live, every date checked)
+  /// even though its film catalog and individual showtimes are real and
+  /// bookable - each film's own overview page (`/film/{filmId}`) still lists
+  /// every one of its real showtimes, just not through the calendar view
+  /// every other 18tickets venue relies on. When true,
+  /// `EighteenTicketsChainApi` falls back to reading showtimes off of that
+  /// page instead, one request per film in the catalog rather than the
+  /// usual one request per day - deliberately capped to just today and
+  /// tomorrow (see `getShowingDates`) given this platform's aggressive
+  /// per-IP rate limit (see PROJECT_NOTES.md).
+  final bool scheduleFromFilmPages;
 
   /// [name] alone for UCI Cinemas and every 18tickets venue (both already
   /// self-identifying, e.g. "UCI Cinemas Seven Gioia del Colle" or

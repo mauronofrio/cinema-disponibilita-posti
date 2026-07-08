@@ -61,6 +61,24 @@ void main() {
       expect(first.startTime, DateTime(2026, 7, 8, 17, 0));
     });
 
+    test(
+      'a showtime with no room name after the time (Circuito Cinema / '
+      'Multisala Impero template) still counts as a session, with an '
+      'empty theaterName rather than being dropped',
+      () {
+        final noRoomHtml = File(
+          'test/fixtures/eighteen_tickets_films_for_day_no_room_sample.html',
+        ).readAsStringSync();
+        final programming = parseEighteenTicketsFilmsForDay(
+          noRoomHtml,
+          DateTime(2026, 7, 8),
+        );
+        expect(programming.films, isNotEmpty);
+        expect(programming.sessions, isNotEmpty);
+        expect(programming.sessions.every((s) => s.theaterName == ''), isTrue);
+      },
+    );
+
     test('sessionId is unique across every film/showtime that day', () {
       final programming = parseEighteenTicketsFilmsForDay(
         html,
@@ -71,6 +89,35 @@ void main() {
         hasLength(programming.sessions.length),
       );
     });
+  });
+
+  group('parseEighteenTicketsAllSessionsForFilm', () {
+    test(
+      'reads every real showtime off a film\'s fetch_film_occupations response, with its real date/time',
+      () {
+        // Multisala Massimo - Lecce, confirmed live: TOY STORY 5's
+        // fetch_film_occupations response lists both of its real showtimes
+        // for Wednesday 08/07/2026, even though this cinema's `fetch_films`
+        // response for that same day renders zero showtime markup at all.
+        final html = File(
+          'test/fixtures/eighteen_tickets_film_occupations_sample.html',
+        ).readAsStringSync();
+        final sessions = parseEighteenTicketsAllSessionsForFilm(
+          html,
+          '105201',
+        );
+        expect(sessions, hasLength(2));
+        expect(sessions.every((s) => s.filmId == '105201'), isTrue);
+        final first = sessions.firstWhere(
+          (s) => s.sessionId == '981b4316-1664-4563-939e-c76d673881ce',
+        );
+        expect(first.startTime, DateTime(2026, 7, 8, 18, 45));
+        final second = sessions.firstWhere(
+          (s) => s.sessionId == '82a1dadd-dd73-4d0d-a0fb-041faf6eadb8',
+        );
+        expect(second.startTime, DateTime(2026, 7, 8, 20, 45));
+      },
+    );
   });
 
   group('parseEighteenTicketsTheaterIdForSession', () {
@@ -156,15 +203,15 @@ void main() {
       },
     );
 
-    test('rows are ordered by label, descending, screen-side first', () {
+    test('rows are ordered by real distance from the screen, closest first', () {
       final seatMap = parseEighteenTicketsSeatMap(
         EighteenTicketsSeatMapPayload(
           theaterSvg: svg,
           occupancyJson: emptyOccupancy,
         ),
       );
-      // Row "A" is always the back row on this platform - it must render
-      // last, not first, in the returned row list.
+      // In this room's SVG, row "A" sits at the highest y - farthest from
+      // the screen (drawn at y=10) - so it must render last.
       expect(seatMap.rows.first.rowLabel, isNot('A'));
       expect(seatMap.rows.last.rowLabel, 'A');
     });
@@ -232,14 +279,15 @@ void main() {
     );
 
     test(
-      'row order follows the label, descending, even in a room whose real y runs the opposite way for every row',
+      'row order still follows real distance from the screen in a room built the opposite way round',
       () {
-        // A real Multicinema Galleria room (a Backrooms screening) where
-        // *every* row's real y runs the opposite direction from every other
-        // room checked (row "A" lowest/closest, each later letter higher) -
-        // not just row "A" out of place. Real y can't be trusted
-        // platform-wide, so row order always follows the label itself
-        // (descending) regardless of what the SVG's own geometry says.
+        // A real Multicinema Galleria room (a Backrooms screening) whose SVG
+        // geometry runs the opposite direction from every other room checked
+        // (row "A" nearest the screen, each later letter farther) - confirmed
+        // live against the actual booking page to be a real, intentional
+        // layout, not a data quirk. Distance-from-screen still gets this
+        // right without any special-casing, because it reads whatever this
+        // room's own screen element and rows actually say, room by room.
         final reversedSvg = File(
           'test/fixtures/eighteen_tickets_theater_reversed_row_a_sample.svg',
         ).readAsStringSync();
@@ -250,15 +298,61 @@ void main() {
           ),
         );
         expect(seatMap.rows.map((r) => r.rowLabel).toList(), [
-          'H',
-          'G',
-          'F',
-          'E',
-          'D',
-          'C',
-          'B',
           'A',
+          'B',
+          'C',
+          'D',
+          'E',
+          'F',
+          'G',
+          'H',
         ]);
+      },
+    );
+
+    test(
+      'a room whose screen sits at the bottom of its own SVG puts row "A" first, not last',
+      () {
+        // Multisala Massimo - Lecce, confirmed live against the real booking
+        // page: the screen is drawn at y=280 (below every row), and row "A"
+        // is the closest row to it (y=222.5) - the platform-wide "A is
+        // always the back row" assumption doesn't hold here.
+        final screenAtBottomSvg = File(
+          'test/fixtures/eighteen_tickets_theater_screen_at_bottom_sample.svg',
+        ).readAsStringSync();
+        final seatMap = parseEighteenTicketsSeatMap(
+          EighteenTicketsSeatMapPayload(
+            theaterSvg: screenAtBottomSvg,
+            occupancyJson: emptyOccupancy,
+          ),
+        );
+        expect(seatMap.rows.first.rowLabel, 'A');
+        expect(seatMap.rows.last.rowLabel, isNot('A'));
+      },
+    );
+
+    test(
+      'a "special userhide" seat with a non-empty data-note is left out of the room entirely, not shown as accessibility',
+      () {
+        // Multisala Massimo - Lecce's largest room, confirmed live: roughly
+        // a third of its ~700 seats carry the exact same "special userhide"
+        // class real accessibility seats use elsewhere on this platform,
+        // but tagged `data-note='Galleria'` - reusing the class for a whole
+        // upper section, not individual companion seats, and never really
+        // bookable - so they're gaps in the grid, not accessibility seats
+        // and not a "special" placeholder either.
+        final gallerySvg = File(
+          'test/fixtures/eighteen_tickets_theater_reused_class_gallery_sample.svg',
+        ).readAsStringSync();
+        final seatMap = parseEighteenTicketsSeatMap(
+          EighteenTicketsSeatMapPayload(
+            theaterSvg: gallerySvg,
+            occupancyJson: emptyOccupancy,
+          ),
+        );
+        final seats = seatMap.rows.expand((r) => r.seats).whereType<Seat>();
+        expect(seats.where((s) => s.isAccessibility), isEmpty);
+        expect(seats.where((s) => s.status == SeatStatus.special), isEmpty);
       },
     );
 

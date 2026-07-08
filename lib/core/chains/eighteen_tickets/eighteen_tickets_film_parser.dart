@@ -115,7 +115,12 @@ class EighteenTicketsDayProgramming {
 final _sessionAnchorRe = RegExp(
   "<a data-time=$_q\\d+$_q\\s+href=${_q}https?://[^/'\"]+/film/\\d+/([a-f0-9-]+)#theater-init$_q>([\\s\\S]*?)${_close('a')}",
 );
-final _timeRoomRe = RegExp(r"(\d{2}):(\d{2})\s*<br\s*/?>\s*([^<]+)");
+// The room name after the time is optional: Circuito Cinema (ccb/ccroma/
+// cctorino hosts) and Multisala Impero/Massimo render just `HH:MM</li>`,
+// no `<br>Sala` at all - confirmed live (Fiorella - Firenze showed films
+// but zero sessions before this was made optional, since every anchor's
+// inner text failed the old mandatory-room match).
+final _timeRoomRe = RegExp(r"(\d{2}):(\d{2})(?:\s*<br\s*/?>\s*([^<]+))?");
 
 /// Parses a `GET /film/fetch_films?date=YYYY-MM-DD` response. [date] is the
 /// same date requested - the response's own showtimes only ever carry a
@@ -151,7 +156,7 @@ EighteenTicketsDayProgramming parseEighteenTicketsFilmsForDay(
         ParsedEighteenTicketsSession(
           filmId: filmId,
           sessionId: sessionId,
-          theaterName: timeRoom.group(3)!.trim(),
+          theaterName: timeRoom.group(3)?.trim() ?? '',
           startTime: DateTime(
             date.year,
             date.month,
@@ -197,4 +202,55 @@ String? parseEighteenTicketsTheaterIdForSession(
     }
   }
   return null;
+}
+
+final _dateExtendedRe = RegExp(
+  r'(\d{2})/(\d{2})/(\d{4})\s+ore\s+(\d{2}):(\d{2})',
+);
+
+/// Every real showtime for one film, on any date, from its
+/// `fetch_film_occupations` response (an empty `date`, see
+/// `EighteenTicketsApiClient.getAllFilmOccupations`) rather than a day's
+/// `fetch_films` response - the fallback for
+/// `Cinema.scheduleFromFilmPages` (Multisala Massimo - Lecce so far): its
+/// `fetch_films` never renders any time-slot markup for any date, even
+/// though the showtimes themselves are real and bookable. Deliberately not
+/// read off the film's bare overview page instead (`/film/{filmId}`, no
+/// query params at all) - confirmed live that it only ever renders one
+/// narrower, undocumented default window (e.g. a film playing both today
+/// and tomorrow showed only today's two showtimes there, silently dropping
+/// two real, bookable ones tomorrow). Sessions are read via the same
+/// `film-projection` anchors [parseEighteenTicketsTheaterIdForSession]
+/// already reads, keyed by a date/time (`data-date-extended`, e.g.
+/// "Mercoledì 08/07/2026 ore 18:45") instead of a pre-selected session -
+/// [filmId] is stamped onto every one since the tag's own `data-film` is a
+/// different, unrelated internal id.
+List<ParsedEighteenTicketsSession> parseEighteenTicketsAllSessionsForFilm(
+  String occupationsHtml,
+  String filmId,
+) {
+  final sessions = <ParsedEighteenTicketsSession>[];
+  for (final match in _projectionTagRe.allMatches(occupationsHtml)) {
+    final tag = match.group(0)!;
+    final sessionId = _attr(tag, 'data-id');
+    final dateExtended = _attr(tag, 'data-date-extended');
+    if (sessionId == null || dateExtended == null) continue;
+    final dateMatch = _dateExtendedRe.firstMatch(dateExtended);
+    if (dateMatch == null) continue;
+    sessions.add(
+      ParsedEighteenTicketsSession(
+        filmId: filmId,
+        sessionId: sessionId,
+        theaterName: _attr(tag, 'data-theater-name')?.trim() ?? '',
+        startTime: DateTime(
+          int.parse(dateMatch.group(3)!),
+          int.parse(dateMatch.group(2)!),
+          int.parse(dateMatch.group(1)!),
+          int.parse(dateMatch.group(4)!),
+          int.parse(dateMatch.group(5)!),
+        ),
+      ),
+    );
+  }
+  return sessions;
 }
