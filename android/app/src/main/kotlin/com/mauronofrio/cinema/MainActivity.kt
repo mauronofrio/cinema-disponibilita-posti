@@ -1,4 +1,4 @@
-package com.mauronofrio.thespace_companion
+package com.mauronofrio.cinema
 
 import io.flutter.embedding.android.FlutterActivity
 

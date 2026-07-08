@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mauronofrio.thespace_companion"
+    namespace = "com.mauronofrio.cinema"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,8 +20,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.mauronofrio.thespace_companion"
+        applicationId = "com.mauronofrio.cinema"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
