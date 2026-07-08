@@ -102,6 +102,12 @@ class AppLocalizations {
       'en': 'Couldn\'t complete the request. Please try again later.',
       'it': 'Impossibile completare la richiesta. Riprova più tardi.',
     },
+    'updateAvailableTitle': {
+      'en': 'Update available',
+      'it': 'Aggiornamento disponibile',
+    },
+    'updateLater': {'en': 'Later', 'it': 'Più tardi'},
+    'updateDownload': {'en': 'Download', 'it': 'Scarica'},
   };
 
   String _t(String key) =>
@@ -155,6 +161,19 @@ class AppLocalizations {
   String get disclaimer => _t('disclaimer');
   String get connectionError => _t('connectionError');
   String get requestFailedError => _t('requestFailedError');
+  String get updateAvailableTitle => _t('updateAvailableTitle');
+  String get updateLater => _t('updateLater');
+  String get updateDownload => _t('updateDownload');
+
+  /// "Version {latest} is available (installed: {current})." - method rather
+  /// than getter since it interpolates both versions.
+  String updateAvailableMessage(String latest, String current) {
+    return locale.languageCode == 'it'
+        ? 'È disponibile la versione $latest (installata: $current). '
+              'Il download si apre nel browser.'
+        : 'Version $latest is available (installed: $current). '
+              'The download opens in your browser.';
+  }
 
   /// `DateFormat` locale identifier matching this app's locale (e.g. for day
   /// labels like "Wed 9 Jul" / "mer 9 lug").

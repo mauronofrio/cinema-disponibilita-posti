@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'core/date/clock.dart';
 import 'core/date/day_label.dart';
@@ -8,6 +9,7 @@ import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/no_stretch_scroll_behavior.dart';
+import 'core/update/update_checker.dart';
 import 'features/cinema_picker/cinema_list_provider.dart';
 import 'features/showtimes/showing_dates_provider.dart';
 import 'routing/app_router.dart';
@@ -75,6 +77,82 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      // Wraps whatever route is showing (picker, home, settings, ...) rather
+      // than living on one particular screen - a fresh install lands on the
+      // picker first (no favorite cinema yet), which would never trigger an
+      // update check tied to the showtimes screen alone. This `context` is
+      // inside the Navigator/Localizations tree the router builds, unlike
+      // `TheSpaceApp`'s own.
+      builder: (context, child) => _UpdateCheckGate(child: child),
     );
   }
+}
+
+class _UpdateCheckGate extends ConsumerStatefulWidget {
+  const _UpdateCheckGate({required this.child});
+
+  final Widget? child;
+
+  @override
+  ConsumerState<_UpdateCheckGate> createState() => _UpdateCheckGateState();
+}
+
+class _UpdateCheckGateState extends ConsumerState<_UpdateCheckGate> {
+  /// Once per app *process*, not per rebuild of this gate.
+  bool _checked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeOfferUpdate());
+  }
+
+  /// The app is sideloaded (GitHub releases, no store), so this dialog is
+  /// its only update channel - see update_checker.dart. Deliberately quiet:
+  /// no update or any failure means nothing is shown at all.
+  ///
+  /// Uses [rootNavigatorKey] rather than this widget's own `context`: this
+  /// gate lives in `MaterialApp.router`'s `builder`, which wraps the router
+  /// (and its Navigator) from *outside* rather than being wrapped by it, so
+  /// `context` here has no Navigator ancestor - confirmed live, `showDialog`
+  /// threw "context does not include a Navigator" using it directly.
+  Future<void> _maybeOfferUpdate() async {
+    if (_checked) return;
+    _checked = true;
+    final update = await ref.read(updateCheckProvider.future);
+    final navigatorContext = rootNavigatorKey.currentContext;
+    if (update == null || navigatorContext == null || !navigatorContext.mounted) {
+      return;
+    }
+
+    final t = AppLocalizations.of(navigatorContext);
+    final download = await showDialog<bool>(
+      context: navigatorContext,
+      builder: (context) => AlertDialog(
+        title: Text(t.updateAvailableTitle),
+        content: Text(
+          t.updateAvailableMessage(update.latestVersion, update.currentVersion),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(t.updateLater),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(t.updateDownload),
+          ),
+        ],
+      ),
+    );
+    if (download == true) {
+      await launchUrl(
+        Uri.parse(update.downloadUrl),
+        mode: LaunchMode.externalApplication,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child!;
 }

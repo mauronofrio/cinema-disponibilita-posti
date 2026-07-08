@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,8 +9,16 @@ import '../features/seat_map/seat_map_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/showtimes/showtimes_home_screen.dart';
 
+/// A handle onto go_router's own Navigator, from outside the widget tree it
+/// builds - needed anywhere that must show a dialog/route but only has a
+/// `context` from above the router (e.g. `MaterialApp.router`'s own
+/// `builder`, which wraps the router rather than being wrapped by it - see
+/// `_UpdateCheckGate` in app.dart).
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) async {
       final activeId = await ref.read(activeCinemaIdProvider.future);
