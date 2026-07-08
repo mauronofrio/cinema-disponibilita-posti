@@ -53,6 +53,10 @@ class AppLocalizations {
       'en': 'Couldn\'t load the seats.',
       'it': 'Impossibile caricare i posti.',
     },
+    'noShowingsForFilmThatDay': {
+      'en': 'This film has no showings that day.',
+      'it': 'Nessuno spettacolo di questo film in quel giorno.',
+    },
     'seatStatusAvailable': {'en': 'Available', 'it': 'Disponibile'},
     'seatStatusOccupied': {'en': 'Occupied', 'it': 'Occupato'},
     'seatStatusReserved': {'en': 'Reserved', 'it': 'Riservato'},
@@ -116,6 +120,7 @@ class AppLocalizations {
   String get tomorrow => _t('tomorrow');
   String get soldOut => _t('soldOut');
   String get seatsLoadError => _t('seatsLoadError');
+  String get noShowingsForFilmThatDay => _t('noShowingsForFilmThatDay');
   String get seatStatusAvailable => _t('seatStatusAvailable');
   String get seatStatusOccupied => _t('seatStatusOccupied');
   String get seatStatusReserved => _t('seatStatusReserved');

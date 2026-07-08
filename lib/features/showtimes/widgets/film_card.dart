@@ -31,6 +31,7 @@ class FilmCard extends ConsumerWidget {
       '/seat-map',
       extra: SeatMapArgs(
         cinema: cinema,
+        filmId: film.filmId,
         filmTitle: film.title,
         showingGroups: film.showingGroups,
         initialSessionId: session.sessionId,

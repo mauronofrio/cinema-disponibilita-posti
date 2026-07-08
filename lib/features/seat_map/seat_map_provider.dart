@@ -13,19 +13,24 @@ typedef SeatMapKey = (Cinema cinema, Session session);
 /// the bits already known from the showtimes list, so the screen can render
 /// its header instantly instead of waiting on the seat fetch for anything.
 ///
-/// Carries every showing day for this film, not just the one that was
-/// tapped: `getFilmsForCinema` already returns every day's sessions in one
-/// response (see films_provider.dart), so letting the screen itself switch
-/// day and showtime costs no extra request at all.
+/// Carries every showing day for this film that's already known, not just
+/// the one that was tapped: for The Space/UCI that's every day (their own
+/// [ChainApi.getFilmsForDay] returns everything regardless of which day was
+/// asked for, so this already covers the whole run and switching costs
+/// nothing extra); for RedCarpet it's just the one day the user came from -
+/// switching to a day not in here means [SeatMapScreen] fetches it lazily
+/// itself, keyed by [filmId] to find the same film in that day's response.
 class SeatMapArgs {
   const SeatMapArgs({
     required this.cinema,
+    required this.filmId,
     required this.filmTitle,
     required this.showingGroups,
     required this.initialSessionId,
   });
 
   final Cinema cinema;
+  final String filmId;
   final String filmTitle;
   final List<ShowingGroup> showingGroups;
   final String initialSessionId;

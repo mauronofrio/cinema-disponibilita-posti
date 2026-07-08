@@ -77,7 +77,13 @@ class RedCarpetChainApi implements ChainApi {
                     formattedPrice: null,
                     isPriceVisible: false,
                     attributes: const [],
-                    bookingPath: null,
+                    // The one page this platform has for a single showtime
+                    // (also where getSeatMap reads the room id from, see
+                    // above) is itself the booking flow - the same
+                    // `fetch_films` markup links here as "Programmazione
+                    // Completa"/the time chip's own href.
+                    bookingPath:
+                        'https://$host/film/${film.filmId}/${parsed.sessionId}#theater-init',
                     redCarpetFilmId: film.filmId,
                   ),
                 )

@@ -5,6 +5,8 @@ import '../../core/date/clock.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/models/film.dart';
 import '../../core/theme/app_theme.dart';
+import '../showtimes/films_provider.dart';
+import '../showtimes/showing_dates_provider.dart';
 import 'seat_map_provider.dart';
 import 'widgets/area_legend.dart';
 import 'widgets/buy_tickets_button.dart';
@@ -20,9 +22,14 @@ import 'widgets/time_switcher.dart';
 /// trigger unnecessarily on the same tap.
 ///
 /// Switching to another day or showtime of the same film happens right
-/// here via [DateSwitcher]/[TimeSwitcher], instead of forcing a trip back
-/// to the film list - both are free since `showingGroups` already covers
-/// every day in the one response the film list itself loaded.
+/// here via [DateSwitcher]/[TimeSwitcher] instead of forcing a trip back to
+/// the film list. For The Space/UCI this is always free - their own
+/// `showingGroups` already covers every day in one response. For RedCarpet
+/// it's only free for the one day the user came from; picking any other
+/// day this cinema has showings for (from [showingDatesProvider], already
+/// cached from the home screen) fetches just that one day lazily via
+/// [filmsForDayProvider] and merges it in - see PROJECT_NOTES.md for why
+/// RedCarpet can't just fetch every day up front the way the other two do.
 class SeatMapScreen extends ConsumerStatefulWidget {
   const SeatMapScreen({super.key, required this.args});
 
@@ -33,31 +40,26 @@ class SeatMapScreen extends ConsumerStatefulWidget {
 }
 
 class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
+  late final Map<DateTime, ShowingGroup> _groupsByDay = {
+    for (final g in widget.args.showingGroups) _dayKey(g.date): g,
+  };
   late String _selectedSessionId = widget.args.initialSessionId;
   late DateTime _selectedDate = widget.args.showingGroups
       .firstWhere(
         (g) => g.sessions.any((s) => s.sessionId == _selectedSessionId),
       )
       .date;
+  DateTime? _loadingDate;
 
-  ShowingGroup get _selectedGroup => widget.args.showingGroups.firstWhere(
-    (g) =>
-        g.date.year == _selectedDate.year &&
-        g.date.month == _selectedDate.month &&
-        g.date.day == _selectedDate.day,
-  );
+  DateTime _dayKey(DateTime d) => DateTime(d.year, d.month, d.day);
+
+  ShowingGroup get _selectedGroup => _groupsByDay[_dayKey(_selectedDate)]!;
 
   Session get _selectedSession => _selectedGroup.sessions.firstWhere(
     (s) => s.sessionId == _selectedSessionId,
   );
 
-  void _selectDate(DateTime date) {
-    final group = widget.args.showingGroups.firstWhere(
-      (g) =>
-          g.date.year == date.year &&
-          g.date.month == date.month &&
-          g.date.day == date.day,
-    );
+  void _applyGroup(ShowingGroup group, DateTime date) {
     final now = ref.read(clockProvider).now();
     // Default to the first showtime that hasn't started/sold out yet,
     // rather than always landing on the day's first (possibly already
@@ -67,6 +69,50 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
       orElse: () => group.sessions.first,
     );
     _selectSession(defaultSession, date: date);
+  }
+
+  Future<void> _selectDate(DateTime date) async {
+    final key = _dayKey(date);
+    final known = _groupsByDay[key];
+    if (known != null) {
+      _applyGroup(known, date);
+      return;
+    }
+
+    // Not already known (RedCarpet only - see class doc): fetch just this
+    // one day, find the same film in it by id, and merge its sessions in.
+    setState(() => _loadingDate = date);
+    ShowingGroup? fetchedGroup;
+    var failed = false;
+    try {
+      final films = await ref.read(
+        filmsForDayProvider((widget.args.cinema, date)).future,
+      );
+      for (final film in films) {
+        if (film.filmId != widget.args.filmId) continue;
+        for (final group in film.showingGroups) {
+          if (_dayKey(group.date) == key && group.sessions.isNotEmpty) {
+            fetchedGroup = group;
+          }
+        }
+      }
+    } catch (_) {
+      failed = true;
+    }
+    if (!mounted) return;
+    setState(() => _loadingDate = null);
+
+    if (fetchedGroup != null) {
+      _groupsByDay[key] = fetchedGroup;
+      _applyGroup(fetchedGroup, date);
+    } else {
+      final t = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(failed ? t.seatsLoadError : t.noShowingsForFilmThatDay),
+        ),
+      );
+    }
   }
 
   void _selectSession(Session session, {DateTime? date}) {
@@ -86,6 +132,20 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
     final key = (widget.args.cinema, session);
     final seatMapAsync = ref.watch(seatMapProvider(key));
     final now = ref.watch(clockProvider).now();
+    // Same cached provider the home screen already populated - for The
+    // Space/UCI this is a strict superset of `_groupsByDay`'s keys anyway
+    // (both come from the same one-shot fetch), for RedCarpet it's the
+    // whole cinema's calendar even though only one of its days has this
+    // film's sessions loaded yet. Falls back to what's already known from
+    // the nav args if this hasn't resolved yet, so the switcher never shows
+    // fewer days than it did a moment ago on the home screen.
+    final availableDates = ref
+        .watch(showingDatesProvider(widget.args.cinema))
+        .maybeWhen(
+          data: (days) =>
+              days.where((d) => d.hasShowings).map((d) => d.date).toList(),
+          orElse: () => widget.args.showingGroups.map((g) => g.date).toList(),
+        );
 
     return Scaffold(
       appBar: AppBar(
@@ -113,10 +173,11 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
           ),
           children: [
             DateSwitcher(
-              showingGroups: widget.args.showingGroups,
+              availableDates: availableDates,
               selectedDate: _selectedDate,
               now: now,
               onSelect: _selectDate,
+              loadingDate: _loadingDate,
             ),
             const SizedBox(height: 2),
             TimeSwitcher(

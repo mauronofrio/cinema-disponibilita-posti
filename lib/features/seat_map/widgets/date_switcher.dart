@@ -3,28 +3,34 @@ import 'package:intl/intl.dart';
 
 import '../../../core/date/day_label.dart';
 import '../../../core/localization/app_localizations.dart';
-import '../../../core/models/film.dart';
 import '../../../core/theme/app_theme.dart';
 
-/// Every day this film is showing at this cinema, so switching to "domani"
-/// doesn't mean leaving the seat map screen - the data is already at hand
-/// ([SeatMapArgs.showingGroups] covers every day in one response), so this
-/// costs nothing extra to offer.
+/// Every day this cinema has showings at all (not just this one film) - see
+/// PROJECT_NOTES.md: for The Space/UCI this film's sessions are already
+/// known for every one of these days ([SeatMapArgs.showingGroups] covers
+/// everything in one response), so selecting any of them is instant; for
+/// RedCarpet only the day the user came from is known upfront, so selecting
+/// any other one triggers [SeatMapScreen] to fetch it lazily - [loadingDate]
+/// is which one (if any) is currently in flight, shown as a small spinner
+/// on that one chip, with every chip disabled meanwhile so a second tap
+/// can't start an overlapping fetch.
 ///
 /// Scrolls the selected day into view on its own, same as [TimeSwitcher].
 class DateSwitcher extends StatefulWidget {
   const DateSwitcher({
     super.key,
-    required this.showingGroups,
+    required this.availableDates,
     required this.selectedDate,
     required this.now,
     required this.onSelect,
+    this.loadingDate,
   });
 
-  final List<ShowingGroup> showingGroups;
+  final List<DateTime> availableDates;
   final DateTime selectedDate;
   final DateTime now;
   final ValueChanged<DateTime> onSelect;
+  final DateTime? loadingDate;
 
   @override
   State<DateSwitcher> createState() => _DateSwitcherState();
@@ -43,17 +49,14 @@ class _DateSwitcherState extends State<DateSwitcher> {
   );
 
   double _estimatedInitialOffset() {
-    final available = widget.showingGroups
-        .where((g) => g.sessions.isNotEmpty)
-        .toList();
-    final index = available.indexWhere(
-      (g) =>
-          g.date.year == widget.selectedDate.year &&
-          g.date.month == widget.selectedDate.month &&
-          g.date.day == widget.selectedDate.day,
+    final index = widget.availableDates.indexWhere(
+      (d) => _isSameDay(d, widget.selectedDate),
     );
     return index <= 0 ? 0 : index * _estimatedItemExtent;
   }
+
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 
   @override
   void initState() {
@@ -88,27 +91,31 @@ class _DateSwitcherState extends State<DateSwitcher> {
 
   @override
   Widget build(BuildContext context) {
-    final available = widget.showingGroups
-        .where((g) => g.sessions.isNotEmpty)
-        .toList();
+    final isBusy = widget.loadingDate != null;
     return SizedBox(
       height: 40,
       child: ListView.separated(
         controller: _controller,
         scrollDirection: Axis.horizontal,
-        itemCount: available.length,
+        itemCount: widget.availableDates.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          final group = available[index];
-          final isSelected =
-              group.date.year == widget.selectedDate.year &&
-              group.date.month == widget.selectedDate.month &&
-              group.date.day == widget.selectedDate.day;
+          final date = widget.availableDates[index];
+          final isSelected = _isSameDay(date, widget.selectedDate);
+          final isLoadingThis =
+              widget.loadingDate != null &&
+              _isSameDay(date, widget.loadingDate!);
           return ChoiceChip(
             key: isSelected ? _selectedKey : null,
             selected: isSelected,
-            onSelected: (_) => widget.onSelect(group.date),
-            label: Text(_labelFor(context, group.date)),
+            onSelected: isBusy ? null : (_) => widget.onSelect(date),
+            label: isLoadingThis
+                ? const SizedBox(
+                    width: 13,
+                    height: 13,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(_labelFor(context, date)),
             labelStyle: AppTheme.body(context).copyWith(
               color: isSelected
                   ? const Color(0xFF211500)
