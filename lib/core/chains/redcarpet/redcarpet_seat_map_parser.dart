@@ -22,6 +22,8 @@ class _RawSeat {
     required this.seatNumber,
     required this.area,
     required this.x,
+    required this.y,
+    required this.isAccessibility,
   });
 
   final String seatId;
@@ -29,10 +31,20 @@ class _RawSeat {
   final String seatNumber;
   final String area;
   final double x;
+  final double y;
+
+  /// Accessibility/wheelchair seats carry an extra `special userhide` class
+  /// alongside `posto` (confirmed live: always the two seats at either end
+  /// of the row farthest from the screen) - not offered through the normal
+  /// booking flow at all ("userhide"). The old class match required the
+  /// attribute to be *exactly* `posto`, which silently dropped every one of
+  /// these seats from the parsed room entirely (a gap in the grid, not just
+  /// a wrong color) since their real class value never matched.
+  final bool isAccessibility;
 }
 
 final _seatGroupRe = RegExp(
-  r"""<g class=['"]posto['"][^>]*data-area=['"]([^'"]*)['"][^>]*data-row=['"]([^'"]*)['"][^>]*data-seat=['"]([^'"]*)['"][^>]*>\s*<rect[^>]*id=['"]([^'"]+)['"][^>]*x=['"]([\d.]+)['"]""",
+  r"""<g class=['"]([^'"]*)['"][^>]*data-area=['"]([^'"]*)['"][^>]*data-row=['"]([^'"]*)['"][^>]*data-seat=['"]([^'"]*)['"][^>]*>\s*<rect[^>]*id=['"]([^'"]+)['"][^>]*x=['"]([\d.]+)['"][^>]*y=['"]([\d.]+)['"]""",
 );
 
 /// Categories the occupancy JSON's own arrays use (see PROJECT_NOTES.md) -
@@ -54,36 +66,57 @@ const _busyKeys = [
 /// "Prenotati in cassa", counter-booked rather than fully sold) - everything
 /// else busy collapses to plain `occupied`, same simplification The Space's
 /// own status codes already make for several distinct server states.
-SeatStatus _statusFor(String seatId, Map<String, Set<String>> busyBySeatId) {
+///
+/// [isAccessibility] only affects the *free* case: the grid's own color/icon
+/// treatment for accessibility seats (see seat_grid.dart) keys off
+/// `status == SeatStatus.accessibility` specifically, not the separate
+/// `Seat.isAccessibility` flag (that one only drives the occupancy-count
+/// exclusion) - so an unbooked accessibility seat needs this status
+/// explicitly, not just `available`. A *busy* accessibility seat still
+/// reads as occupied/reserved like any other seat - there's no visual way
+/// to tell "this occupied seat happened to be accessibility" apart from a
+/// regular one, only that it doesn't count towards the totals.
+SeatStatus _statusFor(
+  String seatId,
+  Map<String, Set<String>> busyBySeatId,
+  bool isAccessibility,
+) {
   if (busyBySeatId['reserved']!.contains(seatId)) return SeatStatus.reserved;
   for (final key in _busyKeys) {
     if (busyBySeatId[key]!.contains(seatId)) return SeatStatus.occupied;
   }
-  return SeatStatus.available;
+  return isAccessibility ? SeatStatus.accessibility : SeatStatus.available;
 }
 
 /// Parses a `theater/{id}.svg` layout together with a `seats/{id}`
 /// occupancy response into the same [SeatMap] shape the UI already renders
 /// for the other two chains.
 ///
-/// The SVG gives each seat's exact x position rather than a discrete column
-/// number - column order here is derived by collecting every distinct x
-/// seen across the whole room and ranking them, the same "trust the real
-/// position, not a numbered field" rule as the other chains' seat rows,
-/// just applied to continuous coordinates instead of an integer index
-/// (`data-seat` itself is not reliable for ordering: it's observed to
-/// *decrease* left-to-right in at least one real room, so it's only ever
-/// used for the visible label, never for placement).
+/// The SVG gives each seat's exact x/y position rather than discrete
+/// row/column numbers - both column order (by x) and row order (by y) are
+/// derived from real position rather than trusting a label, the same rule
+/// already applied to columns and now extended to rows too: alphabetical
+/// row-label order turned out to run screen-to-back backwards in the one
+/// real room checked (row "A" sits at the *highest* y, i.e. the row
+/// farthest from the screen, confirmed live - not the front row the
+/// alphabetical assumption implied). `data-seat` itself is not reliable for
+/// column ordering either: observed to *decrease* left-to-right in at
+/// least one real room, so it's only ever used for the visible label, never
+/// for placement.
 SeatMap parseRedCarpetSeatMap(RedCarpetSeatMapPayload payload) {
   final rawSeats = <_RawSeat>[];
   for (final match in _seatGroupRe.allMatches(payload.theaterSvg)) {
+    final classAttr = match.group(1)!;
     rawSeats.add(
       _RawSeat(
-        area: match.group(1)!,
-        row: match.group(2)!,
-        seatNumber: match.group(3)!,
-        seatId: match.group(4)!,
-        x: double.parse(match.group(5)!),
+        area: match.group(2)!,
+        row: match.group(3)!,
+        seatNumber: match.group(4)!,
+        seatId: match.group(5)!,
+        x: double.parse(match.group(6)!),
+        y: double.parse(match.group(7)!),
+        isAccessibility:
+            classAttr.contains('special') || classAttr.contains('userhide'),
       ),
     );
   }
@@ -106,7 +139,12 @@ SeatMap parseRedCarpetSeatMap(RedCarpetSeatMapPayload payload) {
   for (final seat in rawSeats) {
     byRow.putIfAbsent(seat.row, () => []).add(seat);
   }
-  final rowLabels = byRow.keys.toList()..sort();
+  // Every seat in a row shares the same y in practice, but average defends
+  // against a room where that's not quite exact.
+  double averageY(List<_RawSeat> seats) =>
+      seats.map((s) => s.y).reduce((a, b) => a + b) / seats.length;
+  final rowLabels = byRow.keys.toList()
+    ..sort((a, b) => averageY(byRow[a]!).compareTo(averageY(byRow[b]!)));
 
   final rows = rowLabels.map((rowLabel) {
     final rowIndex = rowLabel.isEmpty ? 0 : rowLabel.codeUnitAt(0);
@@ -117,8 +155,9 @@ SeatMap parseRedCarpetSeatMap(RedCarpetSeatMapPayload payload) {
         rowIndex: rowIndex,
         columnIndex: column,
         name: '$rowLabel${raw.seatNumber}',
-        status: _statusFor(raw.seatId, busyBySeatId),
+        status: _statusFor(raw.seatId, busyBySeatId, raw.isAccessibility),
         areaCategoryCode: raw.area,
+        isAccessibility: raw.isAccessibility,
       );
     }
     return SeatRow(rowLabel: rowLabel, rowIndex: rowIndex, seats: slots);

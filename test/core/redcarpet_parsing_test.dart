@@ -101,7 +101,7 @@ void main() {
     });
 
     test(
-      'every seat is available when the occupancy response lists nothing busy',
+      'every non-accessibility seat is available when the occupancy response lists nothing busy',
       () {
         final seatMap = parseRedCarpetSeatMap(
           RedCarpetSeatMapPayload(
@@ -114,7 +114,49 @@ void main() {
             .whereType<Seat>()
             .toList();
         expect(seats, isNotEmpty);
-        expect(seats.every((s) => s.status == SeatStatus.available), isTrue);
+        expect(
+          seats
+              .where((s) => !s.isAccessibility)
+              .every((s) => s.status == SeatStatus.available),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'accessibility seats (class "special userhide") are flagged and given their own status when free',
+      () {
+        final seatMap = parseRedCarpetSeatMap(
+          RedCarpetSeatMapPayload(
+            theaterSvg: svg,
+            occupancyJson: emptyOccupancy,
+          ),
+        );
+        final seats = seatMap.rows.expand((r) => r.seats).whereType<Seat>();
+        final accessibilitySeats = seats
+            .where((s) => s.isAccessibility)
+            .toList();
+        expect(accessibilitySeats, isNotEmpty);
+        expect(
+          accessibilitySeats.every((s) => s.status == SeatStatus.accessibility),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'rows are ordered by real distance from the screen, not alphabetically',
+      () {
+        final seatMap = parseRedCarpetSeatMap(
+          RedCarpetSeatMapPayload(
+            theaterSvg: svg,
+            occupancyJson: emptyOccupancy,
+          ),
+        );
+        // Row "A" sits at the highest y in the real SVG (farthest from the
+        // screen) - it must render last, not first, in the returned row list.
+        expect(seatMap.rows.first.rowLabel, isNot('A'));
+        expect(seatMap.rows.last.rowLabel, 'A');
       },
     );
 
