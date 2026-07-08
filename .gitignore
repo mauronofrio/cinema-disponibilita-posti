@@ -60,3 +60,10 @@ app.*.map.json
 
 # Local, machine-specific Claude Code permission settings.
 /.claude/settings.local.json
+
+# Release signing key and its passwords - never committed, back these up
+# somewhere safe outside git (losing them means never updating the app
+# in place under the same signature again).
+/android/key.properties
+/android/*.keystore
+/android/*.jks
