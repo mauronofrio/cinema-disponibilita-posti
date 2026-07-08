@@ -954,5 +954,165 @@
     "lat": 45.6010418483577,
     "lng": 9.35977668474591,
     "chain": "theSpace"
+  },
+  {
+    "cinemaId": "cinema-barberini-roma",
+    "name": "Cinema Barberini - Roma",
+    "slug": "cinema-barberini-roma",
+    "address": "Piazza Barberini 24-26, 00187 Roma RM",
+    "lat": 41.903619,
+    "lng": 12.489194,
+    "chain": "eighteenTickets",
+    "host": "cinema.barberini.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-eden-roma",
+    "name": "Cinema Eden - Roma",
+    "slug": "cinema-eden-roma",
+    "address": "Piazza Cola di Rienzo 74, 00192 Roma RM",
+    "lat": 41.908619,
+    "lng": 12.468822,
+    "chain": "eighteenTickets",
+    "host": "eden.efc.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-moderno-rieti",
+    "name": "Multisala Moderno - Rieti",
+    "slug": "multisala-moderno-rieti",
+    "address": "Via Cintia 56, 02100 Rieti RI",
+    "lat": 42.402878,
+    "lng": 12.85773,
+    "chain": "eighteenTickets",
+    "host": "modernorieti.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-lux-aprilia",
+    "name": "Cinema Lux - Aprilia",
+    "slug": "cinema-lux-aprilia",
+    "address": "Via Pontina km 45,700, 04011 Aprilia LT",
+    "lat": 41.581766,
+    "lng": 12.649949,
+    "chain": "eighteenTickets",
+    "host": "luxaprilia.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-oxer-latina",
+    "name": "Multisala Oxer - Latina",
+    "slug": "multisala-oxer-latina",
+    "address": "Viale Pier Luigi Nervi 124, 04100 Latina LT",
+    "lat": 41.45903,
+    "lng": 12.88896,
+    "chain": "eighteenTickets",
+    "host": "multisalaoxer.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-etrusco-tarquinia",
+    "name": "Cinema Etrusco - Tarquinia",
+    "slug": "cinema-etrusco-tarquinia",
+    "address": "Via della Caserma 32, 01016 Tarquinia VT",
+    "lat": 42.25364,
+    "lng": 11.756725,
+    "chain": "eighteenTickets",
+    "host": "tarquinia.cinemaetrusco.18tickets.it"
+  },
+  {
+    "cinemaId": "cineplex-moderno-due-carrare",
+    "name": "Cineplex Moderno - Due Carrare",
+    "slug": "cineplex-moderno-due-carrare",
+    "address": "Via Antonio de Curtis 14, 35020 Due Carrare PD",
+    "lat": 45.3279202,
+    "lng": 11.8161434,
+    "chain": "eighteenTickets",
+    "host": "pd.cineplexmoderno.18tickets.it"
+  },
+  {
+    "cinemaId": "multiastra-padova",
+    "name": "Multiastra - Padova",
+    "slug": "multiastra-padova",
+    "address": "Via Tiziano Aspetti 21, 35132 Padova PD",
+    "lat": 45.4208343,
+    "lng": 11.8805344,
+    "chain": "eighteenTickets",
+    "host": "astra.multiastra.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-esperia-padova",
+    "name": "Cinema Esperia - Padova",
+    "slug": "cinema-esperia-padova",
+    "address": "Via Chiesanuova 90, 35136 Padova PD",
+    "lat": 45.4146634,
+    "lng": 11.836266,
+    "chain": "eighteenTickets",
+    "host": "esperia.montagnainscena.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-odeon-vicenza",
+    "name": "Cinema Odeon - Vicenza",
+    "slug": "cinema-odeon-vicenza",
+    "address": "Corso Andrea Palladio 176, 36100 Vicenza VI",
+    "lat": 45.5484808,
+    "lng": 11.548334,
+    "chain": "eighteenTickets",
+    "host": "odeonvicenza.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-astra-venezia",
+    "name": "Cinema Astra - Venezia",
+    "slug": "cinema-astra-venezia",
+    "address": "Via Corfù 9, 30126 Lido di Venezia VE",
+    "lat": 45.4175776,
+    "lng": 12.3700125,
+    "chain": "eighteenTickets",
+    "host": "astra.ccvenezia.18tickets.it"
+  },
+  {
+    "cinemaId": "giorgione-movie-dessai-venezia",
+    "name": "Giorgione Movie d'Essai - Venezia",
+    "slug": "giorgione-movie-dessai-venezia",
+    "address": "Rio Terà dei Franceschi, Cannaregio 4612, 30121 Venezia VE",
+    "lat": 45.441298,
+    "lng": 12.3369407,
+    "chain": "eighteenTickets",
+    "host": "giorgione.ccvenezia.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-rossini-venezia",
+    "name": "Multisala Rossini - Venezia",
+    "slug": "multisala-rossini-venezia",
+    "address": "Calle del Teatro, San Marco 3397a, 30124 Venezia VE",
+    "lat": 45.4352373,
+    "lng": 12.3331236,
+    "chain": "eighteenTickets",
+    "host": "rossini.ccvenezia.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-rivoli-verona",
+    "name": "Multisala Rivoli - Verona",
+    "slug": "multisala-rivoli-verona",
+    "address": "Piazza Brà 10, 37121 Verona VR",
+    "lat": 45.4394957,
+    "lng": 10.9926008,
+    "chain": "eighteenTickets",
+    "host": "multisalarivoliverona.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-cristallo-san-bonifacio",
+    "name": "Cinema Cristallo - San Bonifacio",
+    "slug": "cinema-cristallo-san-bonifacio",
+    "address": "Corso Italia 9, 37047 San Bonifacio VR",
+    "lat": 45.3964647,
+    "lng": 11.2712155,
+    "chain": "eighteenTickets",
+    "host": "cristallo.18tickets.it"
+  },
+  {
+    "cinemaId": "cinergia-legnago",
+    "name": "Cinergia - Legnago",
+    "slug": "cinergia-legnago",
+    "address": "Via Mantova 13, 37045 Legnago VR",
+    "lat": 45.1914821,
+    "lng": 11.2980541,
+    "chain": "eighteenTickets",
+    "host": "legnagocinergia.18tickets.it"
   }
 ]
