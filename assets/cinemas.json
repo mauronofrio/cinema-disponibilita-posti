@@ -1114,5 +1114,315 @@
     "lng": 11.2980541,
     "chain": "eighteenTickets",
     "host": "legnagocinergia.18tickets.it"
+  },
+  {
+    "cinemaId": "sivori-genova",
+    "name": "Sivori - Genova",
+    "slug": "sivori-genova",
+    "address": "Salita Santa Caterina 12, 16123 Genova GE",
+    "lat": 44.40989,
+    "lng": 8.936974,
+    "chain": "eighteenTickets",
+    "host": "sivori.ccgenova.18tickets.it"
+  },
+  {
+    "cinemaId": "ariston-genova",
+    "name": "Ariston - Genova",
+    "slug": "ariston-genova",
+    "address": "Vico San Matteo 14r, 16123 Genova GE",
+    "lat": 44.408477,
+    "lng": 8.932551,
+    "chain": "eighteenTickets",
+    "host": "ariston.ccgenova.18tickets.it"
+  },
+  {
+    "cinemaId": "odeon-genova",
+    "name": "Odeon - Genova",
+    "slug": "odeon-genova",
+    "address": "Corso Buenos Aires 83, 16129 Genova GE",
+    "lat": 44.402241,
+    "lng": 8.952895,
+    "chain": "eighteenTickets",
+    "host": "odeon.ccgenova.18tickets.it"
+  },
+  {
+    "cinemaId": "corallo-genova",
+    "name": "Corallo - Genova",
+    "slug": "corallo-genova",
+    "address": "Via Innocenzo IV 13r, 16128 Genova GE",
+    "lat": 44.402335,
+    "lng": 8.935497,
+    "chain": "eighteenTickets",
+    "host": "corallo.ccgenova.18tickets.it"
+  },
+  {
+    "cinemaId": "city-genova",
+    "name": "City - Genova",
+    "slug": "city-genova",
+    "address": "Vico Carmagnola, 16123 Genova GE",
+    "lat": 44.409177,
+    "lng": 8.934426,
+    "chain": "eighteenTickets",
+    "host": "city.ccgenova.18tickets.it"
+  },
+  {
+    "cinemaId": "america-genova",
+    "name": "America - Genova",
+    "slug": "america-genova",
+    "address": "Via Cristoforo Colombo 11, 16121 Genova GE",
+    "lat": 44.406441,
+    "lng": 8.942127,
+    "chain": "eighteenTickets",
+    "host": "america.ccgenova.18tickets.it"
+  },
+  {
+    "cinemaId": "filmclub-genova",
+    "name": "Filmclub - Genova",
+    "slug": "filmclub-genova",
+    "address": "Salita Santa Caterina 12, 16123 Genova GE",
+    "lat": 44.40989,
+    "lng": 8.936974,
+    "chain": "eighteenTickets",
+    "host": "carignano.ccgenova.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-modena-trento",
+    "name": "Multisala G. Modena - Trento",
+    "slug": "multisala-modena-trento",
+    "address": "Via San Francesco D'Assisi 8, 38122 Trento TN",
+    "lat": 46.066899,
+    "lng": 11.125922,
+    "chain": "eighteenTickets",
+    "host": "modena.cineworld.18tickets.it"
+  },
+  {
+    "cinemaId": "supercinema-vittoria-trento",
+    "name": "Supercinema Vittoria - Trento",
+    "slug": "supercinema-vittoria-trento",
+    "address": "Via Giannantonio Manci 72, 38122 Trento TN",
+    "lat": 46.069835,
+    "lng": 11.124055,
+    "chain": "eighteenTickets",
+    "host": "vittoria.cineworld.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-teatro-nuovo-roma-trento",
+    "name": "Cinema Teatro Nuovo Roma - Trento",
+    "slug": "cinema-teatro-nuovo-roma-trento",
+    "address": "Corso III Novembre 35, 38122 Trento TN",
+    "lat": 46.061558,
+    "lng": 11.125172,
+    "chain": "eighteenTickets",
+    "host": "roma.cineworld.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-lumiere-bologna",
+    "name": "Cinema Lumiere - Bologna",
+    "slug": "cinema-lumiere-bologna",
+    "address": "Piazzetta Pier Paolo Pasolini 2/b, 40122 Bologna BO",
+    "lat": 44.502398,
+    "lng": 11.334245,
+    "chain": "eighteenTickets",
+    "host": "lumiere.cinetecabologna.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-modernissimo-bologna",
+    "name": "Cinema Modernissimo - Bologna",
+    "slug": "cinema-modernissimo-bologna",
+    "address": "Piazza Re Enzo 3, 40125 Bologna BO",
+    "lat": 44.494237,
+    "lng": 11.343524,
+    "chain": "eighteenTickets",
+    "host": "modernissimo.cinetecabologna.18tickets.it"
+  },
+  {
+    "cinemaId": "sala-cervi-bologna",
+    "name": "Sala Cervi - Bologna",
+    "slug": "sala-cervi-bologna",
+    "address": "Via Riva di Reno 72, 40122 Bologna BO",
+    "lat": 44.498959,
+    "lng": 11.33714,
+    "chain": "eighteenTickets",
+    "host": "cervi.cinetecabologna.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-visionario-udine",
+    "name": "Cinema Visionario - Udine",
+    "slug": "cinema-visionario-udine",
+    "address": "Via Asquini 33, 33100 Udine UD",
+    "lat": 46.064791,
+    "lng": 13.229112,
+    "chain": "eighteenTickets",
+    "host": "visionario.cec.18tickets.it"
+  },
+  {
+    "cinemaId": "teatro-nuovo-udine",
+    "name": "Teatro Nuovo - Udine",
+    "slug": "teatro-nuovo-udine",
+    "address": "Via Trento 4, 33100 Udine UD",
+    "lat": 46.065515,
+    "lng": 13.243102,
+    "chain": "eighteenTickets",
+    "host": "teatro.cec.18tickets.it"
+  },
+  {
+    "cinemaId": "casa-cinema-napoli",
+    "name": "Casa Cinema - Napoli",
+    "slug": "casa-cinema-napoli",
+    "address": "Via Cisterna dell'Olio 46, 80134 Napoli NA",
+    "lat": 40.847588,
+    "lng": 14.250518,
+    "chain": "eighteenTickets",
+    "host": "casacinema.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-filangieri-napoli",
+    "name": "Multisala Filangieri - Napoli",
+    "slug": "multisala-filangieri-napoli",
+    "address": "Via Gaetano Filangieri 43, 80121 Napoli NA",
+    "lat": 40.836173,
+    "lng": 14.241018,
+    "chain": "eighteenTickets",
+    "host": "filangieri.cinemadinapoli.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-america-hall-napoli",
+    "name": "Cinema America Hall - Napoli",
+    "slug": "cinema-america-hall-napoli",
+    "address": "Via Tito Angelini 21, 80129 Napoli NA",
+    "lat": 40.845691,
+    "lng": 14.237489,
+    "chain": "eighteenTickets",
+    "host": "america.cinemadinapoli.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-plaza-napoli",
+    "name": "Cinema Plaza - Napoli",
+    "slug": "cinema-plaza-napoli",
+    "address": "Via Michele Kerbaker 85, 80129 Napoli NA",
+    "lat": 40.844794,
+    "lng": 14.232642,
+    "chain": "eighteenTickets",
+    "host": "plaza.plazanapoli.18tickets.it"
+  },
+  {
+    "cinemaId": "multiplex-mercogliano",
+    "name": "Multiplex Mercogliano - Mercogliano",
+    "slug": "multiplex-mercogliano",
+    "address": "Via Nicola Santangelo, 83013 Mercogliano AV",
+    "lat": 40.912,
+    "lng": 14.748573,
+    "chain": "eighteenTickets",
+    "host": "movieplexmercogliano.18tickets.it"
+  },
+  {
+    "cinemaId": "cineteatro-massimo-freccia-ladispoli",
+    "name": "Cineteatro Massimo Freccia - Ladispoli",
+    "slug": "cineteatro-massimo-freccia-ladispoli",
+    "address": "Via Settevene Palo SNC, 00055 Ladispoli RM",
+    "lat": 41.956735,
+    "lng": 12.081805,
+    "chain": "eighteenTickets",
+    "host": "massimofreccia.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-savoia-taranto",
+    "name": "Cinema Savoia - Taranto",
+    "slug": "cinema-savoia-taranto",
+    "address": "Via Leonida 25, 74121 Taranto TA",
+    "lat": 40.466629,
+    "lng": 17.251523,
+    "chain": "eighteenTickets",
+    "host": "savoia.cinetar.18tickets.it"
+  },
+  {
+    "cinemaId": "movieland-ancona-goldoni",
+    "name": "Movieland Ancona Goldoni - Ancona",
+    "slug": "movieland-ancona-goldoni",
+    "address": "Via Montebello 91, 60121 Ancona AN",
+    "lat": 43.615869,
+    "lng": 13.513199,
+    "chain": "eighteenTickets",
+    "host": "ancona.movieland.18tickets.it"
+  },
+  {
+    "cinemaId": "movieland-fabriano",
+    "name": "Movieland Fabriano - Fabriano",
+    "slug": "movieland-fabriano",
+    "address": "Viale Beniamino Gigli 19, 60044 Fabriano AN",
+    "lat": 43.347588,
+    "lng": 12.922566,
+    "chain": "eighteenTickets",
+    "host": "fabriano.movieland.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-aurora-palermo",
+    "name": "Cinema Aurora - Palermo",
+    "slug": "cinema-aurora-palermo",
+    "address": "Via Tommaso Natale 177, 90147 Palermo PA",
+    "lat": 38.187043,
+    "lng": 13.289792,
+    "chain": "eighteenTickets",
+    "host": "aurora.18tickets.it"
+  },
+  {
+    "cinemaId": "cityplex-moderno-sassari",
+    "name": "Cityplex Moderno - Sassari",
+    "slug": "cityplex-moderno-sassari",
+    "address": "Viale Umberto I 18, 07100 Sassari SS",
+    "lat": 40.727401,
+    "lng": 8.563791,
+    "chain": "eighteenTickets",
+    "host": "cityplex.sassarimoderno.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-reposi-torino",
+    "name": "Multisala Reposi - Torino",
+    "slug": "multisala-reposi-torino",
+    "address": "Via XX Settembre 15, 10121 Torino TO",
+    "lat": 45.065359,
+    "lng": 7.679239,
+    "chain": "eighteenTickets",
+    "host": "repositorino.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-electric-gavirate",
+    "name": "Multisala Electric - Gavirate",
+    "slug": "multisala-electric-gavirate",
+    "address": "Viale Ticino 82, 21026 Gavirate VA",
+    "lat": 45.838826,
+    "lng": 8.704194,
+    "chain": "eighteenTickets",
+    "host": "electric.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-italia-belluno",
+    "name": "Cinema Italia - Belluno",
+    "slug": "cinema-italia-belluno",
+    "address": "Via Giuseppe Garibaldi 8, 32100 Belluno BL",
+    "lat": 46.139438,
+    "lng": 12.213075,
+    "chain": "eighteenTickets",
+    "host": "italiabelluno.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-teatro-del-borgo-bergamo",
+    "name": "Cinema Teatro del Borgo - Bergamo",
+    "slug": "cinema-teatro-del-borgo-bergamo",
+    "address": "Via Borgo Palazzo 51, 24121 Bergamo BG",
+    "lat": 45.696099,
+    "lng": 9.682387,
+    "chain": "eighteenTickets",
+    "host": "borgopalazzo.sas.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-conca-verde-bergamo",
+    "name": "Cinema Conca Verde - Bergamo",
+    "slug": "cinema-conca-verde-bergamo",
+    "address": "Via Mattioli 65, 24129 Bergamo BG",
+    "lat": 45.693566,
+    "lng": 9.629045,
+    "chain": "eighteenTickets",
+    "host": "concaverde.sas.18tickets.it"
   }
 ]
