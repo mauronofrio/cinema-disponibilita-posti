@@ -1,32 +1,50 @@
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../localization/app_localizations.dart';
+import '../date/clock.dart';
 import '../models/cinema.dart';
 import '../models/film.dart';
 import '../models/seat_map.dart';
 import '../models/showing_date.dart';
-import '../network/api_client.dart' show ApiException;
 import '../network/webtic_platform_api_client.dart';
 import 'chain_api.dart';
 import 'webtic/webtic_film_parser.dart';
+import 'webtic/webtic_programming_page_parser.dart';
 import 'webtic/webtic_seat_map_parser.dart';
 
-/// [ChainApi] for [CinemaChain.webtic] - chains whose own front-end site
-/// calls the Webtic platform's classic `cvu/modules/prenoRapido.php`
-/// endpoints directly (confirmed live for Notorious Cinemas). One
-/// [getFullSchedule] call already returns a cinema's entire catalog - every
-/// film, day and showtime at once - so both [getShowingDates] and
-/// [getFilmsForDay] just fetch it fresh each time rather than caching: the
-/// same "one-time cost either way" tradeoff `UciChainApi` already makes for
-/// its own "fetch everything, filter client-side" model.
+/// [ChainApi] for [CinemaChain.webtic]. Two different catalog sources exist
+/// on this platform depending on [Cinema.webticScrapesProgrammingPage] (see
+/// its own doc and PROJECT_NOTES.md):
+/// - Notorious Cinemas: one [WebticPlatformApiClient.getFullSchedule] call
+///   returns a cinema's entire catalog - every film, day and showtime - at
+///   once.
+/// - Giometti Cinema: no such call exists: [WebticPlatformApiClient
+///   .getProgrammingPage] gives every film currently showing, but only ever
+///   *one* calendar day's showtimes per film.
+///
+/// Neither is cached - both just fetch fresh every time, same "one-time
+/// cost either way" tradeoff `UciChainApi` already makes for its own "fetch
+/// everything, filter client-side" model.
+///
+/// Seat maps are identical either way: `getOccupancy` alone (just
+/// `LocalId`+`PerformanceId`) always echoes back the real room id as
+/// `idsala` (confirmed live on both chains), so [getSeatMap] never needs to
+/// already know which room a showtime plays in - it calls `getOccupancy`
+/// first and reads the room off its response, then calls `getMapSeats`.
 class WebticChainApi implements ChainApi {
-  WebticChainApi(this._client);
+  WebticChainApi(this._client, this._clock);
 
   final WebticPlatformApiClient _client;
+  final Clock _clock;
 
   @override
   Future<List<ShowingDate>> getShowingDates(Cinema cinema) async {
+    if (cinema.webticScrapesProgrammingPage) {
+      final html = await _client.getProgrammingPage(cinema.host!, cinema.slug);
+      final films = parseWebticProgrammingPage(html, now: _clock.now());
+      final days = films.map((f) => f.day).toSet().toList()..sort();
+      return days.map((d) => ShowingDate(date: d, hasShowings: true)).toList();
+    }
     final schedule = await _client.getFullSchedule(
       cinema.host!,
       cinema.webticLocalId!,
@@ -37,6 +55,9 @@ class WebticChainApi implements ChainApi {
 
   @override
   Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) async {
+    if (cinema.webticScrapesProgrammingPage) {
+      return _getFilmsForDayFromProgrammingPage(cinema, day);
+    }
     // [day] is unused - getFullSchedule already returns every day at once,
     // same reasoning as UciChainApi.getFilmsForDay (see ChainApi doc).
     final host = cinema.host!;
@@ -67,7 +88,6 @@ class WebticChainApi implements ChainApi {
                             'https://$host/generic/seatsframe.php'
                             '?sc=$localId&sp=${parsed.performanceId}'
                             '#seatsframe',
-                        webticScreenId: parsed.screenId,
                       );
                     }).toList()
                     ..sort((a, b) => a.startTime.compareTo(b.startTime));
@@ -94,27 +114,86 @@ class WebticChainApi implements ChainApi {
     return result;
   }
 
+  Future<List<Film>> _getFilmsForDayFromProgrammingPage(
+    Cinema cinema,
+    DateTime day,
+  ) async {
+    final host = cinema.host!;
+    final localId = cinema.webticLocalId!;
+    final html = await _client.getProgrammingPage(host, cinema.slug);
+    final films = parseWebticProgrammingPage(html, now: _clock.now());
+
+    final result = <Film>[];
+    for (final film in films) {
+      if (film.day.year != day.year ||
+          film.day.month != day.month ||
+          film.day.day != day.day) {
+        continue;
+      }
+      final sessions =
+          film.sessions.map((s) {
+              final timeParts = s.time.split(':');
+              final startTime = DateTime(
+                film.day.year,
+                film.day.month,
+                film.day.day,
+                int.parse(timeParts[0]),
+                int.parse(timeParts[1]),
+              );
+              return Session(
+                sessionId: s.performanceId,
+                startTime: startTime,
+                // The programmazione page never gives an end time.
+                endTime: startTime,
+                screenName: '',
+                isSoldOut: false,
+                formattedPrice: null,
+                isPriceVisible: false,
+                attributes: const [],
+                bookingPath:
+                    'https://$host/cinema/acquisti'
+                    '?ep=loadPerformance&sc=$localId'
+                    '&se=${film.eventId}&sp=${s.performanceId}',
+              );
+            }).toList()
+            ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      result.add(
+        Film(
+          filmId: film.eventId,
+          title: film.title,
+          posterImageSrc: film.posterUrl,
+          runningTime: null,
+          showingGroups: [ShowingGroup(date: film.day, sessions: sessions)],
+        ),
+      );
+    }
+    result.sort((a, b) => a.title.compareTo(b.title));
+    return result;
+  }
+
   @override
   Future<SeatMap> getSeatMap(Cinema cinema, Session session) async {
-    final localId = cinema.webticLocalId;
-    final screenId = session.webticScreenId;
-    if (localId == null || screenId == null) {
-      throw ApiException(AppLocalizations.current.seatsLoadError);
-    }
-    final results = await Future.wait([
-      _client.getMapSeats(localId, screenId),
-      _client.getOccupancy(localId, session.sessionId),
-    ]);
+    final localId = cinema.webticLocalId!;
+    final occupancyBody = await _client.getOccupancy(
+      localId,
+      session.sessionId,
+    );
+    final screenId = parseWebticScreenIdFromOccupancy(occupancyBody);
+    final mapSeatsBody = await _client.getMapSeats(localId, screenId);
     return compute(
       parseWebticSeatMap,
       WebticSeatMapPayload(
-        mapSeatsResponseBody: results[0],
-        occupancyResponseBody: results[1],
+        mapSeatsResponseBody: mapSeatsBody,
+        occupancyResponseBody: occupancyBody,
       ),
     );
   }
 }
 
 final webticChainApiProvider = Provider<WebticChainApi>((ref) {
-  return WebticChainApi(ref.watch(webticPlatformApiClientProvider));
+  return WebticChainApi(
+    ref.watch(webticPlatformApiClientProvider),
+    ref.watch(clockProvider),
+  );
 });

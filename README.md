@@ -20,7 +20,7 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 | The Space Cinema | 35 sale in tutta Italia |
 | UCI Cinemas | 33 sale in tutta Italia |
 | Cinema indipendenti sulla piattaforma "18tickets.net" | RedCarpet Cinema (Monopoli), Multicinema Galleria (Bari), Anteo spazioCinema (Lombardia), Circuito Cinema (Bologna, Roma, Napoli, Firenze, Torino), Pop Up Cinema (Bologna), Multisala Impero (Varese), Multisala Massimo (Lecce), Cinemazero (Pordenone), altri cinema indipendenti nel Lazio (Roma, Rieti, Aprilia, Latina, Tarquinia), in Veneto (Padova, Vicenza, Venezia, Verona), a Genova, Trento, Udine, Napoli, Bergamo e in altre città sparse (Taranto, Ancona, Fabriano, Palermo, Sassari, Torino, Gavirate, Belluno, Mercogliano, Ladispoli) |
-| Notorious Cinemas (piattaforma "Webtic") | 8 sale: Sesto San Giovanni, Rovigo, Gloria e Merlata Bloom (Milano), Cagliari, Ferrara, Sinalunga, Curno |
+| Notorious Cinemas e Giometti Cinema (piattaforma "Webtic") | Notorious: 8 sale (Sesto San Giovanni, Rovigo, Gloria e Merlata Bloom Milano, Cagliari, Ferrara, Sinalunga, Curno). Giometti: 11 sale in Marche/Toscana/Emilia-Romagna (Pesaro, Riccione, Ancona, Fano, Rimini, Matelica, Prato, Jesi, Porto Sant'Elpidio, Senigallia, Tolentino) |
 
 Ognuna di queste catene parla un'API diversa (alcune un JSON pulito, altre solo HTML/SVG server-renderizzato) - vedi `PROJECT_NOTES.md` (locale, non versionato) per i dettagli del reverse engineering di ciascuna.
 

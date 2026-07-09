@@ -47,6 +47,27 @@ void main() {
         ..['webticLocalId'] = 5631;
       expect(Cinema.fromJson(json).webticLocalId, 5631);
     });
+
+    test(
+      'webticScrapesProgrammingPage defaults to false when absent from the JSON',
+      () {
+        expect(
+          Cinema.fromJson(baseJson()).webticScrapesProgrammingPage,
+          isFalse,
+        );
+      },
+    );
+
+    test(
+      'webticScrapesProgrammingPage reads true for a Giometti-style cinema',
+      () {
+        final json = baseJson()..['webticScrapesProgrammingPage'] = true;
+        expect(
+          Cinema.fromJson(json).webticScrapesProgrammingPage,
+          isTrue,
+        );
+      },
+    );
   });
 
   group('SeatMap.fromApiResponseJson', () {

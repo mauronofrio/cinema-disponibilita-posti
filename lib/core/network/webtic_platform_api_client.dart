@@ -64,6 +64,15 @@ class WebticPlatformApiClient {
     });
   }
 
+  /// [Cinema.webticScrapesProgrammingPage] chains only (Giometti Cinema so
+  /// far): the one page listing every film currently showing at this venue,
+  /// each with its own single day's showtimes (see the field's own doc for
+  /// why that's a real platform limit, not a parsing shortcut). [slug] is
+  /// `Cinema.slug`, the venue's own URL path segment.
+  Future<String> getProgrammingPage(String host, String slug) {
+    return _get('https://$host/cinema/$slug/programmazione', const {});
+  }
+
   Future<String> _postWtService(String wtid, Map<String, dynamic> data) async {
     try {
       final response = await _dio.post<String>(

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:thespace_companion/core/chains/webtic/webtic_film_parser.dart';
+import 'package:thespace_companion/core/chains/webtic/webtic_programming_page_parser.dart';
 import 'package:thespace_companion/core/chains/webtic/webtic_seat_map_parser.dart';
 import 'package:thespace_companion/core/models/seat_map.dart';
 
@@ -148,6 +149,126 @@ void main() {
       );
       final seat = seatMap.rows.expand((r) => r.seats).whereType<Seat>().first;
       expect(seat.isAccessibility, isTrue);
+    });
+  });
+
+  group('parseWebticSeatMap (Giometti Cinema - ACCOMPAGNATORE seats)', () {
+    late WebticSeatMapPayload payload;
+
+    setUpAll(() {
+      payload = WebticSeatMapPayload(
+        mapSeatsResponseBody: File(
+          'test/fixtures/webtic_giometti_map_seats_sample.json',
+        ).readAsStringSync(),
+        occupancyResponseBody: File(
+          'test/fixtures/webtic_giometti_occupancy_sample.json',
+        ).readAsStringSync(),
+      );
+    });
+
+    test(
+      'an ACCOMPAGNATORE seat (companion seat next to a wheelchair spot) reads as accessibility',
+      () {
+        // Real Multiplex Giometti Pesaro room (idsala 74): A/12 and A/8
+        // are ACCOMPAGNATORE, confirmed live by the user in the physical
+        // room - flanking a genuine 3-column gap (the wheelchair spot
+        // itself, never listed in `posti` at all).
+        final seatMap = parseWebticSeatMap(payload);
+        final seat = seatMap.rows
+            .expand((r) => r.seats)
+            .whereType<Seat>()
+            .firstWhere((s) => s.name == 'A/12');
+        expect(seat.isAccessibility, isTrue);
+      },
+    );
+
+    test(
+      'the wheelchair spot itself is a real gap, not a rendered seat',
+      () {
+        final seatMap = parseWebticSeatMap(payload);
+        final rowA = seatMap.rows.firstWhere((r) => r.rowLabel == 'A');
+        // A/8 sits at colonna 12 and A/12 at colonna 8 (aliases run right
+        // to left) - columns 9, 10 and 11 between them have no seat at all.
+        for (final i in {8, 9, 10}) {
+          expect(rowA.seats[i], isNull);
+        }
+      },
+    );
+  });
+
+  group('parseWebticScreenIdFromOccupancy', () {
+    test('reads idsala off a real Occupancy response, no ScreenId needed upfront', () {
+      final raw = File(
+        'test/fixtures/webtic_occupancy_sample.json',
+      ).readAsStringSync();
+      // Real Notorious Cagliari sample - see webtic_full_schedule_sample.json,
+      // ScreenId 237 for that same performance's room.
+      expect(parseWebticScreenIdFromOccupancy(raw), 237);
+    });
+  });
+
+  group('parseWebticProgrammingPage', () {
+    late String raw;
+
+    setUpAll(() {
+      raw = File(
+        'test/fixtures/webtic_giometti_programming_page_sample.html',
+      ).readAsStringSync();
+    });
+
+    test('parses every film block, real Giometti Pesaro sample', () {
+      final films = parseWebticProgrammingPage(
+        raw,
+        now: DateTime(2026, 7, 9),
+      );
+      expect(films, hasLength(12));
+    });
+
+    test('a film with several same-day showtimes, real sessions', () {
+      final films = parseWebticProgrammingPage(
+        raw,
+        now: DateTime(2026, 7, 9),
+      );
+      final minions = films.firstWhere((f) => f.title == 'Minions & Monsters');
+      expect(minions.day, DateTime(2026, 7, 9));
+      expect(minions.sessions, hasLength(6));
+      expect(
+        minions.sessions.map((s) => s.time),
+        containsAll(['17:30', '22:30']),
+      );
+    });
+
+    test(
+      'a film not showing today carries its own next playing day instead',
+      () {
+        final films = parseWebticProgrammingPage(
+          raw,
+          now: DateTime(2026, 7, 9),
+        );
+        final odissea = films.firstWhere((f) => f.title == 'Odissea');
+        expect(odissea.day, DateTime(2026, 7, 16));
+        final spiderMan = films.firstWhere(
+          (f) => f.title == 'Spider-Man: Brand New Day',
+        );
+        expect(spiderMan.day, DateTime(2026, 7, 29));
+      },
+    );
+
+    test('day/month with no year rolls over to next year near a year boundary', () {
+      // A "02 Gennaio" listing found while checking in late December must
+      // resolve to next January, not a January 65 weeks in the past.
+      const html = '''
+      <div class="wrap-scheda-programmazione-cinema">
+        <h2>Capodanno Movie</h2>
+        <div class="number">02</div><div class="month">Gennaio</div>
+        <a href="x?ep=loadPerformance&sc=1&se=100&sp=200"><span class="orario">20:00</span>
+      </div>
+      ''';
+      final films = parseWebticProgrammingPage(
+        html,
+        now: DateTime(2026, 12, 20),
+      );
+      expect(films.single.day, DateTime(2027, 1, 2));
     });
   });
 }
