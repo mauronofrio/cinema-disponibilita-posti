@@ -20,6 +20,7 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 | The Space Cinema | 35 sale in tutta Italia |
 | UCI Cinemas | 33 sale in tutta Italia |
 | Cinema indipendenti sulla piattaforma "18tickets.net" | RedCarpet Cinema (Monopoli), Multicinema Galleria (Bari), Anteo spazioCinema (Lombardia), Circuito Cinema (Bologna, Roma, Napoli, Firenze, Torino), Pop Up Cinema (Bologna), Multisala Impero (Varese), Multisala Massimo (Lecce), Cinemazero (Pordenone), altri cinema indipendenti nel Lazio (Roma, Rieti, Aprilia, Latina, Tarquinia), in Veneto (Padova, Vicenza, Venezia, Verona), a Genova, Trento, Udine, Napoli, Bergamo e in altre città sparse (Taranto, Ancona, Fabriano, Palermo, Sassari, Torino, Gavirate, Belluno, Mercogliano, Ladispoli) |
+| Notorious Cinemas (piattaforma "Webtic") | 8 sale: Sesto San Giovanni, Rovigo, Gloria e Merlata Bloom (Milano), Cagliari, Ferrara, Sinalunga, Curno |
 
 Ognuna di queste catene parla un'API diversa (alcune un JSON pulito, altre solo HTML/SVG server-renderizzato) - vedi `PROJECT_NOTES.md` (locale, non versionato) per i dettagli del reverse engineering di ciascuna.
 
@@ -32,7 +33,7 @@ Flutter, nessun backend proprio: l'app chiama direttamente le API/i siti pubblic
 - **Stato**: Riverpod (`flutter_riverpod`), cache in-memory con TTL brevi - niente persistenza locale oltre al cinema preferito (`shared_preferences`)
 - **Rete**: `dio`, un client per catena
 - **Routing**: `go_router`
-- **Un'astrazione, tre implementazioni**: ogni catena implementa la stessa `ChainApi` (`getShowingDates`/`getFilmsForDay`/`getSeatMap`); schermate e provider non sanno mai con quale catena stanno parlando. Aggiungere una nuova catena (o un nuovo cinema indipendente sulla stessa piattaforma) è una nuova classe più una riga nel registro, senza toccare l'interfaccia utente
+- **Un'astrazione, quattro implementazioni**: ogni catena implementa la stessa `ChainApi` (`getShowingDates`/`getFilmsForDay`/`getSeatMap`); schermate e provider non sanno mai con quale catena stanno parlando. Aggiungere una nuova catena (o un nuovo cinema indipendente sulla stessa piattaforma) è una nuova classe più una riga nel registro, senza toccare l'interfaccia utente
 
 ## Sviluppo
 

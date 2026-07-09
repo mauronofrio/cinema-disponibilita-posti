@@ -35,6 +35,18 @@ void main() {
       final json = baseJson()..['scheduleFromFilmPages'] = true;
       expect(Cinema.fromJson(json).scheduleFromFilmPages, isTrue);
     });
+
+    test('chain "webtic" parses to CinemaChain.webtic', () {
+      final json = baseJson()..['chain'] = 'webtic';
+      expect(Cinema.fromJson(json).chain, CinemaChain.webtic);
+    });
+
+    test('webticLocalId round-trips for a webtic-chain cinema', () {
+      final json = baseJson()
+        ..['chain'] = 'webtic'
+        ..['webticLocalId'] = 5631;
+      expect(Cinema.fromJson(json).webticLocalId, 5631);
+    });
   });
 
   group('SeatMap.fromApiResponseJson', () {

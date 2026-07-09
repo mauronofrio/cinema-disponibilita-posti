@@ -5,6 +5,7 @@ import 'chain_api.dart';
 import 'eighteen_tickets_chain_api.dart';
 import 'the_space_chain_api.dart';
 import 'uci_chain_api.dart';
+import 'webtic_chain_api.dart';
 
 /// The only place that knows which [ChainApi] implementation backs which
 /// [CinemaChain]. Everything else (providers, screens) asks for "the API for
@@ -18,5 +19,7 @@ final chainApiProvider = Provider.family<ChainApi, CinemaChain>((ref, chain) {
       return ref.watch(uciChainApiProvider);
     case CinemaChain.eighteenTickets:
       return ref.watch(eighteenTicketsChainApiProvider);
+    case CinemaChain.webtic:
+      return ref.watch(webticChainApiProvider);
   }
 });

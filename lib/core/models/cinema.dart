@@ -10,11 +10,23 @@ enum CinemaChain {
   /// Multicinema Galleria - Bari) - confirmed live to be byte-for-byte
   /// compatible with the same parsing code, so one [ChainApi] implementation
   /// serves all of them, distinguished only by their own [Cinema.host].
-  eighteenTickets;
+  eighteenTickets,
+
+  /// A cinema chain whose own front-end site calls the "Webtic" ticketing
+  /// platform's classic `cvu/modules/prenoRapido.php` endpoints directly for
+  /// its catalog (confirmed live for Notorious Cinemas), then hands off
+  /// seat map/occupancy to the same shared `secure.webtic.it` backend UCI
+  /// also sits on top of - see [Cinema.host] and [Cinema.webticLocalId].
+  /// Not every Webtic-branded chain uses this same front-end pattern though
+  /// (Cinelandia, Giometti Cinema and Arcadia Cinema all 404 on it, see
+  /// PROJECT_NOTES.md) - only add a cinema here once its own chain's
+  /// `prenoRapido.php` has been confirmed live.
+  webtic;
 
   static CinemaChain fromJson(String? value) => switch (value) {
     'uci' => CinemaChain.uci,
     'eighteenTickets' => CinemaChain.eighteenTickets,
+    'webtic' => CinemaChain.webtic,
     _ => CinemaChain.theSpace,
   };
 }
@@ -58,16 +70,21 @@ class Cinema {
   final double lng;
   final CinemaChain chain;
 
-  /// UCI Cinemas only: the id its WebTic booking backend uses for this
-  /// venue - unrelated to [cinemaId] (which is the myuci content backend's
-  /// slug for this chain). Needed for the `Screen`/`Occupancy` calls.
+  /// The id the shared "Webtic" ticketing backend uses for this venue -
+  /// called `IDWEBTIC` on [CinemaChain.webtic] chains' own `getCinema` list
+  /// and `LocalId` in every `secure.webtic.it` call. For [CinemaChain.uci]
+  /// this is the same concept via its own English-translating proxy in
+  /// front of the same backend (see `webtic_api_client.dart`) - unrelated
+  /// to [cinemaId] there (which is the myuci content backend's own slug).
   final int? webticLocalId;
 
-  /// [CinemaChain.eighteenTickets] only: the per-venue hostname its
-  /// 18tickets.net booking site runs on (e.g. "monopoli.redcarpetcinema.it",
-  /// "multicinemagalleria.18tickets.it") - every call for this cinema (film
-  /// list, showtimes, seat map) goes to this same host, so it's the one
-  /// piece of chain-specific routing info it needs.
+  /// The per-venue/per-chain hostname every call for this cinema goes to:
+  /// for [CinemaChain.eighteenTickets] its own dedicated 18tickets.net
+  /// booking site (e.g. "monopoli.redcarpetcinema.it", one deployment per
+  /// venue); for [CinemaChain.webtic] the chain's own front-end site shared
+  /// by every venue of that chain (e.g. "www.notoriouscinemas.it", one
+  /// deployment per *chain*, distinguished venue-to-venue only by
+  /// [webticLocalId]).
   final String? host;
 
   /// False for a cinema whose site only exposes the film programme (titles,
@@ -95,15 +112,17 @@ class Cinema {
   /// per-IP rate limit (see PROJECT_NOTES.md).
   final bool scheduleFromFilmPages;
 
-  /// [name] alone for UCI Cinemas and every 18tickets venue (both already
-  /// self-identifying, e.g. "UCI Cinemas Seven Gioia del Colle" or
-  /// "Red Carpet Cinema - Monopoli"), but The Space's own names are bare
-  /// town names ("Casamassima", "Beinasco") with nothing marking the chain -
-  /// prefixed here so a mixed list of all chains stays unambiguous.
+  /// [name] alone for UCI Cinemas and every 18tickets/Webtic venue (all
+  /// already self-identifying, e.g. "UCI Cinemas Seven Gioia del Colle",
+  /// "Red Carpet Cinema - Monopoli" or "Notorious Cinemas - Cagliari"), but
+  /// The Space's own names are bare town names ("Casamassima", "Beinasco")
+  /// with nothing marking the chain - prefixed here so a mixed list of all
+  /// chains stays unambiguous.
   String get displayName => switch (chain) {
     CinemaChain.theSpace => 'The Space $name',
     CinemaChain.uci => name,
     CinemaChain.eighteenTickets => name,
+    CinemaChain.webtic => name,
   };
 
   /// A cinema is the same cinema iff same id within the same chain (ids are

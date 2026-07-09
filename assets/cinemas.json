@@ -1434,5 +1434,93 @@
     "lng": 17.3641971,
     "chain": "eighteenTickets",
     "host": "casablanca.multicine.casablancamulticine.com"
+  },
+  {
+    "cinemaId": "notorious-sesto-san-giovanni",
+    "name": "Notorious Cinemas - Sesto San Giovanni",
+    "slug": "notorious-sesto-san-giovanni",
+    "address": "Via Milanese, 20099 Sesto San Giovanni MI",
+    "lat": 45.5299886,
+    "lng": 9.2168731,
+    "chain": "webtic",
+    "host": "www.notoriouscinemas.it",
+    "webticLocalId": 5446
+  },
+  {
+    "cinemaId": "notorious-rovigo",
+    "name": "Notorious Cinemas - Rovigo",
+    "slug": "notorious-rovigo",
+    "address": "Viale Porta Po 209, 45100 Rovigo RO",
+    "lat": 45.0282863,
+    "lng": 11.7774108,
+    "chain": "webtic",
+    "host": "www.notoriouscinemas.it",
+    "webticLocalId": 5484
+  },
+  {
+    "cinemaId": "notorious-gloria-milano",
+    "name": "Notorious Cinemas - Gloria Milano",
+    "slug": "notorious-gloria-milano",
+    "address": "Corso Vercelli 18, 20145 Milano MI",
+    "lat": 45.4665478,
+    "lng": 9.1618614,
+    "chain": "webtic",
+    "host": "www.notoriouscinemas.it",
+    "webticLocalId": 5491
+  },
+  {
+    "cinemaId": "notorious-cagliari",
+    "name": "Notorious Cinemas - Cagliari",
+    "slug": "notorious-cagliari",
+    "address": "Via Santa Gilla 18, 09122 Cagliari CA",
+    "lat": 39.2272644,
+    "lng": 9.0977525,
+    "chain": "webtic",
+    "host": "www.notoriouscinemas.it",
+    "webticLocalId": 5631
+  },
+  {
+    "cinemaId": "notorious-merlata-bloom-milano",
+    "name": "Notorious Cinemas - Merlata Bloom Milano",
+    "slug": "notorious-merlata-bloom-milano",
+    "address": "Via Daimler, 20153 Milano MI",
+    "lat": 45.5135223,
+    "lng": 9.0979474,
+    "chain": "webtic",
+    "host": "www.notoriouscinemas.it",
+    "webticLocalId": 5779
+  },
+  {
+    "cinemaId": "notorious-ferrara",
+    "name": "Notorious Cinemas - Ferrara",
+    "slug": "notorious-ferrara",
+    "address": "Via Darsena, 44122 Ferrara FE",
+    "lat": 44.8366596,
+    "lng": 11.6019878,
+    "chain": "webtic",
+    "host": "www.notoriouscinemas.it",
+    "webticLocalId": 5848
+  },
+  {
+    "cinemaId": "notorious-sinalunga",
+    "name": "Notorious Cinemas - Sinalunga",
+    "slug": "notorious-sinalunga",
+    "address": "Via Pier Paolo Pasolini, 53048 Sinalunga SI",
+    "lat": 43.2159724,
+    "lng": 11.7520435,
+    "chain": "webtic",
+    "host": "www.notoriouscinemas.it",
+    "webticLocalId": 5854
+  },
+  {
+    "cinemaId": "notorious-curno",
+    "name": "Notorious Cinemas - Curno",
+    "slug": "notorious-curno",
+    "address": "Via Lega Lombarda 39, 24035 Curno BG",
+    "lat": 45.6847116,
+    "lng": 9.6100384,
+    "chain": "webtic",
+    "host": "www.notoriouscinemas.it",
+    "webticLocalId": 6122
   }
 ]
