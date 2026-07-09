@@ -1894,5 +1894,174 @@
     "lng": 13.325654,
     "chain": "eighteenTickets",
     "host": "metropolitan.cityplex.18tickets.it"
+  },
+  {
+    "cinemaId": "movie-planet-parona",
+    "name": "Movie Planet - Parona",
+    "slug": "movie-planet-parona",
+    "address": "Strada per la Cattanea 106, 27020 Parona PV",
+    "lat": 45.2763517,
+    "lng": 8.7884298,
+    "chain": "webtic",
+    "host": "www.movieplanetgroup.it",
+    "webticLocalId": 5167
+  },
+  {
+    "cinemaId": "movie-planet-borgo-vercelli",
+    "name": "Movie Planet - Borgo Vercelli",
+    "slug": "movie-planet-borgo-vercelli",
+    "address": "Strada Statale 11, Regione Mondine, 13012 Borgo Vercelli VC",
+    "lat": 45.33828497909974,
+    "lng": 8.449291015383402,
+    "chain": "webtic",
+    "host": "www.movieplanetgroup.it",
+    "webticLocalId": 5169
+  },
+  {
+    "cinemaId": "movie-planet-vercelli",
+    "name": "Movie Planet - Vercelli",
+    "slug": "movie-planet-vercelli",
+    "address": "Piazza Pietro Paietta Nedo 3/5, 13100 Vercelli VC",
+    "lat": 45.323689150829544,
+    "lng": 8.414621015305743,
+    "chain": "webtic",
+    "host": "www.movieplanetgroup.it",
+    "webticLocalId": 5334
+  },
+  {
+    "cinemaId": "arca-spoltore",
+    "name": "Cinema Multiplex Arca - Spoltore",
+    "slug": "arca-spoltore",
+    "address": "Via Federico Fellini 2, 65010 Spoltore PE",
+    "lat": 42.4566579,
+    "lng": 14.1794605,
+    "chain": "eighteenTickets",
+    "host": "arca.multicinema.18tickets.it"
+  },
+  {
+    "cinemaId": "universo-silvi",
+    "name": "Multiplex Universo - Silvi",
+    "slug": "universo-silvi",
+    "address": "Via Nazionale Nord, 64028 Silvi TE",
+    "lat": 42.5733011,
+    "lng": 14.0976641,
+    "chain": "eighteenTickets",
+    "host": "universo.multicinema.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-adriano-roma",
+    "name": "Cinema Adriano - Roma",
+    "slug": "cinema-adriano-roma",
+    "address": "Piazza Cavour 22, 00193 Roma RM",
+    "lat": 41.9060169,
+    "lng": 12.4697046,
+    "chain": "webtic",
+    "host": "www.nvrcinema.it",
+    "webticLocalId": 5304
+  },
+  {
+    "cinemaId": "multisala-atlantic-roma",
+    "name": "Multisala Atlantic - Roma",
+    "slug": "multisala-atlantic-roma",
+    "address": "Via Tuscolana 745, 00174 Roma RM",
+    "lat": 41.8607808,
+    "lng": 12.555606,
+    "chain": "webtic",
+    "host": "www.nvrcinema.it",
+    "webticLocalId": 5305
+  },
+  {
+    "cinemaId": "cinema-europa-roma",
+    "name": "Cinema Europa - Roma",
+    "slug": "cinema-europa-roma",
+    "address": "Corso d'Italia 107/a, 00198 Roma RM",
+    "lat": 41.9101282,
+    "lng": 12.5006645,
+    "chain": "webtic",
+    "host": "www.mycityplex.it",
+    "webticLocalId": 5281
+  },
+  {
+    "cinemaId": "savoy-cityplex-roma",
+    "name": "Savoy Cityplex - Roma",
+    "slug": "savoy-cityplex-roma",
+    "address": "Via Bergamo 25, 00198 Roma RM",
+    "lat": 41.9113102,
+    "lng": 12.4995899,
+    "chain": "webtic",
+    "host": "www.mycityplex.it",
+    "webticLocalId": 5283
+  },
+  {
+    "cinemaId": "cityplex-tiffany-palermo",
+    "name": "Cityplex Tiffany - Palermo",
+    "slug": "cityplex-tiffany-palermo",
+    "address": "Via Giorgio Boris Giuliano 38, 90144, Palermo PA",
+    "lat": 38.1416457,
+    "lng": 13.3408677,
+    "chain": "eighteenTickets",
+    "host": "tiffany.cityplex.18tickets.it"
+  },
+  {
+    "cinemaId": "cineteca-milano-arlecchino",
+    "name": "Cineteca Milano Arlecchino",
+    "slug": "cineteca-milano-arlecchino",
+    "address": "Via San Pietro all'Orto 9, 20121 Milano MI",
+    "lat": 45.4664614,
+    "lng": 9.1953168,
+    "chain": "eighteenTickets",
+    "host": "arlecchino.cinetecadimilano.18tickets.it"
+  },
+  {
+    "cinemaId": "cineteca-milano-meet",
+    "name": "Cineteca Milano Meet",
+    "slug": "cineteca-milano-meet",
+    "address": "Viale Vittorio Veneto 2, 20124 Milano MI",
+    "lat": 45.4753723,
+    "lng": 9.2039666,
+    "chain": "eighteenTickets",
+    "host": "meet.cinetecadimilano.18tickets.it"
+  },
+  {
+    "cinemaId": "cineteca-milano-mic",
+    "name": "Cineteca Milano MIC",
+    "slug": "cineteca-milano-mic",
+    "address": "Viale Fulvio Testi 121, 20126 Milano MI",
+    "lat": 45.5134172,
+    "lng": 9.2040438,
+    "chain": "eighteenTickets",
+    "host": "mic.cinetecadimilano.18tickets.it"
+  },
+  {
+    "cinemaId": "filmclub-capitol-bolzano",
+    "name": "Filmclub - Capitol - Bolzano",
+    "slug": "filmclub-capitol-bolzano",
+    "address": "Via Dr. Josef Streiter 8, 39100 Bolzano BZ",
+    "lat": 46.5004885,
+    "lng": 11.3560006,
+    "chain": "eighteenTickets",
+    "host": "capitol.filmclub.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-centrale-viareggio",
+    "name": "Cinema Centrale - Viareggio",
+    "slug": "cinema-centrale-viareggio",
+    "address": "Via Cesare Battisti 67, 55049 Viareggio LU",
+    "lat": 43.8677065,
+    "lng": 10.2485659,
+    "chain": "webtic",
+    "host": "www.viareggiocinema.com",
+    "webticLocalId": 5261
+  },
+  {
+    "cinemaId": "multisala-goldoni-viareggio",
+    "name": "Multisala Goldoni - Viareggio",
+    "slug": "multisala-goldoni-viareggio",
+    "address": "Via San Francesco 124, 55049 Viareggio LU",
+    "lat": 43.8676247,
+    "lng": 10.2521912,
+    "chain": "webtic",
+    "host": "www.viareggiocinema.com",
+    "webticLocalId": 5230
   }
 ]
