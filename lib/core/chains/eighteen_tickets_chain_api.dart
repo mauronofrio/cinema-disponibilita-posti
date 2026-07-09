@@ -96,7 +96,21 @@ class EighteenTicketsChainApi implements ChainApi {
     // one page load. Only fetching a specific day's *films* (below) has a
     // real per-request cost, so there's no reason to trim this list.
     final homepage = await _client.getHomepage(cinema.host!);
-    final days = parseEighteenTicketsProgrammingDays(homepage);
+    var days = parseEighteenTicketsProgrammingDays(homepage);
+    if (days.isEmpty) {
+      // Confirmed live on a handful of tenants (e.g. Cinema Savoia -
+      // Taranto): the day carousel isn't server-rendered into the bare
+      // homepage at all there, only injected client-side via the same
+      // XHR call `getFilmsForDay` already makes - whose response carries
+      // the identical balloon markup. One extra request, only paid on
+      // tenants where the homepage genuinely has nothing to parse.
+      final today = DateTime.now();
+      final filmsForToday = await _client.getFilmsForDay(
+        cinema.host!,
+        _dateKey(today),
+      );
+      days = parseEighteenTicketsProgrammingDays(filmsForToday);
+    }
     return days
         .map((d) => ShowingDate(date: DateTime.parse(d), hasShowings: true))
         .toList();

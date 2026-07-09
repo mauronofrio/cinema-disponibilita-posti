@@ -1424,5 +1424,15 @@
     "lng": 9.629045,
     "chain": "eighteenTickets",
     "host": "concaverde.sas.18tickets.it"
+  },
+  {
+    "cinemaId": "casablanca-multicine-san-giorgio-ionico",
+    "name": "Casablanca Multicine - San Giorgio Ionico",
+    "slug": "casablanca-multicine-san-giorgio-ionico",
+    "address": "Contrada San Giovanni s/n/c, 74027 San Giorgio Ionico TA",
+    "lat": 40.4632059,
+    "lng": 17.3641971,
+    "chain": "eighteenTickets",
+    "host": "casablanca.multicine.casablancamulticine.com"
   }
 ]
