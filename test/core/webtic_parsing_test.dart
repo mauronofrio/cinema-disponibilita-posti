@@ -208,6 +208,65 @@ void main() {
     });
   });
 
+  group('parseWebticSeatMap (Cineplexx Bolzano - ACCOMPAGNATORE seats)', () {
+    late WebticSeatMapPayload payload;
+
+    setUpAll(() {
+      payload = WebticSeatMapPayload(
+        mapSeatsResponseBody: File(
+          'test/fixtures/webtic_cineplexx_map_seats_sample.json',
+        ).readAsStringSync(),
+        occupancyResponseBody: File(
+          'test/fixtures/webtic_cineplexx_occupancy_sample.json',
+        ).readAsStringSync(),
+      );
+    });
+
+    test(
+      'an ACCOMPAGNATORE seat reads as accessibility on this chain too, not just Giometti',
+      () {
+        // Real Cineplexx Bolzano room (SALA 6, idsala 21): 11/1 and 11/2
+        // are ACCOMPAGNATORE - user-reported doubt about disabled seats on
+        // this specific chain prompted a live re-check, confirming the
+        // same handling already added for Giometti carries over correctly.
+        final seatMap = parseWebticSeatMap(payload);
+        final seat = seatMap.rows
+            .expand((r) => r.seats)
+            .whereType<Seat>()
+            .firstWhere((s) => s.name == '11/1');
+        expect(seat.isAccessibility, isTrue);
+      },
+    );
+
+    test(
+      'the wheelchair spot in front of the ACCOMPAGNATORE seats is a real gap',
+      () {
+        // Row "11" (fila 13) only has seats from colonna 9 onward - columns
+        // 5-8 are missing entirely (the wheelchair spaces themselves,
+        // never listed in `posti`), same pattern as Giometti Pesaro.
+        final seatMap = parseWebticSeatMap(payload);
+        final row11 = seatMap.rows.firstWhere((r) => r.rowLabel == '11');
+        for (final i in {4, 5, 6, 7}) {
+          expect(row11.seats[i], isNull);
+        }
+      },
+    );
+
+    test('a STANDARD seat in the same "HC" settore is not accessibility', () {
+      // The whole rear block of this room happens to share sector code
+      // "HC" with the ACCOMPAGNATORE seats, but "HC" itself carries no
+      // accessibility meaning - only individual seats with tipologia
+      // ACCOMPAGNATORE/DISABILE do. Confirms accessibility is decided per
+      // seat, never inferred from its sector.
+      final seatMap = parseWebticSeatMap(payload);
+      final seat = seatMap.rows
+          .expand((r) => r.seats)
+          .whereType<Seat>()
+          .firstWhere((s) => s.name == '11/3');
+      expect(seat.isAccessibility, isFalse);
+    });
+  });
+
   group('parseWebticProgrammingPage', () {
     late String raw;
 
