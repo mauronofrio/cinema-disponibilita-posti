@@ -27,6 +27,11 @@ class ShowtimesHomeScreen extends ConsumerStatefulWidget {
 class _ShowtimesHomeScreenState extends ConsumerState<ShowtimesHomeScreen> {
   DateTime? _selectedDay;
 
+  /// Which cinema [_selectedDay] was picked for - switching cinema (e.g.
+  /// from settings) should land back on today's programme, not whichever
+  /// day happened to be selected for the previous cinema.
+  Cinema? _selectedDayCinema;
+
   @override
   Widget build(BuildContext context) {
     final activeAsync = ref.watch(activeCinemaProvider);
@@ -41,6 +46,10 @@ class _ShowtimesHomeScreenState extends ConsumerState<ShowtimesHomeScreen> {
             // No active cinema yet - redirect handled by the router; this
             // frame just avoids flashing an empty screen.
             return const SizedBox.shrink();
+          }
+          if (_selectedDayCinema != cinema) {
+            _selectedDayCinema = cinema;
+            _selectedDay = null;
           }
           return _CinemaShowtimes(
             cinema: cinema,
