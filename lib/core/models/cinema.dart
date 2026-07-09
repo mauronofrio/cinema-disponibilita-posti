@@ -74,12 +74,24 @@ enum WebticCatalogSource {
   /// `getFullScheduleViaPortal`). [Cinema.host] is irrelevant for this
   /// source (kept null or set to the venue's own informational site) since
   /// every call here only ever needs [Cinema.webticLocalId].
-  fullSchedulePortal;
+  fullSchedulePortal,
+
+  /// "Madison Cinemas" (Iglesias, Roma, Grottaferrata/Al Fellini, Pianoro -
+  /// Bologna): same one-day-per-film limitation as [programmingPage], but a
+  /// completely different WordPress page template - own splitter, own
+  /// booking-link shape with no `sc=`/`se=` params at all (just
+  /// `/info-e-acquisto/?performance={id}`), own day format - see
+  /// `webtic_madison_programming_page_parser.dart`. [Cinema.slug] here is
+  /// the venue's own full page slug (e.g.
+  /// "programmazione-cinema-madison-roma"), not a `/cinema/{slug}/...` path
+  /// segment like Giometti's.
+  madisonProgrammingPage;
 
   static WebticCatalogSource fromJson(String? value) => switch (value) {
     'programmingPage' => WebticCatalogSource.programmingPage,
     'filmSchedulePages' => WebticCatalogSource.filmSchedulePages,
     'fullSchedulePortal' => WebticCatalogSource.fullSchedulePortal,
+    'madisonProgrammingPage' => WebticCatalogSource.madisonProgrammingPage,
     _ => WebticCatalogSource.fullSchedule,
   };
 }

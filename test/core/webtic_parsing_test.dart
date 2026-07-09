@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:thespace_companion/core/chains/webtic/webtic_film_parser.dart';
 import 'package:thespace_companion/core/chains/webtic/webtic_film_schedule_page_parser.dart';
+import 'package:thespace_companion/core/chains/webtic/webtic_madison_programming_page_parser.dart';
 import 'package:thespace_companion/core/chains/webtic/webtic_programming_page_parser.dart';
 import 'package:thespace_companion/core/chains/webtic/webtic_seat_map_parser.dart';
 import 'package:thespace_companion/core/models/seat_map.dart';
@@ -358,6 +359,45 @@ void main() {
         now: DateTime(2026, 12, 20),
       );
       expect(films.single.day, DateTime(2027, 1, 2));
+    });
+  });
+
+  group('parseWebticMadisonProgrammingPage', () {
+    late String raw;
+
+    setUpAll(() {
+      raw = File(
+        'test/fixtures/webtic_madison_alfellini_programmazione_sample.html',
+      ).readAsStringSync();
+    });
+
+    test('parses every film block, real Madison Alfellini sample', () {
+      final films = parseWebticMadisonProgrammingPage(
+        raw,
+        now: DateTime(2026, 7, 9),
+      );
+      expect(films, hasLength(3));
+      expect(
+        films.map((f) => f.title),
+        containsAll(['Backrooms', 'Disclosure Day', 'Obsession']),
+      );
+    });
+
+    test('a film session, real performanceId/time/day/poster', () {
+      final films = parseWebticMadisonProgrammingPage(
+        raw,
+        now: DateTime(2026, 7, 9),
+      );
+      final backrooms = films.firstWhere((f) => f.title == 'Backrooms');
+      expect(backrooms.filmId, '10231');
+      expect(backrooms.day, DateTime(2026, 7, 9));
+      expect(backrooms.sessions, hasLength(1));
+      expect(backrooms.sessions.single.performanceId, '16464');
+      expect(backrooms.sessions.single.time, '21:30');
+      expect(
+        backrooms.posterUrl,
+        'https://secure.webtic.it/angwt/HandlerLocandinaEx.ashx?idcinema=5802&idevento=541&i=jpg-m&t=010620261303',
+      );
     });
   });
 

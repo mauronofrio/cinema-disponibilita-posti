@@ -81,6 +81,14 @@ void main() {
         WebticCatalogSource.fullSchedulePortal,
       );
     });
+
+    test('webticCatalogSource reads "madisonProgrammingPage" for a Madison Cinemas venue', () {
+      final json = baseJson()..['webticCatalogSource'] = 'madisonProgrammingPage';
+      expect(
+        Cinema.fromJson(json).webticCatalogSource,
+        WebticCatalogSource.madisonProgrammingPage,
+      );
+    });
   });
 
   group('SeatMap.fromApiResponseJson', () {

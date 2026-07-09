@@ -10,6 +10,7 @@ import '../network/webtic_platform_api_client.dart';
 import 'chain_api.dart';
 import 'webtic/webtic_film_parser.dart';
 import 'webtic/webtic_film_schedule_page_parser.dart';
+import 'webtic/webtic_madison_programming_page_parser.dart';
 import 'webtic/webtic_programming_page_parser.dart';
 import 'webtic/webtic_seat_map_parser.dart';
 
@@ -79,6 +80,20 @@ class WebticChainApi implements ChainApi {
         return days
             .map((d) => ShowingDate(date: d, hasShowings: true))
             .toList();
+
+      case WebticCatalogSource.madisonProgrammingPage:
+        final html = await _client.getMadisonProgrammingPage(
+          cinema.host!,
+          cinema.slug,
+        );
+        final films = parseWebticMadisonProgrammingPage(
+          html,
+          now: _clock.now(),
+        );
+        final days = films.map((f) => f.day).toSet().toList()..sort();
+        return days
+            .map((d) => ShowingDate(date: d, hasShowings: true))
+            .toList();
     }
   }
 
@@ -93,6 +108,8 @@ class WebticChainApi implements ChainApi {
         return _getFilmsForDayFromFullSchedule(cinema);
       case WebticCatalogSource.fullSchedulePortal:
         return _getFilmsForDayFromFullSchedulePortal(cinema);
+      case WebticCatalogSource.madisonProgrammingPage:
+        return _getFilmsForDayFromMadisonProgrammingPage(cinema, day);
     }
   }
 
@@ -227,6 +244,65 @@ class WebticChainApi implements ChainApi {
       result.add(
         Film(
           filmId: film.eventId,
+          title: film.title,
+          posterImageSrc: film.posterUrl,
+          runningTime: null,
+          showingGroups: [ShowingGroup(date: film.day, sessions: sessions)],
+        ),
+      );
+    }
+    result.sort((a, b) => a.title.compareTo(b.title));
+    return result;
+  }
+
+  Future<List<Film>> _getFilmsForDayFromMadisonProgrammingPage(
+    Cinema cinema,
+    DateTime day,
+  ) async {
+    final host = cinema.host!;
+    final html = await _client.getMadisonProgrammingPage(host, cinema.slug);
+    final films = parseWebticMadisonProgrammingPage(html, now: _clock.now());
+
+    final result = <Film>[];
+    for (final film in films) {
+      if (film.day.year != day.year ||
+          film.day.month != day.month ||
+          film.day.day != day.day) {
+        continue;
+      }
+      final sessions =
+          film.sessions.map((s) {
+              final timeParts = s.time.split(':');
+              final startTime = DateTime(
+                film.day.year,
+                film.day.month,
+                film.day.day,
+                int.parse(timeParts[0]),
+                int.parse(timeParts[1]),
+              );
+              return Session(
+                sessionId: s.performanceId,
+                startTime: startTime,
+                // The programmazione page never gives an end time.
+                endTime: startTime,
+                screenName: '',
+                isSoldOut: false,
+                formattedPrice: null,
+                isPriceVisible: false,
+                attributes: const [],
+                // No `sc=`/`se=` params needed here - unlike Giometti's own
+                // booking path, this chain's site resolves everything from
+                // the performance id alone (confirmed live).
+                bookingPath:
+                    'https://$host/info-e-acquisto/'
+                    '?performance=${s.performanceId}#acquista_ora',
+              );
+            }).toList()
+            ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      result.add(
+        Film(
+          filmId: film.filmId,
           title: film.title,
           posterImageSrc: film.posterUrl,
           runningTime: null,

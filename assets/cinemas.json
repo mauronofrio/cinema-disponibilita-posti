@@ -2167,5 +2167,53 @@
     "host": "www.multisalaplinius.com",
     "webticLocalId": 5094,
     "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "madison-alfellini-grottaferrata",
+    "name": "Madison Cinemas - Grottaferrata Al Fellini",
+    "slug": "programmazione-madison-cinemas-grottaferrata-al-fellini",
+    "address": "Viale I Maggio 82, 00046 Grottaferrata RM",
+    "lat": 41.7868901,
+    "lng": 12.6688795,
+    "chain": "webtic",
+    "host": "madisoncinemas.it",
+    "webticLocalId": 5802,
+    "webticCatalogSource": "madisonProgrammingPage"
+  },
+  {
+    "cinemaId": "madison-cineworld-iglesias",
+    "name": "Madison Cineworld - Iglesias",
+    "slug": "programmazione-madison-cineworld-iglesias",
+    "address": "Via Cavalier S. Filippo, 09016 Iglesias SU",
+    "lat": 39.3059679,
+    "lng": 8.565648,
+    "chain": "webtic",
+    "host": "madisoncinemas.it",
+    "webticLocalId": 5152,
+    "webticCatalogSource": "madisonProgrammingPage"
+  },
+  {
+    "cinemaId": "madison-cinemas-roma",
+    "name": "Cinema Madison - Roma",
+    "slug": "programmazione-cinema-madison-roma",
+    "address": "Via Gabriello Chiabrera 121, 00145 Roma RM",
+    "lat": 41.8534209,
+    "lng": 12.4793,
+    "chain": "webtic",
+    "host": "madisoncinemas.it",
+    "webticLocalId": 5192,
+    "webticCatalogSource": "madisonProgrammingPage"
+  },
+  {
+    "cinemaId": "madison-cinemas-pianoro-bologna",
+    "name": "Cinema Madison - Pianoro (Bologna)",
+    "slug": "programmazione-madison-cinema-pianoro-star-city",
+    "address": "Via Serrabella 14, 40065 Pianoro BO",
+    "lat": 44.4171782,
+    "lng": 11.3477766,
+    "chain": "webtic",
+    "host": "madisoncinemas.it",
+    "webticLocalId": 6258,
+    "webticCatalogSource": "madisonProgrammingPage"
   }
 ]

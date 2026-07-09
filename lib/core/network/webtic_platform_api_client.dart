@@ -131,6 +131,16 @@ class WebticPlatformApiClient {
     }
   }
 
+  /// [WebticCatalogSource.madisonProgrammingPage] chains only ("Madison
+  /// Cinemas"): the one page listing every film currently showing at this
+  /// venue - unlike [getProgrammingPage], [slug] here is already the full
+  /// page slug (`Cinema.slug`, e.g. "programmazione-cinema-madison-roma"),
+  /// not a path segment under a shared `/cinema/.../programmazione`
+  /// template.
+  Future<String> getMadisonProgrammingPage(String host, String slug) {
+    return _get('https://$host/$slug/', const {});
+  }
+
   Future<String> _postWtService(String wtid, Map<String, dynamic> data) async {
     try {
       final response = await _dio.post<String>(
