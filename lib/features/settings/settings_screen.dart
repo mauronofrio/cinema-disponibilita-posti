@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/localization/app_localizations.dart';
 import '../../core/localization/locale_provider.dart';
@@ -127,6 +128,34 @@ class SettingsScreen extends ConsumerWidget {
             style: AppTheme.body(
               context,
             ).copyWith(color: AppColors.textMuted, fontSize: 12),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: () => launchUrl(
+              Uri.parse(
+                'https://github.com/mauronofrio/cinema-disponibilita-posti',
+              ),
+              mode: LaunchMode.externalApplication,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.code,
+                  size: 16,
+                  color: AppColors.textMuted,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  t.sourceCode,
+                  style: AppTheme.body(context).copyWith(
+                    color: AppColors.textMuted,
+                    fontSize: 12,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
