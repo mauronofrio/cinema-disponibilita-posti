@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:thespace_companion/core/chains/webtic/webtic_film_parser.dart';
+import 'package:thespace_companion/core/chains/webtic/webtic_film_schedule_page_parser.dart';
 import 'package:thespace_companion/core/chains/webtic/webtic_programming_page_parser.dart';
 import 'package:thespace_companion/core/chains/webtic/webtic_seat_map_parser.dart';
 import 'package:thespace_companion/core/models/seat_map.dart';
@@ -270,5 +271,75 @@ void main() {
       );
       expect(films.single.day, DateTime(2027, 1, 2));
     });
+  });
+
+  group('parseWebticFilmCatalog', () {
+    late String raw;
+
+    setUpAll(() {
+      raw = File(
+        'test/fixtures/webtic_cineplexx_home_sample.html',
+      ).readAsStringSync();
+    });
+
+    test(
+      'skips a film block missing a scheda link, real Cineplexx Bolzano homepage',
+      () {
+        // 11 "inprogrammazione" blocks on the real homepage, one of them
+        // ("JACKASS: BEST AND LAST") has no /scheda/ link at all - real
+        // platform quirk, not a parsing bug, so it's dropped rather than
+        // crashing or emitting a film with no slug.
+        final films = parseWebticFilmCatalog(raw, siteCinemaId: '2360');
+        expect(films, hasLength(10));
+        expect(films.any((f) => f.title.contains('JACKASS')), isFalse);
+      },
+    );
+
+    test('a film missing entirely at this cinema is not in the result', () {
+      // Confirmed live: not every film in the catalog plays at every
+      // cinema - only films with a data-prog_{siteCinemaId} attribute do.
+      final films = parseWebticFilmCatalog(raw, siteCinemaId: '999999');
+      expect(films, isEmpty);
+    });
+
+    test('playing dates for one cinema, real MINIONS & MONSTERS sample', () {
+      final films = parseWebticFilmCatalog(raw, siteCinemaId: '2360');
+      final minions = films.firstWhere((f) => f.filmId == '47588');
+      expect(minions.title, 'MINIONS & MONSTERS');
+      expect(minions.slug, 'minions-monsters');
+      expect(
+        minions.playingDates,
+        containsAll([DateTime(2026, 7, 9), DateTime(2026, 7, 15)]),
+      );
+    });
+  });
+
+  group('parseWebticFilmSchedulePage', () {
+    test(
+      'every day and showtime, real Cineplexx Bolzano MINIONS & MONSTERS sample',
+      () {
+        final raw = File(
+          'test/fixtures/webtic_cineplexx_film_schedule_sample.html',
+        ).readAsStringSync();
+        final sessions = parseWebticFilmSchedulePage(
+          raw,
+          now: DateTime(2026, 7, 9),
+        );
+        // A real week (confirmed live: unlike Giometti, this page gives a
+        // full week per film, not just one day).
+        final days = sessions.map((s) => s.day).toSet();
+        expect(days, hasLength(7));
+        expect(days, contains(DateTime(2026, 7, 9)));
+
+        final firstDay = sessions.where((s) => s.day == DateTime(2026, 7, 9));
+        final threePm = firstDay.firstWhere((s) => s.performanceId == '226519');
+        expect(threePm.time, '17:00');
+        // Confirmed live: the LocalId embedded in each showtime's own link
+        // (5098) differs from the site's own internal cinema id (2360)
+        // used to build this very page's URL - never assume they match.
+        expect(threePm.localId, 5098);
+        expect(threePm.eventId, '7525');
+      },
+    );
   });
 }

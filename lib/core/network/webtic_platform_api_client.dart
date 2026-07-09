@@ -64,13 +64,34 @@ class WebticPlatformApiClient {
     });
   }
 
-  /// [Cinema.webticScrapesProgrammingPage] chains only (Giometti Cinema so
+  /// [WebticCatalogSource.programmingPage] chains only (Giometti Cinema so
   /// far): the one page listing every film currently showing at this venue,
-  /// each with its own single day's showtimes (see the field's own doc for
-  /// why that's a real platform limit, not a parsing shortcut). [slug] is
-  /// `Cinema.slug`, the venue's own URL path segment.
+  /// each with its own single day's showtimes (see the enum value's own doc
+  /// for why that's a real platform limit, not a parsing shortcut). [slug]
+  /// is `Cinema.slug`, the venue's own URL path segment.
   Future<String> getProgrammingPage(String host, String slug) {
     return _get('https://$host/cinema/$slug/programmazione', const {});
+  }
+
+  /// [WebticCatalogSource.filmSchedulePages] chains only (Cineplexx so far):
+  /// the chain's own homepage, embedding the full film catalog plus, per
+  /// film, which cinemas show it and on which days - see
+  /// `parseWebticFilmCatalog`.
+  Future<String> getFilmCatalogHomepage(String host) {
+    return _get('https://$host/', const {});
+  }
+
+  /// [WebticCatalogSource.filmSchedulePages] chains only: one film's full
+  /// week of showtimes at one specific cinema. [siteCinemaId] is
+  /// `Cinema.slug` here (the venue's own site-internal numeric id, distinct
+  /// from `Cinema.webticLocalId` - see `parseWebticFilmSchedulePage`).
+  Future<String> getFilmSchedulePage(
+    String host,
+    String filmSlug,
+    String filmId,
+    String siteCinemaId,
+  ) {
+    return _get('https://$host/scheda/$filmSlug/$filmId/$siteCinemaId/', const {});
   }
 
   Future<String> _postWtService(String wtid, Map<String, dynamic> data) async {

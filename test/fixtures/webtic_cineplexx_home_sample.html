@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="it">
+<head>
+	<!--<meta name="google-site-verification" content="" />-->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Cineplexx">
+	<meta property="og:url" content="https://www.cineplexx.bz.it" />
+	<meta property="og:site_name" content="Cineplexx" />
+	<meta property="og:image" content="https://www.cineplexx.bz.it/layouts/images/share_img_fb.jpg" />
+	<meta property="og:description" content="Cineplexx" />
+	<meta property="og:title" content="Cineplexx" />
+	
+	<link rel="icon" href="/layouts/images/favicon.png?fc=4374" type="image/png" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/reset.css?fc=1349" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/colors.css?fc=399" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/main.css?fc=13503" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/menu.css?fc=2580" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/reel.css?fc=1498" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/slick.css?fc=1729" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/slick-theme.css?fc=3291" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/menu_box.css?fc=1882" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/pagina_tabella.css?fc=156" />
+
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-thin-straight/css/uicons-thin-straight.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-thin-chubby/css/uicons-thin-chubby.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-thin-rounded/css/uicons-thin-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css'>
+
+<title>Cineplexx</title>	<link rel="Stylesheet" type="text/css" href="/layouts/css/home.css?fc=3906" />
+	
+<script src="/layouts/js/jquery.min.js?fc=89475" type="text/javascript"></script>
+<script src="/layouts/js/slick.min.js?fc=41953" type="text/javascript"></script>
+<script src="/layouts/js/navi.js?fc=22" type="text/javascript"></script>
+
+<script type="text/javascript">
+	var img_url = "";
+	var domain = "www.cineplexx.bz.it";
+	var cookie_object = JSON.parse('{"neces":1,"funz":0,"perf":0,"analy":0,"adv":0,"altri":0}');
+	//console.log(cookie_object);
+</script>
+
+
+<script>
+	var skip_scroll = true;
+	var filter = "null";
+	$(function(){
+		
+		// init
+		$("select").prop("selectedIndex", 0);
+		
+		if(filter == "top-film") {
+			$("#filter_date").parent().hide();
+			
+			$("#prog_menu .top_film").addClass("active");
+		}else $("#prog_menu .homepage").addClass("active");
+		
+		
+		$(".inprogrammazione_container .versioni").each( function() {
+			let v_cont = $(this).html().trim();
+			$(this).html(v_cont.replace("2D", "IT"));
+		});
+		
+		
+		
+		// act
+		$(".inprogrammazione a").click(function(event){ event.preventDefault(); });
+		$("body").on("click", ".inprogrammazione", function() {
+			let p_href = $(this).find("a").attr("href");
+			if($("#filter_cinema").val() != "null") p_href += $("#filter_cinema").val()+"/";
+			
+			window.location.href = p_href;
+		});
+		
+		
+		
+		$("body").on("change", "#filter_cinema", function() {
+			let cine = $(this).val();
+			if(cine != "null") {
+				
+				$(".inprogrammazione").hide();
+				$(".inprogrammazione[data-cinemas*='"+cine+"']").fadeIn();
+				
+				
+				$("#filter_date option[value!='null']").hide();
+				$("#filter_date option[data-cinemas*='"+cine+"']").show();
+				
+				let data_cinemas = String($("#filter_date option:selected").data("cinemas"));
+				if(data_cinemas.indexOf(cine) < 0) $("#filter_date").prop("selectedIndex", 0);
+				else $("#filter_date").trigger("change");
+				
+			}else {
+				$("#filter_date option").show();
+				$("#filter_date").trigger("change");
+			}
+			
+		});
+		
+		$("body").on("change", "#filter_date", function() {
+			let filter_date = $(this);
+			if(filter_date.val() != "null") {
+				
+				$(".inprogrammazione").hide();
+				$(".inprogrammazione[data-prog_date*='"+filter_date.val()+"']").fadeIn();
+				
+				
+				if($("#filter_cinema").val() != "null") {
+					let cine = String( $("#filter_cinema option:selected").val() );
+					$(".inprogrammazione:not([data-cinemas*='"+cine+"'])").hide();
+				}
+				
+			}else { $(".inprogrammazione").fadeIn(); }
+			
+		});
+		
+	})
+	</script>
+</head>
+<body>
+	<div id="container">
+		
+				
+			
+	<link rel="Stylesheet" type="text/css" href="/layouts/css/cookie_accept.css?fc=1764" />
+	
+	<script defer src="/layouts/js/cookie_accept.js?fc=" type="text/javascript"></script>
+	
+	
+	<div id="cookie_accept_cont">
+		<div class="cookie_accept_cont_body">
+			<div class="cookie_accept_close_box"><div class="cookie_accept_close"><i class="fi fi-tr-circle-xmark"></i></div></div>
+			<div class="cookie_accept_box">
+				Questo sito web o gli strumenti di terze parti da esso utilizzati si servono di cookie per il funzionamento e gli scopi descritti nella <a href='/content/cookie-policy' title='vai alla cookie policy'>cookie policy</a>.<br/>Cliccando sulla (X) sarà come rifiutare l'utilizzo dei cookie, ad eccezione dei necessari.			</div>
+			<span class="btt_main_solid" id="cookie_policy_nay">
+				<i class="fi fi-tr-circle-xmark"></i>
+				Rifiuto			</span>
+			<span class="btt_main_solid" id="cookie_policy_aye">
+				<i class="fi fi-tr-check-circle"></i>
+				Accetto			</span>
+		</div>
+	</div>
+	
+
+<script>
+$(function(){
+	
+	$("#language_menu").on("click", function(event) {
+		event.preventDefault();
+		
+		let btt_lang = $(this).find(".btt_language_text");
+		let d = new Date();
+		let d2 = new Date(d.getFullYear() + 1, d.getMonth(), d.getDate());
+		let expires = d2.toUTCString();
+		document.cookie = "id_lang="+btt_lang.data("id_lang")+"; expires="+expires+"; domain="+domain+"; Secure; path=/";
+		
+		location.reload(); 
+	});
+	
+})
+</script>
+<div id="header_top">
+	<div id="header_top_body">
+	
+		<div id="contact_menu">
+			<a href="/content/newsletter">
+				<div class="btt_contact">
+				<i class="fi fi-tc-envelope"></i>
+					<span class="btt_contact_text">Cineplexx Newsletter</span>
+				</div>
+			</a>
+			<div class="btt_contact">
+				<i class="fi fi-tr-cloud-download-alt"></i>
+				<span class="btt_contact_text">Cineplexx Apps</span>
+				<a href="https://itunes.apple.com/app/webtic-cineplexx-bolzano-cinema/id575103280?mt=8" target="_blank"><i class="fi fi-brands-apple"></i></a>
+				<a href="https://play.google.com/store/apps/details?id=it.creaweb.cineplexx" target="_blank"><i class="fi fi-brands-google"></i></a>
+			</div>
+		</div>
+		
+		<div id="language_menu">
+			<div class="btt_language">
+				<span class='btt_language_text' data-id_lang='de'>Sprache ändern</span> <i class='fi fi-ts-german'></i>			</div>
+		</div>
+		
+	</div>
+</div>
+
+<header>
+	<div id="header_body">
+	
+		<a href="/"><img src="/layouts/images/logo.png" id="logo" /></a>
+	
+		        	<nav>
+			  	<label for="drop" class="toggle"><i class="fi fi-tr-bars-filter"></i></label>
+			  	<input type="checkbox" id="drop" />
+				<ul class="menu">
+					<li><a href="/" title="Film">Film</a></li>
+					<li>
+												<a href="/eventi" title="Eventi">
+						Eventi						</a>
+					</li>
+
+					<li>
+						<label for="drop-3" class="toggle">
+							Prezzi						</label>
+						<a href="#">
+							Prezzi						</a>
+						<input type="checkbox" id="drop-3"/>
+						<ul>
+							<li>
+																<a href="/prezzi-bolzano" title="Prezzi Bolzano">
+								Prezzi Bolzano								</a>
+							</li>
+							<li>
+																<a href="/prezzi-algo" title="Prezzi Algo">
+								Prezzi Algo								</a>
+							</li>
+						</ul> 
+					</li>
+					<li>
+						<label for="drop-1" class="toggle">Card</label>
+						<a href="#">Card</a>
+						<input type="checkbox" id="drop-1"/>
+						<ul>
+							<li><a href="/cineplexx-bonus-card" title="Cineplexx Bonus Card">Cineplexx Bonus Card</a></li>
+							<li><a href="/gift-card" title="Gift Card">Gift Card</a></li>
+							<li><a href="/family-filmclub" title="Family Film Club">Family Film Club</a></li>
+						</ul> 
+					</li>
+					<li>
+						<label for="drop-2" class="toggle">
+							Info cinema						</label>
+						<a href="#">
+							Info cinema						</a>
+						<input type="checkbox" id="drop-2"/>
+						<ul>
+							<li>
+																<a href="/dove-siamo" title="Dove siamo">
+								Dove siamo								</a>
+							</li>
+							<li>
+																<a href="/sale" title="Sale">
+								Sale								</a>
+							</li>
+							<li>
+																<a href="/tecnologie" title="Tecnologie">
+								Tecnologie								</a>
+							</li>
+							<li>
+																<a href="/informazioni-sul-cinema" title="Informazioni sul cinema">
+								Informazioni sul cinema								</a>
+							</li>
+							<li>
+																<a href="/lavora-con-noi" title="Lavora con noi">
+								Lavora con noi								</a>
+							</li>
+							<li>
+																<a href="/affitto-cinema" title="Affitto cinema">
+								Affitto cinema								</a>
+							</li>
+							<li>
+																<a href="/scuole-al-cinema" title="Scuole al cinema">
+								Scuole al cinema								</a>
+							</li>
+							<li>
+																<a href="/compleanni" title="Compleanni">
+								Compleanni								</a>
+							</li>
+							<li>
+																<a href="/contatti" title="Contatti">
+								Contatti								</a>
+							</li>
+						</ul> 
+					</li>
+					<li>
+												<a href="/pubblicita" title="Pubblicità">
+						Pubblicità						</a>
+					</li>
+				</ul>
+        	</nav>
+		
+	</div>
+</header>
+<!--header close-->		
+		<style>
+
+#reel {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	margin: 0 auto;
+}
+	
+@media screen and (min-width : 992px) {
+	#reel { width: 1140px; height: 640px; }
+}
+
+.banner_reel {
+}
+
+	.reel_item {
+		position: relative;
+	}
+	
+	@media screen and (min-width : 992px) {
+		.reel_item {
+			width: 1140px;
+			height: 640px;
+		}
+	}
+	
+		.reel_item_image_blur {
+			display: none;
+		}
+	
+		@media screen and (min-width : 992px) {
+			.reel_item_image_blur {
+				content: "";
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-size: cover;
+				overflow:hidden;
+				-webkit-filter: blur(15px);
+				-moz-filter: blur(15px);
+				-o-filter: blur(15px);
+				-ms-filter: blur(15px);
+				filter: blur(15px);
+			}
+			
+			.reel_item_image_blur img {
+				width: 100%;
+			}
+		}
+		
+		.reel_item_image img {
+			width: 100%;
+		}
+	
+		@media screen and (min-width : 992px) {
+			.reel_item_image { width: 1140px; height: 640px; position: absolute; top: 50%; left: 50%; margin-left: -570px; margin-top: -320px; }
+		}
+		
+		.reel_item .btt_reel {
+			position: absolute;
+			top: 10px;
+			right: 20px;
+			display: flex;
+			flex-direction: column;
+			row-gap: 10px;
+			display: none;
+		}
+	
+		@media screen and (min-width : 992px) {
+			.reel_item .btt_reel { top: 30px; right: 40px; row-gap: 20px; }
+		}
+		
+			.btt_reel_trailer, .btt_reel_acquista {
+				width: 40px;
+				height: 40px;
+				font-size: 20px;
+				line-height: 43px;
+				text-align: center;
+				border-radius: 50%;
+				border: 2px solid var(--second_color);
+				background: rgba(255,255,255,.2);
+				color: var(--first_color);
+				transition: background 0.3s linear;
+				-webkit-transition: background 0.3s linear;
+				-moz-transition: background 0.3s linear;
+				
+				display: none;
+			}
+	
+			@media screen and (min-width : 992px) {
+				.btt_reel_trailer, .btt_reel_acquista { width: 50px; height: 50px; font-size: 25px; line-height: 55px; }
+			}
+		
+			.btt_reel_trailer:hover, .btt_reel_acquista:hover {
+				background: rgba(255,255,255,.4);
+			}
+
+</style>
+
+<script>
+$(function(){
+$('.banner_reel').on('init', function(event, slick){ if(typeof skip_scroll === 'undefined'|| !skip_scroll) $("html, body").animate({ scrollTop: ( $("main").offset().top ) }); });
+$('.banner_reel').slick({
+	dots: false,
+ 	arrows: true,
+	infinite: true,
+	autoplay: true,
+	speed: 600,
+	slidesToShow: 1,
+	slidesToScroll: 1,
+	responsive: [
+    {
+		breakpoint: 992,
+		settings: {
+        arrows: false
+    	}
+    }
+  	]
+});
+})
+</script>
+<div id="reel">
+	
+	<!-- slider container -->
+	<div class="banner_reel">
+		
+		<!-- slider items -->
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg" alt="blurred /cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/english-movie-night" title="it">
+					<img src="/cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg" alt="/cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/english-movie-night" title="/cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg" alt="blurred /cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/free-refill-de-it" title="it">
+					<img src="/cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg" alt="/cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/free-refill-de-it" title="/cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/533dd9163bad80993eab801182e5f004e1dd249cc04767f8ab1b4553d2b503080b0192f4945f2e24c4614b9b66b8d7d005de813eb2b60da002f00c187ee55bdb.jpg" alt="blurred /cdn/home/533dd9163bad80993eab801182e5f004e1dd249cc04767f8ab1b4553d2b503080b0192f4945f2e24c4614b9b66b8d7d005de813eb2b60da002f00c187ee55bdb.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="" title="it">
+					<img src="/cdn/home/533dd9163bad80993eab801182e5f004e1dd249cc04767f8ab1b4553d2b503080b0192f4945f2e24c4614b9b66b8d7d005de813eb2b60da002f00c187ee55bdb.jpg" alt="/cdn/home/533dd9163bad80993eab801182e5f004e1dd249cc04767f8ab1b4553d2b503080b0192f4945f2e24c4614b9b66b8d7d005de813eb2b60da002f00c187ee55bdb.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+											</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg" alt="blurred /cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/scheda/odissea-2026/47434/" title="it">
+					<img src="/cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg" alt="/cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/scheda/odissea-2026/47434/" title="/cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/0a634b66306cdc4044ad92fa0fb9a30118f5ffd3dbbb0b47f55f3136ed067f2d20305c0453769916c7748eb13bfd39aa0ada40b223a8696ec32d13ce96da7651.jpg" alt="blurred /cdn/home/0a634b66306cdc4044ad92fa0fb9a30118f5ffd3dbbb0b47f55f3136ed067f2d20305c0453769916c7748eb13bfd39aa0ada40b223a8696ec32d13ce96da7651.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="" title="it">
+					<img src="/cdn/home/0a634b66306cdc4044ad92fa0fb9a30118f5ffd3dbbb0b47f55f3136ed067f2d20305c0453769916c7748eb13bfd39aa0ada40b223a8696ec32d13ce96da7651.jpg" alt="/cdn/home/0a634b66306cdc4044ad92fa0fb9a30118f5ffd3dbbb0b47f55f3136ed067f2d20305c0453769916c7748eb13bfd39aa0ada40b223a8696ec32d13ce96da7651.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+											</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg" alt="blurred /cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/special-english-movie-night" title="it">
+					<img src="/cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg" alt="/cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/special-english-movie-night" title="/cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/40b1e5f87680998ed25db640da7795cc96565c5aeaae25f6a6723b85e0197be13e46584486ec7719446ba7ee2372a9f188bdb75327f122cfca69b1ad1d1c4fa6.jpg" alt="blurred /cdn/home/40b1e5f87680998ed25db640da7795cc96565c5aeaae25f6a6723b85e0197be13e46584486ec7719446ba7ee2372a9f188bdb75327f122cfca69b1ad1d1c4fa6.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="" title="it">
+					<img src="/cdn/home/40b1e5f87680998ed25db640da7795cc96565c5aeaae25f6a6723b85e0197be13e46584486ec7719446ba7ee2372a9f188bdb75327f122cfca69b1ad1d1c4fa6.jpg" alt="/cdn/home/40b1e5f87680998ed25db640da7795cc96565c5aeaae25f6a6723b85e0197be13e46584486ec7719446ba7ee2372a9f188bdb75327f122cfca69b1ad1d1c4fa6.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+											</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg" alt="blurred /cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/hot-movie-summer-it" title="it">
+					<img src="/cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg" alt="/cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/hot-movie-summer-it" title="/cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg" alt="blurred /cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/cineplexx-opera-it" title="it">
+					<img src="/cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg" alt="/cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/cineplexx-opera-it" title="/cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg" alt="blurred /cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="/gift-card" title="it">
+					<img src="/cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg" alt="/cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="/gift-card" title="/cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/9e138fd1c0e0ad4207ffc688c2b9a76c56a3fd24bfbe58da3f34949e9cf2929642fb5cb5f000cc40ca2e5bd3aac2509923baeef5422d03996b5b7414da14d5a6.jpg" alt="blurred /cdn/home/9e138fd1c0e0ad4207ffc688c2b9a76c56a3fd24bfbe58da3f34949e9cf2929642fb5cb5f000cc40ca2e5bd3aac2509923baeef5422d03996b5b7414da14d5a6.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="" title="it">
+					<img src="/cdn/home/9e138fd1c0e0ad4207ffc688c2b9a76c56a3fd24bfbe58da3f34949e9cf2929642fb5cb5f000cc40ca2e5bd3aac2509923baeef5422d03996b5b7414da14d5a6.jpg" alt="/cdn/home/9e138fd1c0e0ad4207ffc688c2b9a76c56a3fd24bfbe58da3f34949e9cf2929642fb5cb5f000cc40ca2e5bd3aac2509923baeef5422d03996b5b7414da14d5a6.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+											</div>
+		</div>
+				<!-- reel_item....... -->
+		
+	</div>
+	
+</div>		
+		<main>
+			<div id="main_body">
+				
+					<div id="prog_menu">
+		<ul>
+			<li class="top_film">
+								<a href="/top-film" title="Top Film">
+				Top Film				</a>
+			</li>
+			<li class="homepage">
+								<a href="/" title="Ora al cinema">
+				Ora al cinema				</a>
+			</li>
+			<li class="prossimamente">
+								<a href="/prossimamente" title="Prossimamente">
+				Prossimamente				</a>
+			</li>
+		</ul>
+	</div>				
+
+				<div id="prog_filter">
+					<div id="filter_label">
+						Filtra per					</div>
+
+					<div class="filter_select">
+						<i class="fi fi-tr-map-marker-check"></i>
+						<select id="filter_cinema">
+							<option value="null">
+								Cinema							</option>
+														<option value="5593">Algo</option>
+														<option value="2360">Bolzano</option>
+													</select>
+					</div>
+
+					<div class="filter_select">
+						<i class="fi fi-tr-calendar-check"></i>
+						<select id="filter_date">
+							<option value="null">
+								Data							</option>
+														<option value="2026-07-09" data-cinemas="5593-2360">
+								09.07.2026							</option>
+														<option value="2026-07-10" data-cinemas="5593-2360">
+								10.07.2026							</option>
+														<option value="2026-07-11" data-cinemas="5593-2360">
+								11.07.2026							</option>
+														<option value="2026-07-12" data-cinemas="5593-2360">
+								12.07.2026							</option>
+														<option value="2026-07-13" data-cinemas="5593-2360">
+								13.07.2026							</option>
+														<option value="2026-07-14" data-cinemas="5593-2360">
+								14.07.2026							</option>
+														<option value="2026-07-15" data-cinemas="5593-2360">
+								15.07.2026							</option>
+														<option value="2026-07-16" data-cinemas="5593-2360">
+								16.07.2026							</option>
+														<option value="2026-07-17" data-cinemas="5593-2360">
+								17.07.2026							</option>
+														<option value="2026-07-18" data-cinemas="5593-2360">
+								18.07.2026							</option>
+														<option value="2026-07-19" data-cinemas="5593-2360">
+								19.07.2026							</option>
+														<option value="2026-07-31" data-cinemas="5593-2360">
+								31.07.2026							</option>
+													</select>
+					</div>
+				</div>
+				
+				<div class="inprogrammazione_container">
+										<div class="inprogrammazione" data-idfilm="48195" data-release_date="2026-07-29" data-cinemas="5593-2360" data-prog_date="2026-07-31|2026-07-31" data-title="SPIDER-MAN: BRAND NEW DAY" data-prog_2360="2026-07-31" data-prog_5593="2026-07-31">
+						
+												<img src="https://img.cine-vu.it/locandineSchede/[446]48195.jpg" alt="SPIDER-MAN: BRAND NEW DAY | ORIGINAL VERSION" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/spider-man-brand-new-day-original-version/48195/" title="SPIDER-MAN: BRAND NEW DAY">
+							SPIDER-MAN: BRAND NEW DAY						</a>
+						</div>
+						<div class="versioni">
+						ORIGINAL VERSION						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="48188" data-release_date="2026-07-16" data-cinemas="5593-2360" data-prog_date="2026-07-16|2026-07-17|2026-07-18|2026-07-19|2026-07-16|2026-07-17|2026-07-18|2026-07-19" data-title="DIE ODYSSEE" data-prog_2360="2026-07-16|2026-07-17|2026-07-18|2026-07-19" data-prog_5593="2026-07-16|2026-07-17|2026-07-18|2026-07-19">
+						
+												<img src="https://img.cine-vu.it/locandineSchede/[446]48188.jpg" alt="DIE ODYSSEE | DE" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/die-odyssee/48188/" title="DIE ODYSSEE">
+							DIE ODYSSEE						</a>
+						</div>
+						<div class="versioni">
+						DE						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="47434" data-release_date="2026-07-16" data-cinemas="5593-2360" data-prog_date="2026-07-16|2026-07-17|2026-07-18|2026-07-19|2026-07-16|2026-07-17|2026-07-18|2026-07-19" data-title="ODISSEA [2026]" data-prog_2360="2026-07-16|2026-07-17|2026-07-18|2026-07-19" data-prog_5593="2026-07-16|2026-07-17|2026-07-18|2026-07-19">
+						
+												<img src="https://img.cine-vu.it/locandineSchede/[446]47434.jpg" alt="ODISSEA [2026]" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/odissea-2026/47434/" title="ODISSEA [2026]">
+							ODISSEA [2026]						</a>
+						</div>
+						<div class="versioni">
+						2D						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="48146" data-release_date="2026-07-16" data-cinemas="5593-2360" data-prog_date="2026-07-17|2026-07-17" data-title="THE ODYSSEY [2026]" data-prog_2360="2026-07-17" data-prog_5593="2026-07-17">
+						
+												<img src="https://img.cine-vu.it/locandineSchede/[446]48146.jpg" alt="THE ODYSSEY [2026] | ORIGINAL VERSION" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/the-odyssey-2026-original-version/48146/" title="THE ODYSSEY [2026]">
+							THE ODYSSEY [2026]						</a>
+						</div>
+						<div class="versioni">
+						ORIGINAL VERSION						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="48346" data-release_date="2026-07-10" data-cinemas="2360" data-prog_date="2026-07-12" data-title="DHAMAAL 4" data-prog_2360="2026-07-12" data-prog_5593="">
+						
+												<img src="https://img.cine-vu.it/locandineSchede/[446]48346.jpg" alt="DHAMAAL 4 | ORIGINAL VERSION" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/dhamaal-4-original-version/48346/" title="DHAMAAL 4">
+							DHAMAAL 4						</a>
+						</div>
+						<div class="versioni">
+						ORIGINAL VERSION						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="48324" data-release_date="2026-07-08" data-cinemas="5593-2360" data-prog_date="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15|2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-title="EVIL DEAD BURN" data-prog_2360="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-prog_5593="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15">
+						
+												<img src="/cdn/movies/ee6d01b913d4d4cf5a184ee1227b55bd4924ece8c873080fbf55dd3b9c254f35499a5f8e5235b8c227afa3db07d2477e460cfcce43ad2eebfa84d3dddf937af9.jpg" alt="EVIL DEAD BURN | DE" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/evil-dead-burn/48324/" title="EVIL DEAD BURN">
+							EVIL DEAD BURN						</a>
+						</div>
+						<div class="versioni">
+						DE						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="48036" data-release_date="2026-07-08" data-cinemas="5593-2360" data-prog_date="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15|2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-title="LA CASA - IL ROGO DEL MALE" data-prog_2360="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-prog_5593="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15">
+						
+												<img src="https://img.cine-vu.it/locandineSchede/[446]48036.jpg" alt="LA CASA - IL ROGO DEL MALE" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/la-casa-il-rogo-del-male/48036/" title="LA CASA - IL ROGO DEL MALE">
+							LA CASA - IL ROGO DEL MALE - V.M. 14						</a>
+						</div>
+						<div class="versioni">
+						2D						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="48341" data-release_date="2026-07-01" data-cinemas="5593-2360" data-prog_date="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15|2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-title="BACKROOMS - EVERYTHING MUST GO EDITION" data-prog_2360="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-prog_5593="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15">
+						
+												<img src="https://img.cine-vu.it/locandineSchede/[446]48341.jpg" alt="BACKROOMS - EVERYTHING MUST GO EDITION | DE" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/backrooms-everything-must-go-edition/48341/" title="BACKROOMS - EVERYTHING MUST GO EDITION">
+							BACKROOMS - EVERYTHING MUST GO EDITION						</a>
+						</div>
+						<div class="versioni">
+						DE						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="47588" data-release_date="2026-07-01" data-cinemas="5593-2360" data-prog_date="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15|2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-title="MINIONS & MONSTERS" data-prog_2360="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-prog_5593="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15">
+						
+												<img src="https://img.cine-vu.it/locandineSchede/[446]47588.jpg" alt="MINIONS & MONSTERS" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/minions-monsters/47588/" title="MINIONS & MONSTERS">
+							MINIONS & MONSTERS						</a>
+						</div>
+						<div class="versioni">
+						2D, 3D, 3D DE, DE						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="48342" data-release_date="2026-07-01" data-cinemas="5593-2360" data-prog_date="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15|2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-title="VIRGINIA WOOLF'S NIGHT EEE DAY" data-prog_2360="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15" data-prog_5593="2026-07-09|2026-07-10|2026-07-11|2026-07-12|2026-07-13|2026-07-14|2026-07-15">
+						
+												<img src="https://img.cine-vu.it/locandineSchede/[446]48342.jpg" alt="VIRGINIA WOOLF'S NIGHT EEE DAY | DE" class="locandina"/>
+						
+						<div class="titolo">
+							<a href="/scheda/virginia-woolfs-night-eee-day/48342/" title="VIRGINIA WOOLF'S NIGHT EEE DAY">
+							VIRGINIA WOOLF'S NIGHT EEE DAY						</a>
+						</div>
+						<div class="versioni">
+						DE						</div>
+					</div>
+										<div class="inprogrammazione" data-idfilm="48032" data-release_date="2026-06-25" data-cinemas="2360" data-prog_date="2026-07-09|2026-07-10|2026-07-11|2026-07-13|2026-07-14|2026-07-15" data-title="JACKASS: BEST AND LAST" data-prog_2360="2026-07-09|2026-07-10|2026-07-11|2026-07-13|2026-07-14|2026-07-15" data-prog_5593="">
+						
+						<br />
+<b>Fatal error</b>:  Uncaught TypeError: property_exists(): Argument #1 ($object_or_class) must be of type object|string, null given in /usr/local/apache/hosting/cineplexx/www/layouts/page_generic_homepage.php:251
+Stack trace:
+#0 /usr/local/apache/hosting/cineplexx/www/layouts/page_generic_homepage.php(251): property_exists()
+#1 {main}
+  thrown in <b>/usr/local/apache/hosting/cineplexx/www/layouts/page_generic_homepage.php</b> on line <b>251</b><br />

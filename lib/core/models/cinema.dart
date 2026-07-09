@@ -16,14 +16,12 @@ enum CinemaChain {
   /// platform for its catalog, then hands off seat map/occupancy to the same
   /// shared `secure.webtic.it` backend UCI also sits on top of - see
   /// [Cinema.host] and [Cinema.webticLocalId]. Not every Webtic-branded chain
-  /// exposes its catalog the same way though (see
-  /// [Cinema.webticScrapesProgrammingPage] and PROJECT_NOTES.md): Notorious
-  /// Cinemas has a single `cvu/modules/prenoRapido.php?sel=getFullSched` call
-  /// that returns everything at once, Giometti Cinema only has a
-  /// `programmazione` page giving each film's one nearest day, and Cinelandia
-  /// (an Angular SPA with no confirmed backend action yet) isn't supported at
-  /// all - only add a cinema here once its own chain's actual catalog source
-  /// has been confirmed live.
+  /// exposes its catalog the same way though - see [WebticCatalogSource] and
+  /// PROJECT_NOTES.md. Chains with no confirmed working catalog source at all
+  /// (Cinelandia, Starplex, Cinestar, ePlanet Cinemas - all Angular SPAs or
+  /// session-gated backends with no endpoint crackable from the outside)
+  /// aren't supported - only add a cinema here once its own chain's actual
+  /// catalog source has been confirmed live.
   webtic;
 
   static CinemaChain fromJson(String? value) => switch (value) {
@@ -31,6 +29,41 @@ enum CinemaChain {
     'eighteenTickets' => CinemaChain.eighteenTickets,
     'webtic' => CinemaChain.webtic,
     _ => CinemaChain.theSpace,
+  };
+}
+
+/// [CinemaChain.webtic] only: which of this platform's several different
+/// catalog-reading strategies a given chain's own front-end needs (see
+/// PROJECT_NOTES.md for how each was discovered) - the shared
+/// `secure.webtic.it` seat map/occupancy backend never changes, only how a
+/// cinema's showtimes are found in the first place.
+enum WebticCatalogSource {
+  /// Notorious Cinemas, Il Regno del Cinema: one
+  /// `cvu/modules/prenoRapido.php?sel=getFullSched` call per cinema returns
+  /// its entire catalog - every film, day and showtime - at once.
+  fullSchedule,
+
+  /// Giometti Cinema: each cinema has its own `programmazione` page (at
+  /// `https://{host}/cinema/{slug}/programmazione`, see [Cinema.slug])
+  /// listing every film currently showing there, but - confirmed live -
+  /// only ever *one* calendar day's showtimes per film (today's, or its
+  /// next playing day if not showing today), never a full week.
+  programmingPage,
+
+  /// Cineplexx (Bolzano/Algo): the chain's own homepage embeds the full
+  /// film catalog plus, per film, which of the chain's cinemas show it and
+  /// on which calendar days (`data-prog_{siteCinemaId}`, [Cinema.slug]
+  /// holding that per-venue numeric id) - but not the individual showtimes
+  /// themselves. Those live on each film's own per-cinema page
+  /// (`/scheda/{filmSlug}/{filmId}/{siteCinemaId}/`), which - unlike
+  /// Giometti - does give a full week at once, just one request per film
+  /// rather than one per cinema.
+  filmSchedulePages;
+
+  static WebticCatalogSource fromJson(String? value) => switch (value) {
+    'programmingPage' => WebticCatalogSource.programmingPage,
+    'filmSchedulePages' => WebticCatalogSource.filmSchedulePages,
+    _ => WebticCatalogSource.fullSchedule,
   };
 }
 
@@ -47,7 +80,7 @@ class Cinema {
     this.host,
     this.hasSeatMap = true,
     this.scheduleFromFilmPages = false,
-    this.webticScrapesProgrammingPage = false,
+    this.webticCatalogSource = WebticCatalogSource.fullSchedule,
   });
 
   factory Cinema.fromJson(Map<String, dynamic> json) {
@@ -63,8 +96,9 @@ class Cinema {
       host: json['host'] as String?,
       hasSeatMap: json['hasSeatMap'] as bool? ?? true,
       scheduleFromFilmPages: json['scheduleFromFilmPages'] as bool? ?? false,
-      webticScrapesProgrammingPage:
-          json['webticScrapesProgrammingPage'] as bool? ?? false,
+      webticCatalogSource: WebticCatalogSource.fromJson(
+        json['webticCatalogSource'] as String?,
+      ),
     );
   }
 
@@ -72,10 +106,15 @@ class Cinema {
   final String name;
 
   /// Mostly unused at runtime (kept for The Space, whose scraper stores it
-  /// but whose actual API calls only ever need [cinemaId]) - the one
-  /// exception is [webticScrapesProgrammingPage] cinemas, where this is the
+  /// but whose actual API calls only ever need [cinemaId]) - the exceptions
+  /// are [WebticCatalogSource.programmingPage] cinemas, where this is the
   /// URL path segment identifying the venue on its own chain's site (e.g.
-  /// "multiplex-pesaro" in `.../cinema/multiplex-pesaro/programmazione`).
+  /// "multiplex-pesaro" in `.../cinema/multiplex-pesaro/programmazione`),
+  /// and [WebticCatalogSource.filmSchedulePages] cinemas, where it's instead
+  /// the venue's own numeric site-internal id (e.g. "2360" for Cineplexx
+  /// Bolzano) used to build `/scheda/{filmSlug}/{filmId}/{slug}/` - a
+  /// different, chain-assigned number from [webticLocalId], which is what
+  /// the shared Webtic backend itself uses.
   final String slug;
   final String address;
   final double lat;
@@ -124,17 +163,9 @@ class Cinema {
   /// per-IP rate limit (see PROJECT_NOTES.md).
   final bool scheduleFromFilmPages;
 
-  /// [CinemaChain.webtic] only, and only Giometti Cinema so far: true for a
-  /// chain whose front-end has no single "everything at once" catalog call
-  /// the way Notorious Cinemas does - instead each cinema has its own
-  /// `programmazione` page (at `https://{host}/cinema/{slug}/programmazione`,
-  /// see [slug]) listing every film currently showing there, but - confirmed
-  /// live - only ever *one* calendar day's showtimes per film (today's, or
-  /// its next playing day if not showing today), never a full week. When
-  /// true, `WebticChainApi` scrapes that page instead of calling
-  /// `getFullSched`, and a day only ever shows up as a real showing day if
-  /// some film's own single day happens to land on it.
-  final bool webticScrapesProgrammingPage;
+  /// [CinemaChain.webtic] only - see [WebticCatalogSource] for what each
+  /// value means and how `WebticChainApi` branches on it.
+  final WebticCatalogSource webticCatalogSource;
 
   /// [name] alone for UCI Cinemas and every 18tickets/Webtic venue (all
   /// already self-identifying, e.g. "UCI Cinemas Seven Gioia del Colle",

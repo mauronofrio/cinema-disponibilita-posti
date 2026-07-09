@@ -49,25 +49,30 @@ void main() {
     });
 
     test(
-      'webticScrapesProgrammingPage defaults to false when absent from the JSON',
+      'webticCatalogSource defaults to fullSchedule when absent from the JSON',
       () {
         expect(
-          Cinema.fromJson(baseJson()).webticScrapesProgrammingPage,
-          isFalse,
+          Cinema.fromJson(baseJson()).webticCatalogSource,
+          WebticCatalogSource.fullSchedule,
         );
       },
     );
 
-    test(
-      'webticScrapesProgrammingPage reads true for a Giometti-style cinema',
-      () {
-        final json = baseJson()..['webticScrapesProgrammingPage'] = true;
-        expect(
-          Cinema.fromJson(json).webticScrapesProgrammingPage,
-          isTrue,
-        );
-      },
-    );
+    test('webticCatalogSource reads "programmingPage" for a Giometti-style cinema', () {
+      final json = baseJson()..['webticCatalogSource'] = 'programmingPage';
+      expect(
+        Cinema.fromJson(json).webticCatalogSource,
+        WebticCatalogSource.programmingPage,
+      );
+    });
+
+    test('webticCatalogSource reads "filmSchedulePages" for a Cineplexx-style cinema', () {
+      final json = baseJson()..['webticCatalogSource'] = 'filmSchedulePages';
+      expect(
+        Cinema.fromJson(json).webticCatalogSource,
+        WebticCatalogSource.filmSchedulePages,
+      );
+    });
   });
 
   group('SeatMap.fromApiResponseJson', () {

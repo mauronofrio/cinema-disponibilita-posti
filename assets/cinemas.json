@@ -1720,5 +1720,29 @@
     "webticLocalId": 5431,
     "chain": "webtic",
     "host": "www.ilregnodelcinema.com"
+  },
+  {
+    "cinemaId": "cineplexx-bolzano",
+    "name": "Cineplexx Bolzano",
+    "slug": "2360",
+    "address": "Via Macello 53/A, 39100 Bolzano BZ",
+    "lat": 46.4931615,
+    "lng": 11.3612118,
+    "webticLocalId": 5098,
+    "chain": "webtic",
+    "host": "www.cineplexx.bz.it",
+    "webticCatalogSource": "filmSchedulePages"
+  },
+  {
+    "cinemaId": "cineplexx-algo-lagundo",
+    "name": "Cineplexx Algo - Lagundo",
+    "slug": "5593",
+    "address": "Via Josef Weingartner 31, 39022 Lagundo BZ",
+    "lat": 46.679198,
+    "lng": 11.1347776,
+    "webticLocalId": 5593,
+    "chain": "webtic",
+    "host": "www.cineplexx.bz.it",
+    "webticCatalogSource": "filmSchedulePages"
   }
 ]

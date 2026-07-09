@@ -1,0 +1,1222 @@
+<!doctype html>
+<html lang="it">
+<head>
+	<!--<meta name="google-site-verification" content="" />-->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Cineplexx">
+	<meta property="og:url" content="https://www.cineplexx.bz.it" />
+	<meta property="og:site_name" content="Cineplexx" />
+	<meta property="og:image" content="https://www.cineplexx.bz.it/layouts/images/share_img_fb.jpg" />
+	<meta property="og:description" content="Cineplexx" />
+	<meta property="og:title" content="Cineplexx" />
+	
+	<link rel="icon" href="/layouts/images/favicon.png?fc=4374" type="image/png" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/reset.css?fc=1349" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/colors.css?fc=399" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/main.css?fc=13503" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/menu.css?fc=2580" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/reel.css?fc=1498" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/slick.css?fc=1729" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/slick-theme.css?fc=3291" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/menu_box.css?fc=1882" />
+<link rel="Stylesheet" type="text/css" href="/layouts/css/pagina_tabella.css?fc=156" />
+
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-thin-straight/css/uicons-thin-straight.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-thin-chubby/css/uicons-thin-chubby.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-thin-rounded/css/uicons-thin-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css'>
+
+<title>Cineplexx</title>	<link rel="Stylesheet" type="text/css" href="/layouts/css/scheda.css?fc=3130" />
+	
+<script src="/layouts/js/jquery.min.js?fc=89475" type="text/javascript"></script>
+<script src="/layouts/js/slick.min.js?fc=41953" type="text/javascript"></script>
+<script src="/layouts/js/navi.js?fc=22" type="text/javascript"></script>
+
+<script type="text/javascript">
+	var img_url = "";
+	var domain = "www.cineplexx.bz.it";
+	var cookie_object = JSON.parse('{"neces":1,"funz":0,"perf":0,"analy":0,"adv":0,"altri":0}');
+	//console.log(cookie_object);
+</script>
+
+
+	<script>
+		var idcinema = "2360";
+		var idfilm = "47588";
+		var slug = "minions-monsters";
+	</script>
+	<script>
+	$(function(){
+		if(idcinema != "0") {
+			$("#sel_cine_scheda option[value='"+idcinema+"']").prop("selected", true);
+			/*
+			$("html, body").animate({
+				scrollTop: ($("#preno").offset().top)
+			});
+			*/
+		}
+		if($("#sel_cine_scheda option").length == 1) $("#preno").hide();
+		
+		$("#sel_cine_scheda").on('change', function() {
+			let this_lmnt = $("#sel_cine_scheda");
+			
+			let scheda_url = "/scheda/"+slug+"/"+idfilm+"/";
+			if(this_lmnt.val() != "null") scheda_url += this_lmnt.val()+"/";
+			
+			window.location.href = scheda_url;
+			//console.log(scheda_url);
+		});
+		
+		$("body").on("click", ".orario", function() { window.location.href = $(this).find("a").attr("href"); });
+		
+		//$(".versione:contains('2D')").hide();
+
+		$(".orari_cont .versione").each( function() {
+			let v_cont = $(this).html().trim();
+			$(this).html(v_cont.replace("2D", "IT"));
+		});
+		
+		//$("html, body").animate({ scrollTop: ($("#scheda").offset().top - 20) });
+	})	
+	</script>
+</head>
+<body>
+	<div id="container">
+		
+			
+	<link rel="Stylesheet" type="text/css" href="/layouts/css/cookie_accept.css?fc=1764" />
+	
+	<script defer src="/layouts/js/cookie_accept.js?fc=" type="text/javascript"></script>
+	
+	
+	<div id="cookie_accept_cont">
+		<div class="cookie_accept_cont_body">
+			<div class="cookie_accept_close_box"><div class="cookie_accept_close"><i class="fi fi-tr-circle-xmark"></i></div></div>
+			<div class="cookie_accept_box">
+				Questo sito web o gli strumenti di terze parti da esso utilizzati si servono di cookie per il funzionamento e gli scopi descritti nella <a href='/content/cookie-policy' title='vai alla cookie policy'>cookie policy</a>.<br/>Cliccando sulla (X) sarà come rifiutare l'utilizzo dei cookie, ad eccezione dei necessari.			</div>
+			<span class="btt_main_solid" id="cookie_policy_nay">
+				<i class="fi fi-tr-circle-xmark"></i>
+				Rifiuto			</span>
+			<span class="btt_main_solid" id="cookie_policy_aye">
+				<i class="fi fi-tr-check-circle"></i>
+				Accetto			</span>
+		</div>
+	</div>
+	
+
+<script>
+$(function(){
+	
+	$("#language_menu").on("click", function(event) {
+		event.preventDefault();
+		
+		let btt_lang = $(this).find(".btt_language_text");
+		let d = new Date();
+		let d2 = new Date(d.getFullYear() + 1, d.getMonth(), d.getDate());
+		let expires = d2.toUTCString();
+		document.cookie = "id_lang="+btt_lang.data("id_lang")+"; expires="+expires+"; domain="+domain+"; Secure; path=/";
+		
+		location.reload(); 
+	});
+	
+})
+</script>
+<div id="header_top">
+	<div id="header_top_body">
+	
+		<div id="contact_menu">
+			<a href="/content/newsletter">
+				<div class="btt_contact">
+				<i class="fi fi-tc-envelope"></i>
+					<span class="btt_contact_text">Cineplexx Newsletter</span>
+				</div>
+			</a>
+			<div class="btt_contact">
+				<i class="fi fi-tr-cloud-download-alt"></i>
+				<span class="btt_contact_text">Cineplexx Apps</span>
+				<a href="https://itunes.apple.com/app/webtic-cineplexx-bolzano-cinema/id575103280?mt=8" target="_blank"><i class="fi fi-brands-apple"></i></a>
+				<a href="https://play.google.com/store/apps/details?id=it.creaweb.cineplexx" target="_blank"><i class="fi fi-brands-google"></i></a>
+			</div>
+		</div>
+		
+		<div id="language_menu">
+			<div class="btt_language">
+				<span class='btt_language_text' data-id_lang='de'>Sprache ändern</span> <i class='fi fi-ts-german'></i>			</div>
+		</div>
+		
+	</div>
+</div>
+
+<header>
+	<div id="header_body">
+	
+		<a href="/"><img src="/layouts/images/logo.png" id="logo" /></a>
+	
+		        	<nav>
+			  	<label for="drop" class="toggle"><i class="fi fi-tr-bars-filter"></i></label>
+			  	<input type="checkbox" id="drop" />
+				<ul class="menu">
+					<li><a href="/" title="Film">Film</a></li>
+					<li>
+												<a href="/eventi" title="Eventi">
+						Eventi						</a>
+					</li>
+
+					<li>
+						<label for="drop-3" class="toggle">
+							Prezzi						</label>
+						<a href="#">
+							Prezzi						</a>
+						<input type="checkbox" id="drop-3"/>
+						<ul>
+							<li>
+																<a href="/prezzi-bolzano" title="Prezzi Bolzano">
+								Prezzi Bolzano								</a>
+							</li>
+							<li>
+																<a href="/prezzi-algo" title="Prezzi Algo">
+								Prezzi Algo								</a>
+							</li>
+						</ul> 
+					</li>
+					<li>
+						<label for="drop-1" class="toggle">Card</label>
+						<a href="#">Card</a>
+						<input type="checkbox" id="drop-1"/>
+						<ul>
+							<li><a href="/cineplexx-bonus-card" title="Cineplexx Bonus Card">Cineplexx Bonus Card</a></li>
+							<li><a href="/gift-card" title="Gift Card">Gift Card</a></li>
+							<li><a href="/family-filmclub" title="Family Film Club">Family Film Club</a></li>
+						</ul> 
+					</li>
+					<li>
+						<label for="drop-2" class="toggle">
+							Info cinema						</label>
+						<a href="#">
+							Info cinema						</a>
+						<input type="checkbox" id="drop-2"/>
+						<ul>
+							<li>
+																<a href="/dove-siamo" title="Dove siamo">
+								Dove siamo								</a>
+							</li>
+							<li>
+																<a href="/sale" title="Sale">
+								Sale								</a>
+							</li>
+							<li>
+																<a href="/tecnologie" title="Tecnologie">
+								Tecnologie								</a>
+							</li>
+							<li>
+																<a href="/informazioni-sul-cinema" title="Informazioni sul cinema">
+								Informazioni sul cinema								</a>
+							</li>
+							<li>
+																<a href="/lavora-con-noi" title="Lavora con noi">
+								Lavora con noi								</a>
+							</li>
+							<li>
+																<a href="/affitto-cinema" title="Affitto cinema">
+								Affitto cinema								</a>
+							</li>
+							<li>
+																<a href="/scuole-al-cinema" title="Scuole al cinema">
+								Scuole al cinema								</a>
+							</li>
+							<li>
+																<a href="/compleanni" title="Compleanni">
+								Compleanni								</a>
+							</li>
+							<li>
+																<a href="/contatti" title="Contatti">
+								Contatti								</a>
+							</li>
+						</ul> 
+					</li>
+					<li>
+												<a href="/pubblicita" title="Pubblicità">
+						Pubblicità						</a>
+					</li>
+				</ul>
+        	</nav>
+		
+	</div>
+</header>
+<!--header close-->		
+		<style>
+
+#reel {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	margin: 0 auto;
+}
+	
+@media screen and (min-width : 992px) {
+	#reel { width: 1140px; height: 640px; }
+}
+
+.banner_reel {
+}
+
+	.reel_item {
+		position: relative;
+	}
+	
+	@media screen and (min-width : 992px) {
+		.reel_item {
+			width: 1140px;
+			height: 640px;
+		}
+	}
+	
+		.reel_item_image_blur {
+			display: none;
+		}
+	
+		@media screen and (min-width : 992px) {
+			.reel_item_image_blur {
+				content: "";
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-size: cover;
+				overflow:hidden;
+				-webkit-filter: blur(15px);
+				-moz-filter: blur(15px);
+				-o-filter: blur(15px);
+				-ms-filter: blur(15px);
+				filter: blur(15px);
+			}
+			
+			.reel_item_image_blur img {
+				width: 100%;
+			}
+		}
+		
+		.reel_item_image img {
+			width: 100%;
+		}
+	
+		@media screen and (min-width : 992px) {
+			.reel_item_image { width: 1140px; height: 640px; position: absolute; top: 50%; left: 50%; margin-left: -570px; margin-top: -320px; }
+		}
+		
+		.reel_item .btt_reel {
+			position: absolute;
+			top: 10px;
+			right: 20px;
+			display: flex;
+			flex-direction: column;
+			row-gap: 10px;
+			display: none;
+		}
+	
+		@media screen and (min-width : 992px) {
+			.reel_item .btt_reel { top: 30px; right: 40px; row-gap: 20px; }
+		}
+		
+			.btt_reel_trailer, .btt_reel_acquista {
+				width: 40px;
+				height: 40px;
+				font-size: 20px;
+				line-height: 43px;
+				text-align: center;
+				border-radius: 50%;
+				border: 2px solid var(--second_color);
+				background: rgba(255,255,255,.2);
+				color: var(--first_color);
+				transition: background 0.3s linear;
+				-webkit-transition: background 0.3s linear;
+				-moz-transition: background 0.3s linear;
+				
+				display: none;
+			}
+	
+			@media screen and (min-width : 992px) {
+				.btt_reel_trailer, .btt_reel_acquista { width: 50px; height: 50px; font-size: 25px; line-height: 55px; }
+			}
+		
+			.btt_reel_trailer:hover, .btt_reel_acquista:hover {
+				background: rgba(255,255,255,.4);
+			}
+
+</style>
+
+<script>
+$(function(){
+$('.banner_reel').on('init', function(event, slick){ if(typeof skip_scroll === 'undefined'|| !skip_scroll) $("html, body").animate({ scrollTop: ( $("main").offset().top ) }); });
+$('.banner_reel').slick({
+	dots: false,
+ 	arrows: true,
+	infinite: true,
+	autoplay: true,
+	speed: 600,
+	slidesToShow: 1,
+	slidesToScroll: 1,
+	responsive: [
+    {
+		breakpoint: 992,
+		settings: {
+        arrows: false
+    	}
+    }
+  	]
+});
+})
+</script>
+<div id="reel">
+	
+	<!-- slider container -->
+	<div class="banner_reel">
+		
+		<!-- slider items -->
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg" alt="blurred /cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/english-movie-night" title="it">
+					<img src="/cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg" alt="/cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/english-movie-night" title="/cdn/home/93e713826f0fa75a9c71fd626f433c16a0e73f944efb5c0cdf66c2b2a784e27773cafe77c19ff85b9cf0289a7d27b7009b6d03c41a8f31fc78c121c6c7c334b1.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg" alt="blurred /cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/free-refill-de-it" title="it">
+					<img src="/cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg" alt="/cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/free-refill-de-it" title="/cdn/home/bb9f9136df9859473161f21d65f402f3805af84326d3bf7acbbbd012e9891b173519967132a79f559a731a4a7c8919cf37dcc4db4f29627257fb4d289db31af1.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/533dd9163bad80993eab801182e5f004e1dd249cc04767f8ab1b4553d2b503080b0192f4945f2e24c4614b9b66b8d7d005de813eb2b60da002f00c187ee55bdb.jpg" alt="blurred /cdn/home/533dd9163bad80993eab801182e5f004e1dd249cc04767f8ab1b4553d2b503080b0192f4945f2e24c4614b9b66b8d7d005de813eb2b60da002f00c187ee55bdb.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="" title="it">
+					<img src="/cdn/home/533dd9163bad80993eab801182e5f004e1dd249cc04767f8ab1b4553d2b503080b0192f4945f2e24c4614b9b66b8d7d005de813eb2b60da002f00c187ee55bdb.jpg" alt="/cdn/home/533dd9163bad80993eab801182e5f004e1dd249cc04767f8ab1b4553d2b503080b0192f4945f2e24c4614b9b66b8d7d005de813eb2b60da002f00c187ee55bdb.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+											</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg" alt="blurred /cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/scheda/odissea-2026/47434/" title="it">
+					<img src="/cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg" alt="/cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/scheda/odissea-2026/47434/" title="/cdn/home/74d6781ffc6d9417e761034a7974cb3667a850377667850c028e0c2bbb2c2193e021e3693e2b3bace4c53cbf5d11340be74711590efdfd93bffc1bb2e228a1a8.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/0a634b66306cdc4044ad92fa0fb9a30118f5ffd3dbbb0b47f55f3136ed067f2d20305c0453769916c7748eb13bfd39aa0ada40b223a8696ec32d13ce96da7651.jpg" alt="blurred /cdn/home/0a634b66306cdc4044ad92fa0fb9a30118f5ffd3dbbb0b47f55f3136ed067f2d20305c0453769916c7748eb13bfd39aa0ada40b223a8696ec32d13ce96da7651.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="" title="it">
+					<img src="/cdn/home/0a634b66306cdc4044ad92fa0fb9a30118f5ffd3dbbb0b47f55f3136ed067f2d20305c0453769916c7748eb13bfd39aa0ada40b223a8696ec32d13ce96da7651.jpg" alt="/cdn/home/0a634b66306cdc4044ad92fa0fb9a30118f5ffd3dbbb0b47f55f3136ed067f2d20305c0453769916c7748eb13bfd39aa0ada40b223a8696ec32d13ce96da7651.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+											</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg" alt="blurred /cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/special-english-movie-night" title="it">
+					<img src="/cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg" alt="/cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/special-english-movie-night" title="/cdn/home/cdbce3936c1424a7a38d64c703bb2c5a7dc0e5f330abbc99d05893ce7fead72b2bc6cb40c8fe18fd29fdaf36af136e25ccc179327a32ac9f75668ccb54e3da42.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/40b1e5f87680998ed25db640da7795cc96565c5aeaae25f6a6723b85e0197be13e46584486ec7719446ba7ee2372a9f188bdb75327f122cfca69b1ad1d1c4fa6.jpg" alt="blurred /cdn/home/40b1e5f87680998ed25db640da7795cc96565c5aeaae25f6a6723b85e0197be13e46584486ec7719446ba7ee2372a9f188bdb75327f122cfca69b1ad1d1c4fa6.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="" title="it">
+					<img src="/cdn/home/40b1e5f87680998ed25db640da7795cc96565c5aeaae25f6a6723b85e0197be13e46584486ec7719446ba7ee2372a9f188bdb75327f122cfca69b1ad1d1c4fa6.jpg" alt="/cdn/home/40b1e5f87680998ed25db640da7795cc96565c5aeaae25f6a6723b85e0197be13e46584486ec7719446ba7ee2372a9f188bdb75327f122cfca69b1ad1d1c4fa6.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+											</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg" alt="blurred /cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/hot-movie-summer-it" title="it">
+					<img src="/cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg" alt="/cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/hot-movie-summer-it" title="/cdn/home/aaed5a837fca3fa9e27c0e781306c02778fa07b7c67bc61a7e034b05524e36ba25cda2d382cd7bf34b14ed222d766fbe2c399d3f86be5a0ae17ec7269a82f88b.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg" alt="blurred /cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="https://www.cineplexx.bz.it/event/cineplexx-opera-it" title="it">
+					<img src="/cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg" alt="/cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="https://www.cineplexx.bz.it/event/cineplexx-opera-it" title="/cdn/home/7f095eaa25e952dabffca90a8f684be2646e20fc95a41258c9a781c4165ed31e5901f58ad2abe57bc934a12864c4c132ed32057d956253e111f37635738c922b.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg" alt="blurred /cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="/gift-card" title="it">
+					<img src="/cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg" alt="/cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+												<a href="/gift-card" title="/cdn/home/ba0291f935f95ed9072ceebbc999e90f45b7c0e808109ce376ae843cba0f04a1bce7240395a4efb53e30776808b0950a236dba389b58c87ed04ef2e3e9292c4b.jpg - acquista subito">
+					<div class="btt_reel_acquista"><i class="fi fi-tr-cart-minus"></i></div>
+				</a>
+							</div>
+		</div>
+				<div class="reel_item">
+			<div class="reel_item_image_blur">
+				<img src="/cdn/home/9e138fd1c0e0ad4207ffc688c2b9a76c56a3fd24bfbe58da3f34949e9cf2929642fb5cb5f000cc40ca2e5bd3aac2509923baeef5422d03996b5b7414da14d5a6.jpg" alt="blurred /cdn/home/9e138fd1c0e0ad4207ffc688c2b9a76c56a3fd24bfbe58da3f34949e9cf2929642fb5cb5f000cc40ca2e5bd3aac2509923baeef5422d03996b5b7414da14d5a6.jpg"/>
+			</div>
+			<div class="reel_item_image">
+				<a href="" title="it">
+					<img src="/cdn/home/9e138fd1c0e0ad4207ffc688c2b9a76c56a3fd24bfbe58da3f34949e9cf2929642fb5cb5f000cc40ca2e5bd3aac2509923baeef5422d03996b5b7414da14d5a6.jpg" alt="/cdn/home/9e138fd1c0e0ad4207ffc688c2b9a76c56a3fd24bfbe58da3f34949e9cf2929642fb5cb5f000cc40ca2e5bd3aac2509923baeef5422d03996b5b7414da14d5a6.jpg"/>
+				</a>
+			</div>
+			
+			<div class="btt_reel">
+											</div>
+		</div>
+				<!-- reel_item....... -->
+		
+	</div>
+	
+</div>		
+		<main>
+			<div id="main_body">
+				
+				<div id="scheda">
+					
+					<div id="boxLocandina">
+												<img src="http://img.cine-vu.it/locandineSchede/[446]47588.jpg" alt="MINIONS & MONSTERS"/>
+					</div>
+					
+					<div id="info_film">
+												<div class="titolo">
+							<h1>MINIONS & MONSTERS</h1>
+						</div>
+												<div class="titolo_orig">
+							<span class="label">
+								Titolo originale:							</span>
+							Minions & Monsters</div>
+																		<div class="regia">
+							<span class="label">
+								Regia:							</span>
+							Pierre Coffin</div>
+																		<div class="genere">
+							<span class="label">
+								Genere:							</span>
+							Animazione</div>
+																		<div class="durata">
+							<span class="label">
+								Durata:							</span>
+							90'</div>
+																								<div class="nazione">
+							<span class="label">
+								Nazione:							</span>
+							USA</div>
+																		<div class="anno">
+							<span class="label">
+								Anno:							</span>
+							2026</div>
+												
+												<div id="trama">Questa è la storia turbolenta, assurda e assolutamente vera di come i Minions abbiano conquistato Hollywood, siano diventati star del cinema, abbiano perso tutto, abbiano liberato dei mostri nel mondo e poi si siano riuniti per cercare di salvare il pianeta dal caos che loro stessi avevano creato.</div>
+												
+												<a href="https://www.youtube.com/embed/NtJc1OyjCHA" title="MINIONS & MONSTERS - TRAILER" target="_blank">
+							<div class="btt_trailer">
+								<i class="fi fi-tr-play-circle"></i>
+								Guarda il trailer							</div>
+						</a>
+												
+					</div>
+					
+					<div id="preno">
+						<div class="title">
+							<h1>
+								Visualizza gli orari e acquista							</h1>
+						</div>
+						<div class="content">
+							<form id="prenoRapidoScheda">
+								<select id="sel_cine_scheda">
+									<option value="null">
+										Scegli il cinema									</option>
+																		<option value="5593">
+										Algo									</option>
+																		<option value="2360">
+										Bolzano									</option>
+																	</select>
+							</form>
+						</div>
+						
+						<ul class="orari">
+														<li class="hours">
+								<div class="dayName">
+								Giovedì 09/07								</div>
+								<div class="orari_cont">
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7525/226519/" title="MINIONS & MONSTERS:  09/07 - 17:00" class="link_acquista">
+											17:00										</a>
+										<div class="versione">3D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226509/" title="MINIONS & MONSTERS:  09/07 - 17:10" class="link_acquista">
+											17:10										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226514/" title="MINIONS & MONSTERS:  09/07 - 18:10" class="link_acquista">
+											18:10										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226520/" title="MINIONS & MONSTERS:  09/07 - 18:50" class="link_acquista">
+											18:50										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226515/" title="MINIONS & MONSTERS:  09/07 - 20:00" class="link_acquista">
+											20:00										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226521/" title="MINIONS & MONSTERS:  09/07 - 20:40" class="link_acquista">
+											20:40										</a>
+										<div class="versione">2D</div>
+									</div>
+																</div>
+							</li>
+														<li class="hours">
+								<div class="dayName">
+								Venerdì 10/07								</div>
+								<div class="orari_cont">
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7525/226527/" title="MINIONS & MONSTERS:  10/07 - 16:10" class="link_acquista">
+											16:10										</a>
+										<div class="versione">3D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226531/" title="MINIONS & MONSTERS:  10/07 - 16:15" class="link_acquista">
+											16:15										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226541/" title="MINIONS & MONSTERS:  10/07 - 17:00" class="link_acquista">
+											17:00										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226528/" title="MINIONS & MONSTERS:  10/07 - 17:10" class="link_acquista">
+											17:10										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226532/" title="MINIONS & MONSTERS:  10/07 - 18:10" class="link_acquista">
+											18:10										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7525/226540/" title="MINIONS & MONSTERS:  10/07 - 18:50" class="link_acquista">
+											18:50										</a>
+										<div class="versione">3D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226533/" title="MINIONS & MONSTERS:  10/07 - 20:00" class="link_acquista">
+											20:00										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226542/" title="MINIONS & MONSTERS:  10/07 - 20:40" class="link_acquista">
+											20:40										</a>
+										<div class="versione">2D</div>
+									</div>
+																</div>
+							</li>
+														<li class="hours">
+								<div class="dayName">
+								Sabato 11/07								</div>
+								<div class="orari_cont">
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226546/" title="MINIONS & MONSTERS:  11/07 - 16:10" class="link_acquista">
+											16:10										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226552/" title="MINIONS & MONSTERS:  11/07 - 16:15" class="link_acquista">
+											16:15										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7525/226561/" title="MINIONS & MONSTERS:  11/07 - 17:00" class="link_acquista">
+											17:00										</a>
+										<div class="versione">3D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226549/" title="MINIONS & MONSTERS:  11/07 - 17:10" class="link_acquista">
+											17:10										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226553/" title="MINIONS & MONSTERS:  11/07 - 18:10" class="link_acquista">
+											18:10										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226562/" title="MINIONS & MONSTERS:  11/07 - 18:50" class="link_acquista">
+											18:50										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226554/" title="MINIONS & MONSTERS:  11/07 - 20:00" class="link_acquista">
+											20:00										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7525/226563/" title="MINIONS & MONSTERS:  11/07 - 20:40" class="link_acquista">
+											20:40										</a>
+										<div class="versione">3D</div>
+									</div>
+																</div>
+							</li>
+														<li class="hours">
+								<div class="dayName">
+								Domenica 12/07								</div>
+								<div class="orari_cont">
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226567/" title="MINIONS & MONSTERS:  12/07 - 16:10" class="link_acquista">
+											16:10										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226573/" title="MINIONS & MONSTERS:  12/07 - 16:15" class="link_acquista">
+											16:15										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226583/" title="MINIONS & MONSTERS:  12/07 - 17:00" class="link_acquista">
+											17:00										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226570/" title="MINIONS & MONSTERS:  12/07 - 17:10" class="link_acquista">
+											17:10										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226574/" title="MINIONS & MONSTERS:  12/07 - 18:10" class="link_acquista">
+											18:10										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7525/226582/" title="MINIONS & MONSTERS:  12/07 - 18:50" class="link_acquista">
+											18:50										</a>
+										<div class="versione">3D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226575/" title="MINIONS & MONSTERS:  12/07 - 20:00" class="link_acquista">
+											20:00										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226584/" title="MINIONS & MONSTERS:  12/07 - 20:40" class="link_acquista">
+											20:40										</a>
+										<div class="versione">2D</div>
+									</div>
+																</div>
+							</li>
+														<li class="hours">
+								<div class="dayName">
+								Lunedì 13/07								</div>
+								<div class="orari_cont">
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7525/226600/" title="MINIONS & MONSTERS:  13/07 - 17:00" class="link_acquista">
+											17:00										</a>
+										<div class="versione">3D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226590/" title="MINIONS & MONSTERS:  13/07 - 17:10" class="link_acquista">
+											17:10										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226593/" title="MINIONS & MONSTERS:  13/07 - 18:10" class="link_acquista">
+											18:10										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226601/" title="MINIONS & MONSTERS:  13/07 - 18:50" class="link_acquista">
+											18:50										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226594/" title="MINIONS & MONSTERS:  13/07 - 20:00" class="link_acquista">
+											20:00										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226602/" title="MINIONS & MONSTERS:  13/07 - 20:40" class="link_acquista">
+											20:40										</a>
+										<div class="versione">2D</div>
+									</div>
+																</div>
+							</li>
+														<li class="hours">
+								<div class="dayName">
+								Martedì 14/07								</div>
+								<div class="orari_cont">
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226620/" title="MINIONS & MONSTERS:  14/07 - 17:00" class="link_acquista">
+											17:00										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226608/" title="MINIONS & MONSTERS:  14/07 - 17:10" class="link_acquista">
+											17:10										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226612/" title="MINIONS & MONSTERS:  14/07 - 18:10" class="link_acquista">
+											18:10										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226619/" title="MINIONS & MONSTERS:  14/07 - 18:50" class="link_acquista">
+											18:50										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226611/" title="MINIONS & MONSTERS:  14/07 - 20:00" class="link_acquista">
+											20:00										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7525/226618/" title="MINIONS & MONSTERS:  14/07 - 20:40" class="link_acquista">
+											20:40										</a>
+										<div class="versione">3D</div>
+									</div>
+																</div>
+							</li>
+														<li class="hours">
+								<div class="dayName">
+								Mercoledì 15/07								</div>
+								<div class="orari_cont">
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7525/226636/" title="MINIONS & MONSTERS:  15/07 - 17:00" class="link_acquista">
+											17:00										</a>
+										<div class="versione">3D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226626/" title="MINIONS & MONSTERS:  15/07 - 17:10" class="link_acquista">
+											17:10										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7527/226629/" title="MINIONS & MONSTERS:  15/07 - 18:10" class="link_acquista">
+											18:10										</a>
+										<div class="versione">3D DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226637/" title="MINIONS & MONSTERS:  15/07 - 18:50" class="link_acquista">
+											18:50										</a>
+										<div class="versione">2D</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7523/226630/" title="MINIONS & MONSTERS:  15/07 - 20:00" class="link_acquista">
+											20:00										</a>
+										<div class="versione">DE</div>
+									</div>
+																	<div class="orario">
+										<a href="/acquista/minions-monsters/5098/7522/226638/" title="MINIONS & MONSTERS:  15/07 - 20:40" class="link_acquista">
+											20:40										</a>
+										<div class="versione">2D</div>
+									</div>
+																</div>
+							</li>
+													</ul>
+						
+					</div>
+					
+				</div>
+				<!--scheda close-->
+			
+			</div>
+		</main>
+
+		<section id="newsletter">
+	<div id="newsletter_body">
+
+		<img class="img_newsletter" src="/layouts/images/img_newsletter.png" alt="Newsletter" />
+		<div class="card_info">
+			<h1>
+				Iscriviti gratuitamente alla nostra newsletter!			</h1><br />
+			La newsletter Cineplexx vi informerà tempestivamente su eventi, nuove iniziative, prime visioni e molto altro ancora. Vi fornirà consigli cinematografici, schede tecniche e informazioni sui grandi speciali dedicati ai film.		</div>
+		<a href="/content/newsletter" title="Newsletter">
+			<div id="btt_newsletter">
+				Iscriviti subito			</div>
+		</a>
+		
+	</div>
+</section>
+
+<section id="social">
+	<div id="social_body">
+		<div id="social_title">
+			<h1>
+				Seguici sui nostri canali social			</h1>
+		</div>
+		<div id="social_cont">
+			<div class="social_box">
+				<div class="social_cinema"><h1>Bolzano</h1></div>
+				<div class="social_icon"><a href="https://www.facebook.com/CineplexxBZ" title="Facebook" target="_blank"><i class="fi fi-brands-facebook"></i></a></div>
+				<div class="social_icon"><a href="https://www.instagram.com/cineplexxbz" title="Instagram" target="_blank"><i class="fi fi-brands-instagram"></i></a></div>
+				<div class="social_icon"><a href="https://x.com/CineplexxBZ" title="X" target="_blank"><i class="fi fi-brands-twitter-alt"></i></a></div>
+			</div>
+			<div class="social_box">
+				<div class="social_cinema"><h1>Algo</h1></div>
+				<div class="social_icon"><a href="https://www.facebook.com/CineplexxALGO" title="Facebook" target="_blank"><i class="fi fi-brands-facebook"></i></a></div>
+				<div class="social_icon"><a href="https://www.instagram.com/cineplexx_algo" title="Instagram" target="_blank"><i class="fi fi-brands-instagram"></i></a></div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section id="partner">
+	<div id="partner_body">
+		<div id="partner_title">
+			<h1>
+				Partner			</h1>
+		</div>
+		<div id="partner_box">
+			<a href="http://www.stol.it/Dolomiten" target="_blank" title="Dolomiten"><img src="/layouts/images/partner_dolomiten.png" alt="Dolomiten" class="partner_img" /></a>
+			<a href="http://www.suedtirol1.it/" target="_blank" title="Mein Radio Sudtirol"><img src="/layouts/images/partner_meinradiosudtirol.png" alt="Mein Radio Sudtirol" class="partner_img" /></a>
+			<a href="http://www.altoadige.it/" target="_blank" title="Alto Adige"><img src="/layouts/images/partner_altoadige.png" alt="Alto Adige" class="partner_img" /></a>
+			<a href="http://www.radiotirol.it/" target="_blank" title="Radio Tirol"><img src="/layouts/images/partner_radiotirol.png" alt="Radio Tirol" class="partner_img" /></a>
+			<a href="http://www.radionbc.it/" target="_blank" title="Radio NBC"><img src="/layouts/images/partner_nbc.png" alt="Radio NBC" class="partner_img" /></a>
+			<a href="http://www.stol.it/" target="_blank" title="Stol.it"><img src="/layouts/images/partner_stol.png" alt="Stol.it" class="partner_img" /></a>
+		</div>
+	</div>
+</section>
+
+<!--prenotaRapido-->
+<script>
+$(function(){
+	
+	//init
+	$("#sel_cine option").prop("selected", false);
+	
+	var fullsched;
+	var pos_film;
+	var pos_day;
+	
+	
+	//act
+	$("#sel_cine").on('change', function() {
+		$("#sel_cine").css("font-weight", "bold");
+		$("#sel_cine option").css("font-weight", "normal");
+		
+		clear(1, 1, 1);
+		if($(this).val() != "null")	{
+			idwebtic = $(this).val();
+			var d=new Date();
+			$.getJSON("/cvu/handlers/handler_prenotaRapido.php", {sel: "getFullSched", idwebtic: idwebtic, rand: d.getTime()}, function(jz){
+				fullsched = jz;
+				
+				getFilm(fullsched);
+			});
+		}else	$("#sel_cine").css("font-weight", "normal");
+		
+	});
+	
+	$("#sel_film").on('change', function() {
+		clear(0, 1, 1);
+		if($(this).val() != "null")	{
+			pos_film = $(this).val();
+			getGiorno(pos_film, fullsched);
+		}
+	});
+	
+	$("#sel_giorno").on('change', function() {
+		clear(0, 0, 1);
+		if($(this).val() != "null")	{
+			pos_day = $(this).val();
+			getOra(pos_day, pos_film, fullsched);
+		}
+	});
+	
+	
+	$("#sel_ora").on('change', function() {
+		if($("#sel_cine").val() != "null" && $("#sel_film").val() != "null" && $("#sel_giorno").val() != "null" && $("#sel_ora").val() != "null")	{
+			var preno = "/acquista/"+$("#sel_film").val()+"/"+$("#sel_cine").val()+"/"+$("#sel_giorno").val()+"/"+$("#sel_ora").val()+"/";
+			window.location.href = preno;
+		}
+	});
+	
+	
+	var is_mobile = window.matchMedia("only screen and (max-width: 480px)").matches;
+	$(window).resize(function() { is_mobile = window.matchMedia("only screen and (max-width: 480px)").matches; });
+	$(".title_prenotaRapido").on('click', function() { if(is_mobile) $("#prenoRapido").slideToggle(); });
+	
+	
+	
+	
+	
+	function getOra(pos_day, pos_film, fullsched)	{
+		$("#sel_ora").html('<option value="null">loading...</option>');
+		
+		var performances = fullsched.DS.Scheduling.Events[pos_film].Days[pos_day].Performances;
+		var opts = '<option value="null">Scegli l\'ora</option>';
+		for(i=0;i<performances.length;i++)	{
+			opts += '<option value="' + performances[i].PerformanceId + '">' + performances[i].Time + '</option>';
+		}
+		$("#sel_ora").html(opts);
+		$("#sel_ora").css("font-weight", "bold");
+		$("#sel_ora option").css("font-weight", "normal");
+	}
+	
+	
+	function getGiorno(pos_film, fullsched)	{
+		$("#sel_giorno").html('<option value="null">loading...</option>');
+		
+		var days = fullsched.DS.Scheduling.Events[pos_film].Days;
+		var opts = '<option value="null">Scegli il giorno</option>';
+		for(i=0;i<days.length;i++)	{
+			d = days[i].Day.split("T");
+			dd = d[0].split("-");
+			opts += '<option value="' + i + '">' + dd[2]+"-"+dd[1]+"-"+dd[0] + '</option>';
+		}
+		$("#sel_giorno").html(opts);
+		$("#sel_giorno").css("font-weight", "bold");
+		$("#sel_giorno option").css("font-weight", "normal");
+	}
+	
+	
+	function getFilm(fullsched)	{
+		$("#sel_film").html('<option value="null">loading...</option>');
+		
+		var events = fullsched.DS.Scheduling.Events;
+		var opts = '<option value="null">Scegli il film</option>';
+		for(i=0;i<events.length;i++)	{
+			opts += '<option value="' + i + '">' + events[i].Title.toUpperCase() + '</option>';
+		}
+		$("#sel_film").html(opts);
+		$("#sel_film").css("font-weight", "bold");
+		$("#sel_film option").css("font-weight", "normal");
+	}
+	
+	
+	function clear(film, giorno, ora) {
+		if(film) $("#sel_film").html('<option value="null">Scegli il film</option>').css("font-weight", "normal");
+		if(giorno) $("#sel_giorno").html('<option value="null">Scegli il giorno</option>').css("font-weight", "normal");
+		if(ora) $("#sel_ora").html('<option value="null">Scegli l\'ora</option>').css("font-weight", "normal");
+	}
+	
+	
+})
+</script>
+<div class="prenotaRapido">
+	<div class="prenotaRapido_body">
+		<div class="title_prenotaRapido">
+			<h1>
+				Acquista ora			</h1>
+		</div>
+		<form id="prenoRapido">
+			<div>
+				<i class="fi fi-tr-house-chimney"></i>
+				<select id="sel_cine">
+					<option value="null">
+						Scegli il cinema					</option>
+										<option value="5593">Algo</option>
+										<option value="5098">Bolzano</option>
+									</select>
+			</div>
+			<div>
+				<i class="fi fi-tr-clapperboard"></i>
+				<select id="sel_film">
+					<option value="null">
+						Scegli il film					</option>
+				</select>
+			</div>
+			<div>
+				<i class="fi fi-tr-calendar-check"></i>
+				<select id="sel_giorno">
+					<option value="null">
+						Scegli il giorno					</option>
+				</select>
+			</div>
+			<div>
+				<i class="fi fi-tr-clock-two"></i>
+				<select id="sel_ora">
+					<option value="null">
+						Scegli l'ora						
+					</option>
+				</select>
+			</div>
+		</form>
+	</div>
+</div>
+<!--prenotaRapido close-->		
+		<footer>
+	<div id="footer_body">
+
+		<div id="menu_footer">
+			<div class="menu_footer_col" id="col_1">
+				<div class="footer_title">
+					<i class="fi fi-tr-bars-sort"></i>
+					<h1>
+						Menu cinema					</h1>
+				</div>
+				<div id="col_1_content">
+					<ul>
+						<li><a href="/">Film</a></li>
+						<li>
+														<a href="/eventi" title="Eventi">
+							Eventi							</a>
+						</li>
+						<li>
+														<a href="/prezzi" title="Prezzi">
+							Prezzi							</a>
+						</li>
+						<li><a href="/cineplexx-bonus-card" title="Cineplexx Bonus Card">Cineplexx Bonus Card</a></li>
+						<li><a href="/gift-card" title="Gift Card">Gift Card</a></li>
+						<li><a href="/family-filmclub" title="Family Film Club">Family Film Club</a></li>
+						<li>
+														<a href="/dove-siamo" title="Dove siamo">
+							Dove siamo							</a>
+						</li>
+						<li>
+														<a href="/sale" title="Sale">
+							Sale							</a>
+						</li>
+					</ul>
+					<ul>
+						<li>
+														<a href="/tecnologie" title="Tecnologie">
+							Tecnologie							</a>
+						</li>
+						<li>
+														<a href="/informazioni-sul-cinema" title="Informazioni sul cinema">
+							Informazioni sul cinema							</a>
+						</li>
+						<li>
+														<a href="/lavora-con-noi" title="Lavora con noi">
+							Lavora con noi							</a>
+						</li>
+						<li>
+														<a href="/affitto-cinema" title="Affitto cinema">
+							Affitto cinema							</a>
+						</li>
+						<li>
+														<a href="/scuole-al-cinema" title="Scuole al cinema">
+							Scuole al cinema							</a>
+						</li>
+						<li>
+														<a href="/compleanni" title="Compleanni">
+							Compleanni							</a>
+						</li>
+						<li>
+														<a href="/contatti" title="Contatti">
+							Contatti							</a>
+						</li>
+						<li>
+														<a href="/pubblicita" title="Pubblicità">
+							Pubblicità							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="menu_footer_col" id="col_2">
+				<div class="footer_title">
+					<i class="fi fi-tr-bars-sort"></i>
+					<h1>
+						Note legali					</h1>
+				</div>
+				<ul>
+					<li><a href="/content/privacy-policy" title="Privacy Policy">Privacy Policy</a></li>
+					<li><a href="/content/cookie-policy" title="Cookie Policy">Cookie Policy</a></li>
+					<li>
+												<a href="/content/condizioni-di-utilizzo" title="Condizioni di utilizzo">
+						Condizioni di utilizzo						</a>
+					</li>
+				</ul>
+			</div>
+			<div class="menu_footer_col" id="col_3">
+				<div class="footer_title"><i class="fi fi-tr-bars-sort"></i><h1>Credits</h1></div>
+				<a href="https://www.creaweb.it">Crea Informatica S.r.l.</a><br /> 2026 &copy;				Tutti i diritti riservati.				<br /><br />
+
+				<img src="/layouts/images/logo.png" width="150" /><br /><br />
+
+				<ul>
+					<li><strong>Cineplexx Bozen GmbH</strong><br />Schlachthofstraße 53/A 39100 Bozen (BZ)</li>
+					<li><strong>Ticket-Hotline:</strong> 0471/054550</li>
+					<li><strong>Email:</strong> info@cineplexx.bz.it</li>
+					<li>MwSt.Nr. 02606490213</li>
+				</ul>
+			</div>
+		</div>
+		
+	</div>
+</footer>
+<!--footer close-->		
+	</div>
+</body>
+</html>
