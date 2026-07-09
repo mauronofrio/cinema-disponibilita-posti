@@ -54,6 +54,35 @@ void main() {
     });
   });
 
+  group(
+    'parseWebticFullSchedule (fullSchedulePortal - restapi.webtic.it wrapper, real Nuovo Eden sample)',
+    () {
+      late String raw;
+
+      setUpAll(() {
+        raw = File(
+          'test/fixtures/webtic_nuovoeden_fullschedule_portal_sample.json',
+        ).readAsStringSync();
+      });
+
+      test(
+        'same DS.Scheduling.Events shape as the classic front-end, no new parser needed',
+        () {
+          final films = parseWebticFullSchedule(raw);
+          expect(films, hasLength(2));
+          final film = films.firstWhere((f) => f.eventId == '6446');
+          expect(film.title, 'Amarga Navidad');
+          expect(film.runningTimeMinutes, 111);
+          final day = DateTime(2026, 7, 10);
+          final sessions = film.sessionsByDay[day]!;
+          expect(sessions.single.performanceId, '35974');
+          expect(sessions.single.screenName, 'NUOVO EDEN');
+          expect(sessions.single.screenId, 73);
+        },
+      );
+    },
+  );
+
   group('parseWebticShowingDays', () {
     test('every distinct day across every film, sorted with no duplicates', () {
       final raw = File(

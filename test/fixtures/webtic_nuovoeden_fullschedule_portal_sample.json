@@ -1,0 +1,170 @@
+{
+  "Data": {
+    "ExpiresIn": 0,
+    "GiacenzaBookMinutes": 0
+  },
+  "Status": {
+    "Elapsed": 265,
+    "Success": true,
+    "FromCache": false,
+    "Messages": [],
+    "Time": "2026-07-10T00:24:24.7646881+02:00"
+  },
+  "userdata": {
+    "StatusOk": true,
+    "ReasonCode": 0,
+    "Message": "",
+    "StackTrace": "",
+    "Elapsed": 182.5106,
+    "StartTime": "2026-07-10T00:24:24.5717687+02:00",
+    "EndTime": "2026-07-10T00:24:24.7542793+02:00",
+    "TimeTrace": [
+      "Start GetFullScheduling : 0 - 0",
+      "end getSchedulingCached : 166,786 - 166,786",
+      "End GetFullScheduling : 15,7246 - 182,5106"
+    ],
+    "Errors": []
+  },
+  "DS": {
+    "IsLoggedUser": false,
+    "OptinRequired": false,
+    "TicketoFound": false,
+    "Scheduling": {
+      "LocalId": 5209,
+      "LogoPath": "",
+      "Events": [
+        {
+          "EventId": 6446,
+          "Title": "Amarga Navidad",
+          "OriginalTitle": "Amarga Navidad",
+          "Description": "Amarga Navidad racconta l’alternarsi di due storie. La prima ha per protagonista Elsa, una regista di spot pubblicitari, nel 2004, durante il lungo ponte festivo del mese di dicembre. La seconda si svolge nel 2026 ed è incentrata su Raúl, uno sceneggiatore e regista che sta scrivendo un copione che presto scopriremo essere la storia di Elsa, del suo compagno Bonifacio e delle sue amiche Patricia e Natalia. Mescolata alla finzione, Elsa diventa in qualche modo l’alter ego di Raúl, che ricorre all’autofinzione come soluzione a una lunga stagione di aridità creativa. Guardando dentro se stesso, Raúl non può fare a meno di rivolgere lo sguardo anche alle persone che compongono il suo universo più intimo: il suo compagno e la sua assistente.\\n\\nIl film racconta lo stretto legame tra realtà e finzione, tra ispirazione e vita, e apre una riflessione sui limiti dell’autofinzione.",
+          "Actors": "Bárbara Lennie, Leonardo Sbaraglia, Aitana Sánchez-Gijón, Victoria Luengo, Patrick Criado",
+          "Type": "CINEMA",
+          "Is3D": false,
+          "Director": "Pedro Almodóvar",
+          "Duration": "01:51",
+          "Picture": "HandlerLocandinaEx.ashx?idcinema=5209&idevento=6446&i=jpg-m&t=060720260932",
+          "Year": "2026",
+          "Category": "DRAMMA, COMMEDIA",
+          "MovieId": "https://www.youtube.com/watch?v=HNMPLw6Mvug",
+          "TitleId": "13868",
+          "Properties": [
+            "2D",
+            "10+"
+          ],
+          "EventProperties": [
+            {
+              "EventProperty": "2D",
+              "EventPropertyCategory": "SCREEN"
+            },
+            {
+              "EventProperty": "10+",
+              "EventPropertyCategory": "CATEGORIA NON DEFINITA"
+            }
+          ],
+          "Days": [
+            {
+              "GroupedByScreen": false,
+              "Performances": [
+                {
+                  "PerformanceId": 35974,
+                  "Time": "17:00",
+                  "Screen": "NUOVO EDEN",
+                  "ScreenId": 73,
+                  "StartTime": "2026-07-10T17:00:00",
+                  "EndTime": "2026-07-10T18:51:00",
+                  "Duration": 111
+                }
+              ],
+              "Day": "2026-07-10T00:00:00"
+            },
+            {
+              "GroupedByScreen": false,
+              "Performances": [
+                {
+                  "PerformanceId": 35978,
+                  "Time": "18:15",
+                  "Screen": "NUOVO EDEN",
+                  "ScreenId": 73,
+                  "StartTime": "2026-07-11T18:15:00",
+                  "EndTime": "2026-07-11T20:06:00",
+                  "Duration": 111
+                }
+              ],
+              "Day": "2026-07-11T00:00:00"
+            },
+            {
+              "GroupedByScreen": false,
+              "Performances": [
+                {
+                  "PerformanceId": 35981,
+                  "Time": "18:15",
+                  "Screen": "NUOVO EDEN",
+                  "ScreenId": 73,
+                  "StartTime": "2026-07-12T18:15:00",
+                  "EndTime": "2026-07-12T20:06:00",
+                  "Duration": 111
+                }
+              ],
+              "Day": "2026-07-12T00:00:00"
+            }
+          ],
+          "IsStreaming": false
+        },
+        {
+          "EventId": 6447,
+          "Title": "Amarga Navidad (O.V.)",
+          "OriginalTitle": "Amarga Navidad",
+          "Description": "Amarga Navidad racconta l’alternarsi di due storie. La prima ha per protagonista Elsa, una regista di spot pubblicitari, nel 2004, durante il lungo ponte festivo del mese di dicembre. La seconda si svolge nel 2026 ed è incentrata su Raúl, uno sceneggiatore e regista che sta scrivendo un copione che presto scopriremo essere la storia di Elsa, del suo compagno Bonifacio e delle sue amiche Patricia e Natalia. Mescolata alla finzione, Elsa diventa in qualche modo l’alter ego di Raúl, che ricorre all’autofinzione come soluzione a una lunga stagione di aridità creativa. Guardando dentro se stesso, Raúl non può fare a meno di rivolgere lo sguardo anche alle persone che compongono il suo universo più intimo: il suo compagno e la sua assistente.\\n\\nIl film racconta lo stretto legame tra realtà e finzione, tra ispirazione e vita, e apre una riflessione sui limiti dell’autofinzione.",
+          "Actors": "Bárbara Lennie, Leonardo Sbaraglia, Aitana Sánchez-Gijón, Victoria Luengo, Patrick Criado",
+          "Type": "CINEMA",
+          "Is3D": false,
+          "Director": "Pedro Almodóvar",
+          "Duration": "01:51",
+          "Picture": "HandlerLocandinaEx.ashx?idcinema=5209&idevento=6447&i=jpg-m&t=060720260933",
+          "Year": "2026",
+          "Category": "COMMEDIA, DRAMMA",
+          "MovieId": "https://www.youtube.com/watch?v=HNMPLw6Mvug",
+          "TitleId": "164502",
+          "Properties": [
+            "2D",
+            "O.V.",
+            "10+"
+          ],
+          "EventProperties": [
+            {
+              "EventProperty": "2D",
+              "EventPropertyCategory": "SCREEN"
+            },
+            {
+              "EventProperty": "O.V.",
+              "EventPropertyCategory": "CATEGORIA NON DEFINITA"
+            },
+            {
+              "EventProperty": "10+",
+              "EventPropertyCategory": "CATEGORIA NON DEFINITA"
+            }
+          ],
+          "Days": [
+            {
+              "GroupedByScreen": false,
+              "Performances": [
+                {
+                  "PerformanceId": 35983,
+                  "Time": "18:30",
+                  "Screen": "NUOVO EDEN",
+                  "ScreenId": 73,
+                  "StartTime": "2026-07-13T18:30:00",
+                  "EndTime": "2026-07-13T20:21:00",
+                  "Duration": 111
+                }
+              ],
+              "Day": "2026-07-13T00:00:00"
+            }
+          ],
+          "IsStreaming": false
+        }
+      ]
+    }
+  }
+}

@@ -73,6 +73,14 @@ void main() {
         WebticCatalogSource.filmSchedulePages,
       );
     });
+
+    test('webticCatalogSource reads "fullSchedulePortal" for a portal-wrapper cinema', () {
+      final json = baseJson()..['webticCatalogSource'] = 'fullSchedulePortal';
+      expect(
+        Cinema.fromJson(json).webticCatalogSource,
+        WebticCatalogSource.fullSchedulePortal,
+      );
+    });
   });
 
   group('SeatMap.fromApiResponseJson', () {

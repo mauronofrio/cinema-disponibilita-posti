@@ -70,6 +70,15 @@ class WebticChainApi implements ChainApi {
         return days
             .map((d) => ShowingDate(date: d, hasShowings: true))
             .toList();
+
+      case WebticCatalogSource.fullSchedulePortal:
+        final schedule = await _client.getFullScheduleViaPortal(
+          cinema.webticLocalId!,
+        );
+        final days = parseWebticShowingDays(schedule);
+        return days
+            .map((d) => ShowingDate(date: d, hasShowings: true))
+            .toList();
     }
   }
 
@@ -82,6 +91,8 @@ class WebticChainApi implements ChainApi {
         return _getFilmsForDayFromFilmSchedulePages(cinema, day);
       case WebticCatalogSource.fullSchedule:
         return _getFilmsForDayFromFullSchedule(cinema);
+      case WebticCatalogSource.fullSchedulePortal:
+        return _getFilmsForDayFromFullSchedulePortal(cinema);
     }
   }
 
@@ -91,6 +102,36 @@ class WebticChainApi implements ChainApi {
     final host = cinema.host!;
     final localId = cinema.webticLocalId!;
     final schedule = await _client.getFullSchedule(host, localId);
+    return _filmsFromFullScheduleBody(
+      schedule,
+      bookingPathFor: (performanceId) =>
+          'https://$host/generic/seatsframe.php'
+          '?sc=$localId&sp=$performanceId'
+          '#seatsframe',
+    );
+  }
+
+  // Same response shape as [_getFilmsForDayFromFullSchedule] - see
+  // [WebticCatalogSource.fullSchedulePortal] - just a different fetch and a
+  // generic hand-off link, since these venues' own sites don't expose a
+  // per-performance booking path the way the classic `cvu/modules` front
+  // end does.
+  Future<List<Film>> _getFilmsForDayFromFullSchedulePortal(
+    Cinema cinema,
+  ) async {
+    final localId = cinema.webticLocalId!;
+    final schedule = await _client.getFullScheduleViaPortal(localId);
+    return _filmsFromFullScheduleBody(
+      schedule,
+      bookingPathFor: (_) =>
+          'https://www.webtic.it/index.htm#/home?action=loadLocal&localId=$localId',
+    );
+  }
+
+  List<Film> _filmsFromFullScheduleBody(
+    String schedule, {
+    required String Function(String performanceId) bookingPathFor,
+  }) {
     final films = parseWebticFullSchedule(schedule);
 
     final result = <Film>[];
@@ -112,10 +153,7 @@ class WebticChainApi implements ChainApi {
                         // The chain's own quick-booking flow for this exact
                         // showtime (see PROJECT_NOTES.md) - this app never
                         // implements booking itself, it just hands off.
-                        bookingPath:
-                            'https://$host/generic/seatsframe.php'
-                            '?sc=$localId&sp=${parsed.performanceId}'
-                            '#seatsframe',
+                        bookingPath: bookingPathFor(parsed.performanceId),
                       );
                     }).toList()
                     ..sort((a, b) => a.startTime.compareTo(b.startTime));

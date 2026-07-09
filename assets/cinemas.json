@@ -2063,5 +2063,109 @@
     "chain": "webtic",
     "host": "www.viareggiocinema.com",
     "webticLocalId": 5230
+  },
+  {
+    "cinemaId": "multisala-cinecity-mantova",
+    "name": "Multisala Cinecity - Mantova",
+    "slug": "multisala-cinecity-mantova",
+    "address": "Piazzale Cesare Beccaria 5, 46100 Mantova MN",
+    "lat": 45.1686381,
+    "lng": 10.8253162,
+    "chain": "webtic",
+    "host": "www.cineview.it",
+    "webticLocalId": 5161
+  },
+  {
+    "cinemaId": "cinema-teatro-arese",
+    "name": "Cinema Teatro Arese",
+    "slug": "cinema-teatro-arese",
+    "address": "Piazza Generale Carlo Alberto Dalla Chiesa 4, 20044 Arese MI",
+    "lat": 45.5496941,
+    "lng": 9.0777685,
+    "chain": "webtic",
+    "host": "www.cinemateatroarese.it",
+    "webticLocalId": 5175
+  },
+  {
+    "cinemaId": "db-arena-lecce",
+    "name": "Db Arena - Lecce",
+    "slug": "db-arena-lecce",
+    "address": "Via Vittorio Emanuele II 34, 73100 Lecce LE",
+    "lat": 40.3526012,
+    "lng": 18.1697928,
+    "chain": "eighteenTickets",
+    "host": "dbarena.dbdessai.18tickets.it"
+  },
+  {
+    "cinemaId": "nuovo-eden-brescia",
+    "name": "Nuovo Eden - Brescia",
+    "slug": "nuovo-eden-brescia",
+    "address": "Via Nino Bixio 9, 25122 Brescia BS",
+    "lat": 45.544402,
+    "lng": 10.2173856,
+    "chain": "webtic",
+    "host": "nuovoeden.it",
+    "webticLocalId": 5209,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "cinema-ducale-milano",
+    "name": "Cinema Ducale - Milano",
+    "slug": "cinema-ducale-milano",
+    "address": "Piazza Napoli 27, 20146 Milano MI",
+    "lat": 45.452398,
+    "lng": 9.1546299,
+    "chain": "webtic",
+    "host": "cinenauta.it",
+    "webticLocalId": 5065,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "arcobaleno-film-center-milano",
+    "name": "Arcobaleno Film Center - Milano",
+    "slug": "arcobaleno-film-center-milano",
+    "address": "Viale Tunisia 11, 20124 Milano MI",
+    "lat": 45.4770752,
+    "lng": 9.2056724,
+    "chain": "webtic",
+    "host": "cinenauta.it",
+    "webticLocalId": 5066,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "cinema-mignon-mantova",
+    "name": "Cinema Mignon - Mantova",
+    "slug": "cinema-mignon-mantova",
+    "address": "Via Gaetano Benzoni 22, 46100 Mantova MN",
+    "lat": 45.1521468,
+    "lng": 10.7969835,
+    "chain": "webtic",
+    "host": "www.cinemamignon.com",
+    "webticLocalId": 5512,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "orfeo-multisala-milano",
+    "name": "Orfeo Multisala - Milano",
+    "slug": "orfeo-multisala-milano",
+    "address": "Viale Coni Zugna 50, 20144 Milano MI",
+    "lat": 45.4569421,
+    "lng": 9.1695263,
+    "chain": "webtic",
+    "host": "orfeomultisala.com",
+    "webticLocalId": 5351,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "plinius-multisala-milano",
+    "name": "Plinius Multisala - Milano",
+    "slug": "plinius-multisala-milano",
+    "address": "Viale Abruzzi 28, 20131 Milano MI",
+    "lat": 45.47762,
+    "lng": 9.21739,
+    "chain": "webtic",
+    "host": "www.multisalaplinius.com",
+    "webticLocalId": 5094,
+    "webticCatalogSource": "fullSchedulePortal"
   }
 ]

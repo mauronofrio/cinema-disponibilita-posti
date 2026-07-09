@@ -94,6 +94,43 @@ class WebticPlatformApiClient {
     return _get('https://$host/scheda/$filmSlug/$filmId/$siteCinemaId/', const {});
   }
 
+  /// [WebticCatalogSource.fullSchedulePortal] chains only: the same catalog
+  /// data as [getFullSchedule] (confirmed live to parse with the exact same
+  /// `parseWebticFullSchedule`/`parseWebticShowingDays` - same
+  /// `DS.Scheduling.Events[]` response shape), just fetched through the
+  /// `www.webtic.it` Angular SPA's own backend instead of the chain's own
+  /// front-end site - needed because these venues' front-ends don't expose
+  /// `cvu/modules/prenoRapido.php` at all.
+  Future<String> getFullScheduleViaPortal(int localId) async {
+    try {
+      final response = await _dio.post<String>(
+        'https://restapi.webtic.it/Webtic/CallOldWebtic',
+        data: {
+          'OldWebticRequest': {
+            'meta': {
+              'QueryParams': {
+                'wtid': 'getFullScheduling',
+                'localid': localId,
+                'trackid': 33,
+              },
+            },
+          },
+        },
+        options: Options(
+          responseType: ResponseType.plain,
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      final body = response.data!;
+      if (body.isEmpty) {
+        throw ApiException(AppLocalizations.current.requestFailedError);
+      }
+      return body;
+    } on DioException catch (e) {
+      _throwFriendly(e);
+    }
+  }
+
   Future<String> _postWtService(String wtid, Map<String, dynamic> data) async {
     try {
       final response = await _dio.post<String>(

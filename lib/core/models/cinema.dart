@@ -58,11 +58,28 @@ enum WebticCatalogSource {
   /// (`/scheda/{filmSlug}/{filmId}/{siteCinemaId}/`), which - unlike
   /// Giometti - does give a full week at once, just one request per film
   /// rather than one per cinema.
-  filmSchedulePages;
+  filmSchedulePages,
+
+  /// A handful of small independent venues (Nuovo Eden - Brescia, Cinema
+  /// Mignon/Multisala Cinecity - Mantova's sister sites, Cinema Ducale and
+  /// Arcobaleno Film Center - Milano, Orfeo Multisala - Milano, Plinius
+  /// Multisala - Milano) whose own front-end sites don't run the classic
+  /// `cvu/modules` front end at all - they just deep-link straight to the
+  /// `www.webtic.it` Angular booking SPA. That SPA itself gets its catalog
+  /// from a *different* shared backend than [fullSchedule]
+  /// (`restapi.webtic.it/Webtic/CallOldWebtic`, wrapping the same
+  /// `getFullScheduling` call in a JSON-RPC-style envelope) - but confirmed
+  /// live to return the exact same `DS.Scheduling.Events[]` shape, so no new
+  /// parser was needed, only a new request shape (see
+  /// `getFullScheduleViaPortal`). [Cinema.host] is irrelevant for this
+  /// source (kept null or set to the venue's own informational site) since
+  /// every call here only ever needs [Cinema.webticLocalId].
+  fullSchedulePortal;
 
   static WebticCatalogSource fromJson(String? value) => switch (value) {
     'programmingPage' => WebticCatalogSource.programmingPage,
     'filmSchedulePages' => WebticCatalogSource.filmSchedulePages,
+    'fullSchedulePortal' => WebticCatalogSource.fullSchedulePortal,
     _ => WebticCatalogSource.fullSchedule,
   };
 }
