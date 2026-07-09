@@ -58,6 +58,11 @@ app.*.map.json
 # Local-only project notes, not meant to be shared/versioned.
 /PROJECT_NOTES.md
 
+# External research dataset (~1400 Italian cinemas from OSM, produced by a
+# separate research session) - used to cross-check coverage gaps, not a
+# project source file.
+/cinema_italia.json
+
 # Local, machine-specific Claude Code permission settings.
 /.claude/settings.local.json
 

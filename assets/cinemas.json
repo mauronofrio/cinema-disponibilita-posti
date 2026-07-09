@@ -1744,5 +1744,155 @@
     "chain": "webtic",
     "host": "www.cineplexx.bz.it",
     "webticCatalogSource": "filmSchedulePages"
+  },
+  {
+    "cinemaId": "movieplex-laquila",
+    "name": "Movieplex - L'Aquila",
+    "slug": "movieplex-laquila",
+    "address": "Via Leonardo Da Vinci, 7, 67100, L'Aquila, AQ",
+    "lat": 42.366529,
+    "lng": 13.372537,
+    "chain": "eighteenTickets",
+    "host": "www.movieplex.it"
+  },
+  {
+    "cinemaId": "multiplex-astra-avezzano",
+    "name": "Multiplex Astra - Avezzano",
+    "slug": "multiplex-astra-avezzano",
+    "address": "Via Cavour 62, 67051, Avezzano, AQ",
+    "lat": 42.001617,
+    "lng": 13.432516,
+    "chain": "eighteenTickets",
+    "host": "astra.multicinema.18tickets.it"
+  },
+  {
+    "cinemaId": "gaveli-maxicinema-benevento",
+    "name": "Gaveli Maxicinema - Benevento",
+    "slug": "gaveli-maxicinema-benevento",
+    "address": "Contrada Piano Cappelle, 82100, Benevento, BN",
+    "lat": 41.10461,
+    "lng": 14.822695,
+    "chain": "eighteenTickets",
+    "host": "gavelibenevento.18tickets.it"
+  },
+  {
+    "cinemaId": "happy-maxicinema-afragola",
+    "name": "Happy Maxicinema - Afragola",
+    "slug": "happy-maxicinema-afragola",
+    "address": "Via Santa Maria La Nova, 1, 80021, Afragola, Napoli",
+    "lat": 40.933853,
+    "lng": 14.356822,
+    "chain": "eighteenTickets",
+    "host": "happy.andromeda.18tickets.it"
+  },
+  {
+    "cinemaId": "nuovo-cinema-nosadella-bologna",
+    "name": "Nuovo Cinema Nosadella - Bologna",
+    "slug": "nuovo-cinema-nosadella-bologna",
+    "address": "Via Lodovico Berti 2/7, 40131, Bologna, BO",
+    "lat": 44.502508,
+    "lng": 11.329429,
+    "chain": "eighteenTickets",
+    "host": "nosadella.18tickets.it"
+  },
+  {
+    "cinemaId": "kinemax-gorizia",
+    "name": "Kinemax - Gorizia",
+    "slug": "kinemax-gorizia",
+    "address": "Piazza Vittoria 41, 34170, Gorizia, GO",
+    "lat": 45.945577,
+    "lng": 13.62563,
+    "chain": "eighteenTickets",
+    "host": "gorizia.kinemax.18tickets.it"
+  },
+  {
+    "cinemaId": "politeama-cityplex-frascati",
+    "name": "Politeama Cityplex - Frascati",
+    "slug": "politeama-cityplex-frascati",
+    "address": "Largo Augusto Panizza 5, 00044 Frascati RM",
+    "lat": 41.8079989,
+    "lng": 12.6774934,
+    "chain": "eighteenTickets",
+    "host": "frascati.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-multisala-cynthianum",
+    "name": "Cinema Multisala Cynthianum - Genzano di Roma",
+    "slug": "cinema-multisala-cynthianum",
+    "address": "Viale Mazzini 9, 00045 Genzano di Roma RM",
+    "lat": 41.7111303,
+    "lng": 12.6898291,
+    "chain": "eighteenTickets",
+    "host": "genzano.cinemagenzano.it"
+  },
+  {
+    "cinemaId": "multisala-greenwich-roma",
+    "name": "Multisala Greenwich - Roma",
+    "slug": "multisala-greenwich-roma",
+    "address": "Via Giovan Battista Bodoni 59, 00153 Roma RM",
+    "lat": 41.8788587,
+    "lng": 12.4741095,
+    "chain": "eighteenTickets",
+    "host": "green.multisalagreenwichroma.com"
+  },
+  {
+    "cinemaId": "multisala-jolly-roma",
+    "name": "Multisala Jolly - Roma",
+    "slug": "multisala-jolly-roma",
+    "address": "Via Giano della Bella 4/6, 00184 Roma RM",
+    "lat": 41.9087038,
+    "lng": 12.5228122,
+    "chain": "eighteenTickets",
+    "host": "jollyroma.18tickets.it"
+  },
+  {
+    "cinemaId": "ambra-multiplex-velletri",
+    "name": "Ambra Multiplex - Velletri",
+    "slug": "ambra-multiplex-velletri",
+    "address": "Via Filippo Turati, 5, 00049, Velletri, RM",
+    "lat": 41.6894061,
+    "lng": 12.7889412,
+    "chain": "eighteenTickets",
+    "host": "cinemaambra.18tickets.it"
+  },
+  {
+    "cinemaId": "il-cinemino",
+    "name": "Il Cinemino - Milano",
+    "slug": "il-cinemino",
+    "address": "Via Seneca, 6, 20135 Milano MI",
+    "lat": 45.4541227,
+    "lng": 9.2083301,
+    "chain": "eighteenTickets",
+    "host": "ilcinemino.ilcinemino.18tickets.it"
+  },
+  {
+    "cinemaId": "cinemars-andria",
+    "name": "Cinemars - Andria",
+    "slug": "cinemars-andria",
+    "address": "Contrada Barba d'Angelo, 21, 76123 Andria BT",
+    "lat": 41.245783,
+    "lng": 16.295392,
+    "chain": "eighteenTickets",
+    "host": "www.cinemars.it"
+  },
+  {
+    "cinemaId": "cinema-rouge-et-noir-palermo",
+    "name": "Cinema Rouge et Noir - Palermo",
+    "slug": "cinema-rouge-et-noir-palermo",
+    "address": "Piazza Verdi, 8, 90138, Palermo PA",
+    "lat": 38.119812,
+    "lng": 13.358126,
+    "chain": "eighteenTickets",
+    "host": "rougeetnoirpalermo.18tickets.it"
+  },
+  {
+    "cinemaId": "cityplex-metropolitan-palermo",
+    "name": "Cityplex Metropolitan - Palermo",
+    "slug": "cityplex-metropolitan-palermo",
+    "address": "Viale Strasburgo 352, 90146, Palermo PA",
+    "lat": 38.157031,
+    "lng": 13.325654,
+    "chain": "eighteenTickets",
+    "host": "metropolitan.cityplex.18tickets.it"
   }
 ]
