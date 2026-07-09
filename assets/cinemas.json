@@ -1654,5 +1654,71 @@
     "chain": "webtic",
     "host": "www.giomettirealestatecinema.it",
     "webticScrapesProgrammingPage": true
+  },
+  {
+    "cinemaId": "regno-multisala-oz-brescia",
+    "name": "Multisala OZ - Brescia",
+    "slug": "multisalaoz",
+    "address": "Via Sorbanella 12, 25125 Brescia BS",
+    "lat": 45.5233788,
+    "lng": 10.1778353,
+    "webticLocalId": 5059,
+    "chain": "webtic",
+    "host": "www.ilregnodelcinema.com"
+  },
+  {
+    "cinemaId": "regno-multisala-portanova-crema",
+    "name": "Multisala Portanova - Crema",
+    "slug": "multisalaportanova",
+    "address": "Via Indipendenza 44, 26013 Crema CR",
+    "lat": 45.3678004,
+    "lng": 9.679751,
+    "webticLocalId": 5061,
+    "chain": "webtic",
+    "host": "www.ilregnodelcinema.com"
+  },
+  {
+    "cinemaId": "regno-multisala-colosseo-milano",
+    "name": "Multisala Colosseo - Milano",
+    "slug": "colosseo",
+    "address": "Viale Monte Nero 84, 20135 Milano MI",
+    "lat": 45.4616401,
+    "lng": 9.2079373,
+    "webticLocalId": 5062,
+    "chain": "webtic",
+    "host": "www.ilregnodelcinema.com"
+  },
+  {
+    "cinemaId": "regno-multisala-eliseo-milano",
+    "name": "Multisala Eliseo - Milano",
+    "slug": "eliseo",
+    "address": "Via Torino 64, 20123 Milano MI",
+    "lat": 45.4608342,
+    "lng": 9.1826282,
+    "webticLocalId": 5064,
+    "chain": "webtic",
+    "host": "www.ilregnodelcinema.com"
+  },
+  {
+    "cinemaId": "regno-cinema-sociale-brescia",
+    "name": "Cinema Sociale - Brescia",
+    "slug": "sociale",
+    "address": "Via Felice Cavallotti 20, 25121 Brescia BS",
+    "lat": 45.5359266,
+    "lng": 10.2204787,
+    "webticLocalId": 5174,
+    "chain": "webtic",
+    "host": "www.ilregnodelcinema.com"
+  },
+  {
+    "cinemaId": "regno-cinema-moretto-brescia",
+    "name": "Cinema Moretto - Brescia",
+    "slug": "moretto",
+    "address": "Via Moretto 71, 25121 Brescia BS",
+    "lat": 45.5357991,
+    "lng": 10.2163231,
+    "webticLocalId": 5431,
+    "chain": "webtic",
+    "host": "www.ilregnodelcinema.com"
   }
 ]
