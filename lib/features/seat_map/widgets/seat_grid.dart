@@ -25,7 +25,6 @@ class SeatGrid extends StatelessWidget {
   final SeatMap seatMap;
 
   static const _maxSeatSize = 22.0;
-  static const _minSeatSize = 8.0;
   static const _gap = 2.0;
   static const _rowLabelWidth = 16.0;
 
@@ -36,8 +35,14 @@ class SeatGrid extends StatelessWidget {
         final columns = seatMap.totalColumns;
         final forSeats =
             constraints.maxWidth - _rowLabelWidth * 2 - _gap * (columns + 1);
+        // No lower floor: a genuinely wide room (e.g. a 40+ column single
+        // screen) must still shrink to fit the available width exactly, or
+        // the row overflows past the row-label column on the right (seen
+        // live on Orfeo Multisala's 44-column "ROSSA" screen) - the row
+        // never scrolls horizontally (see class doc), so seat size is the
+        // only thing that can give.
         final seatSize = columns > 0
-            ? (forSeats / columns).clamp(_minSeatSize, _maxSeatSize)
+            ? (forSeats / columns).clamp(0.0, _maxSeatSize)
             : _maxSeatSize;
         return Column(
           mainAxisSize: MainAxisSize.min,
