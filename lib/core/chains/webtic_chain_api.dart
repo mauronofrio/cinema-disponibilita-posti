@@ -99,6 +99,10 @@ class WebticChainApi implements ChainApi {
   // for [WebticCatalogSource.filmSchedulePages], and for the same reason:
   // the catalog page alone only ever shows today, the real multi-day
   // schedule only exists per film (confirmed live - see PROJECT_NOTES.md).
+  // Fired concurrently (`Future.wait`), not one after another - a venue
+  // with 15 films awaiting each call in turn is noticeably slow to load
+  // (confirmed live on Cinema Madison - Roma) for no benefit, since none of
+  // these per-film requests depend on each other.
   Future<Map<ParsedMadisonCatalogFilm, List<ParsedMadisonDay>>>
   _madisonCatalogFilmDays(Cinema cinema) async {
     final host = cinema.host!;
@@ -106,16 +110,15 @@ class WebticChainApi implements ChainApi {
     final html = await _client.getMadisonProgrammingPage(host, cinema.slug);
     final catalog = parseWebticMadisonProgrammingPage(html);
 
-    final result = <ParsedMadisonCatalogFilm, List<ParsedMadisonDay>>{};
-    for (final film in catalog) {
-      final body = await _client.getMadisonFilmDays(
-        host,
-        localId,
-        film.filmId,
-      );
-      result[film] = parseWebticMadisonFilmDays(body);
-    }
-    return result;
+    final allDays = await Future.wait(
+      catalog.map(
+        (film) => _client.getMadisonFilmDays(host, localId, film.filmId),
+      ),
+    );
+    return Map.fromIterables(
+      catalog,
+      allDays.map(parseWebticMadisonFilmDays),
+    );
   }
 
   @override
