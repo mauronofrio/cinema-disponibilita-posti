@@ -38,80 +38,89 @@ class WebticChainApi implements ChainApi {
   final Clock _clock;
 
   @override
-  Future<List<ShowingDate>> getShowingDates(Cinema cinema) async {
-    if (cinema.webticScrapesProgrammingPage) {
-      final html = await _client.getProgrammingPage(cinema.host!, cinema.slug);
-      final films = parseWebticProgrammingPage(html, now: _clock.now());
-      final days = films.map((f) => f.day).toSet().toList()..sort();
+  Future<List<ShowingDate>> getShowingDates(Cinema cinema) {
+    return runChainParsing(() async {
+      if (cinema.webticScrapesProgrammingPage) {
+        final html = await _client.getProgrammingPage(
+          cinema.host!,
+          cinema.slug,
+        );
+        final films = parseWebticProgrammingPage(html, now: _clock.now());
+        final days = films.map((f) => f.day).toSet().toList()..sort();
+        return days
+            .map((d) => ShowingDate(date: d, hasShowings: true))
+            .toList();
+      }
+      final schedule = await _client.getFullSchedule(
+        cinema.host!,
+        cinema.webticLocalId!,
+      );
+      final days = parseWebticShowingDays(schedule);
       return days.map((d) => ShowingDate(date: d, hasShowings: true)).toList();
-    }
-    final schedule = await _client.getFullSchedule(
-      cinema.host!,
-      cinema.webticLocalId!,
-    );
-    final days = parseWebticShowingDays(schedule);
-    return days.map((d) => ShowingDate(date: d, hasShowings: true)).toList();
+    });
   }
 
   @override
-  Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) async {
-    if (cinema.webticScrapesProgrammingPage) {
-      return _getFilmsForDayFromProgrammingPage(cinema, day);
-    }
-    // [day] is unused - getFullSchedule already returns every day at once,
-    // same reasoning as UciChainApi.getFilmsForDay (see ChainApi doc).
-    final host = cinema.host!;
-    final localId = cinema.webticLocalId!;
-    final schedule = await _client.getFullSchedule(host, localId);
-    final films = parseWebticFullSchedule(schedule);
+  Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) {
+    return runChainParsing(() async {
+      if (cinema.webticScrapesProgrammingPage) {
+        return _getFilmsForDayFromProgrammingPage(cinema, day);
+      }
+      // [day] is unused - getFullSchedule already returns every day at once,
+      // same reasoning as UciChainApi.getFilmsForDay (see ChainApi doc).
+      final host = cinema.host!;
+      final localId = cinema.webticLocalId!;
+      final schedule = await _client.getFullSchedule(host, localId);
+      final films = parseWebticFullSchedule(schedule);
 
-    final result = <Film>[];
-    for (final film in films) {
-      if (film.sessionsByDay.isEmpty) continue;
-      final showingGroups =
-          film.sessionsByDay.entries.map((entry) {
-              final sessions =
-                  entry.value.map((parsed) {
-                      return Session(
-                        sessionId: parsed.performanceId,
-                        startTime: parsed.startTime,
-                        endTime: parsed.endTime,
-                        screenName: parsed.screenName,
-                        isSoldOut: false,
-                        formattedPrice: null,
-                        isPriceVisible: false,
-                        attributes: const [],
-                        // The chain's own quick-booking flow for this exact
-                        // showtime (see PROJECT_NOTES.md) - this app never
-                        // implements booking itself, it just hands off.
-                        bookingPath:
-                            'https://$host/generic/seatsframe.php'
-                            '?sc=$localId&sp=${parsed.performanceId}'
-                            '#seatsframe',
-                      );
-                    }).toList()
-                    ..sort((a, b) => a.startTime.compareTo(b.startTime));
-              return ShowingGroup(date: entry.key, sessions: sessions);
-            }).toList()
-            ..sort((a, b) => a.date.compareTo(b.date));
+      final result = <Film>[];
+      for (final film in films) {
+        if (film.sessionsByDay.isEmpty) continue;
+        final showingGroups =
+            film.sessionsByDay.entries.map((entry) {
+                final sessions =
+                    entry.value.map((parsed) {
+                        return Session(
+                          sessionId: parsed.performanceId,
+                          startTime: parsed.startTime,
+                          endTime: parsed.endTime,
+                          screenName: parsed.screenName,
+                          isSoldOut: false,
+                          formattedPrice: null,
+                          isPriceVisible: false,
+                          attributes: const [],
+                          // The chain's own quick-booking flow for this exact
+                          // showtime (see PROJECT_NOTES.md) - this app never
+                          // implements booking itself, it just hands off.
+                          bookingPath:
+                              'https://$host/generic/seatsframe.php'
+                              '?sc=$localId&sp=${parsed.performanceId}'
+                              '#seatsframe',
+                        );
+                      }).toList()
+                      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+                return ShowingGroup(date: entry.key, sessions: sessions);
+              }).toList()
+              ..sort((a, b) => a.date.compareTo(b.date));
 
-      result.add(
-        Film(
-          filmId: film.eventId,
-          title: film.title,
-          // The poster handler lives on the shared Webtic backend, not the
-          // chain's own front-end site the rest of the catalog comes from
-          // (confirmed live - see PROJECT_NOTES.md).
-          posterImageSrc: film.posterPath == null
-              ? null
-              : 'https://secure.webtic.it/cvu/modules/${film.posterPath}',
-          runningTime: film.runningTimeMinutes,
-          showingGroups: showingGroups,
-        ),
-      );
-    }
-    result.sort((a, b) => a.title.compareTo(b.title));
-    return result;
+        result.add(
+          Film(
+            filmId: film.eventId,
+            title: film.title,
+            // The poster handler lives on the shared Webtic backend, not the
+            // chain's own front-end site the rest of the catalog comes from
+            // (confirmed live - see PROJECT_NOTES.md).
+            posterImageSrc: film.posterPath == null
+                ? null
+                : 'https://secure.webtic.it/cvu/modules/${film.posterPath}',
+            runningTime: film.runningTimeMinutes,
+            showingGroups: showingGroups,
+          ),
+        );
+      }
+      result.sort((a, b) => a.title.compareTo(b.title));
+      return result;
+    });
   }
 
   Future<List<Film>> _getFilmsForDayFromProgrammingPage(
@@ -173,21 +182,23 @@ class WebticChainApi implements ChainApi {
   }
 
   @override
-  Future<SeatMap> getSeatMap(Cinema cinema, Session session) async {
-    final localId = cinema.webticLocalId!;
-    final occupancyBody = await _client.getOccupancy(
-      localId,
-      session.sessionId,
-    );
-    final screenId = parseWebticScreenIdFromOccupancy(occupancyBody);
-    final mapSeatsBody = await _client.getMapSeats(localId, screenId);
-    return compute(
-      parseWebticSeatMap,
-      WebticSeatMapPayload(
-        mapSeatsResponseBody: mapSeatsBody,
-        occupancyResponseBody: occupancyBody,
-      ),
-    );
+  Future<SeatMap> getSeatMap(Cinema cinema, Session session) {
+    return runChainParsing(() async {
+      final localId = cinema.webticLocalId!;
+      final occupancyBody = await _client.getOccupancy(
+        localId,
+        session.sessionId,
+      );
+      final screenId = parseWebticScreenIdFromOccupancy(occupancyBody);
+      final mapSeatsBody = await _client.getMapSeats(localId, screenId);
+      return compute(
+        parseWebticSeatMap,
+        WebticSeatMapPayload(
+          mapSeatsResponseBody: mapSeatsBody,
+          occupancyResponseBody: occupancyBody,
+        ),
+      );
+    });
   }
 }
 

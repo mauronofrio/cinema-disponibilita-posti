@@ -30,16 +30,25 @@ class TheSpaceChainApi implements ChainApi {
   }
 
   @override
-  Future<SeatMap> getSeatMap(Cinema cinema, Session session) async {
-    final raw = await _client.getSeatMapJson(
-      cinema.cinemaId,
-      session.sessionId,
-    );
-    // Both jsonDecode and the model mapping happen off the UI isolate: the
-    // response can be several hundred KB, dominated by redundant per-seat
-    // metadata that SeatMap.fromApiResponseJson also strips down to just
-    // what the grid needs.
-    return compute(SeatMap.fromApiResponseJson, raw);
+  Future<SeatMap> getSeatMap(Cinema cinema, Session session) {
+    // _client.getSeatMapJson already turns a network/HTTP failure into a
+    // friendly ApiException (see api_client.dart's _throwFriendly) - but
+    // SeatMap.fromApiResponseJson's own unchecked JSON mapping runs after
+    // that, inside compute() below, which is no more protected against a
+    // malformed body than any other chain's parsing step. runChainParsing
+    // covers that half specifically, without double-wrapping the part
+    // api_client.dart already handles.
+    return runChainParsing(() async {
+      final raw = await _client.getSeatMapJson(
+        cinema.cinemaId,
+        session.sessionId,
+      );
+      // Both jsonDecode and the model mapping happen off the UI isolate: the
+      // response can be several hundred KB, dominated by redundant per-seat
+      // metadata that SeatMap.fromApiResponseJson also strips down to just
+      // what the grid needs.
+      return compute(SeatMap.fromApiResponseJson, raw);
+    });
   }
 }
 
