@@ -48,61 +48,66 @@ class WebticChainApi implements ChainApi {
   static const _madisonCatalogCacheTtl = Duration(minutes: 5);
 
   @override
-  Future<List<ShowingDate>> getShowingDates(Cinema cinema) async {
-    switch (cinema.webticCatalogSource) {
-      case WebticCatalogSource.programmingPage:
-        final html = await _client.getProgrammingPage(
-          cinema.host!,
-          cinema.slug,
-        );
-        final films = parseWebticProgrammingPage(html, now: _clock.now());
-        final days = films.map((f) => f.day).toSet().toList()..sort();
-        return days
-            .map((d) => ShowingDate(date: d, hasShowings: true))
-            .toList();
+  Future<List<ShowingDate>> getShowingDates(Cinema cinema) {
+    return runChainParsing(() async {
+      switch (cinema.webticCatalogSource) {
+        case WebticCatalogSource.programmingPage:
+          final html = await _client.getProgrammingPage(
+            cinema.host!,
+            cinema.slug,
+          );
+          final films = parseWebticProgrammingPage(html, now: _clock.now());
+          final days = films.map((f) => f.day).toSet().toList()..sort();
+          return days
+              .map((d) => ShowingDate(date: d, hasShowings: true))
+              .toList();
 
-      case WebticCatalogSource.filmSchedulePages:
-        final html = await _client.getFilmCatalogHomepage(cinema.host!);
-        final catalog = parseWebticFilmCatalog(html, siteCinemaId: cinema.slug);
-        final days = <DateTime>{};
-        for (final film in catalog) {
-          days.addAll(film.playingDates);
-        }
-        final sortedDays = days.toList()..sort();
-        return sortedDays
-            .map((d) => ShowingDate(date: d, hasShowings: true))
-            .toList();
+        case WebticCatalogSource.filmSchedulePages:
+          final html = await _client.getFilmCatalogHomepage(cinema.host!);
+          final catalog = parseWebticFilmCatalog(
+            html,
+            siteCinemaId: cinema.slug,
+          );
+          final days = <DateTime>{};
+          for (final film in catalog) {
+            days.addAll(film.playingDates);
+          }
+          final sortedDays = days.toList()..sort();
+          return sortedDays
+              .map((d) => ShowingDate(date: d, hasShowings: true))
+              .toList();
 
-      case WebticCatalogSource.fullSchedule:
-        final schedule = await _client.getFullSchedule(
-          cinema.host!,
-          cinema.webticLocalId!,
-        );
-        final days = parseWebticShowingDays(schedule);
-        return days
-            .map((d) => ShowingDate(date: d, hasShowings: true))
-            .toList();
+        case WebticCatalogSource.fullSchedule:
+          final schedule = await _client.getFullSchedule(
+            cinema.host!,
+            cinema.webticLocalId!,
+          );
+          final days = parseWebticShowingDays(schedule);
+          return days
+              .map((d) => ShowingDate(date: d, hasShowings: true))
+              .toList();
 
-      case WebticCatalogSource.fullSchedulePortal:
-        final schedule = await _client.getFullScheduleViaPortal(
-          cinema.webticLocalId!,
-        );
-        final days = parseWebticShowingDays(schedule);
-        return days
-            .map((d) => ShowingDate(date: d, hasShowings: true))
-            .toList();
+        case WebticCatalogSource.fullSchedulePortal:
+          final schedule = await _client.getFullScheduleViaPortal(
+            cinema.webticLocalId!,
+          );
+          final days = parseWebticShowingDays(schedule);
+          return days
+              .map((d) => ShowingDate(date: d, hasShowings: true))
+              .toList();
 
-      case WebticCatalogSource.madisonProgrammingPage:
-        final catalog = await _madisonCatalogFilmDays(cinema);
-        final days = <DateTime>{};
-        for (final filmDays in catalog.values) {
-          days.addAll(filmDays.map((d) => d.day));
-        }
-        final sortedDays = days.toList()..sort();
-        return sortedDays
-            .map((d) => ShowingDate(date: d, hasShowings: true))
-            .toList();
-    }
+        case WebticCatalogSource.madisonProgrammingPage:
+          final catalog = await _madisonCatalogFilmDays(cinema);
+          final days = <DateTime>{};
+          for (final filmDays in catalog.values) {
+            days.addAll(filmDays.map((d) => d.day));
+          }
+          final sortedDays = days.toList()..sort();
+          return sortedDays
+              .map((d) => ShowingDate(date: d, hasShowings: true))
+              .toList();
+      }
+    });
   }
 
   // One `giorno_by_film_cinema` call per film currently listed on the venue's
@@ -148,19 +153,21 @@ class WebticChainApi implements ChainApi {
   }
 
   @override
-  Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) async {
-    switch (cinema.webticCatalogSource) {
-      case WebticCatalogSource.programmingPage:
-        return _getFilmsForDayFromProgrammingPage(cinema, day);
-      case WebticCatalogSource.filmSchedulePages:
-        return _getFilmsForDayFromFilmSchedulePages(cinema, day);
-      case WebticCatalogSource.fullSchedule:
-        return _getFilmsForDayFromFullSchedule(cinema);
-      case WebticCatalogSource.fullSchedulePortal:
-        return _getFilmsForDayFromFullSchedulePortal(cinema);
-      case WebticCatalogSource.madisonProgrammingPage:
-        return _getFilmsForDayFromMadisonProgrammingPage(cinema, day);
-    }
+  Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) {
+    return runChainParsing(() async {
+      switch (cinema.webticCatalogSource) {
+        case WebticCatalogSource.programmingPage:
+          return _getFilmsForDayFromProgrammingPage(cinema, day);
+        case WebticCatalogSource.filmSchedulePages:
+          return _getFilmsForDayFromFilmSchedulePages(cinema, day);
+        case WebticCatalogSource.fullSchedule:
+          return _getFilmsForDayFromFullSchedule(cinema);
+        case WebticCatalogSource.fullSchedulePortal:
+          return _getFilmsForDayFromFullSchedulePortal(cinema);
+        case WebticCatalogSource.madisonProgrammingPage:
+          return _getFilmsForDayFromMadisonProgrammingPage(cinema, day);
+      }
+    });
   }
 
   // [day] is unused - getFullSchedule already returns every day at once,
@@ -437,21 +444,23 @@ class WebticChainApi implements ChainApi {
   }
 
   @override
-  Future<SeatMap> getSeatMap(Cinema cinema, Session session) async {
-    final localId = cinema.webticLocalId!;
-    final occupancyBody = await _client.getOccupancy(
-      localId,
-      session.sessionId,
-    );
-    final screenId = parseWebticScreenIdFromOccupancy(occupancyBody);
-    final mapSeatsBody = await _client.getMapSeats(localId, screenId);
-    return compute(
-      parseWebticSeatMap,
-      WebticSeatMapPayload(
-        mapSeatsResponseBody: mapSeatsBody,
-        occupancyResponseBody: occupancyBody,
-      ),
-    );
+  Future<SeatMap> getSeatMap(Cinema cinema, Session session) {
+    return runChainParsing(() async {
+      final localId = cinema.webticLocalId!;
+      final occupancyBody = await _client.getOccupancy(
+        localId,
+        session.sessionId,
+      );
+      final screenId = parseWebticScreenIdFromOccupancy(occupancyBody);
+      final mapSeatsBody = await _client.getMapSeats(localId, screenId);
+      return compute(
+        parseWebticSeatMap,
+        WebticSeatMapPayload(
+          mapSeatsResponseBody: mapSeatsBody,
+          occupancyResponseBody: occupancyBody,
+        ),
+      );
+    });
   }
 }
 
