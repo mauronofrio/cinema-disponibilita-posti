@@ -77,14 +77,21 @@ enum WebticCatalogSource {
   fullSchedulePortal,
 
   /// "Madison Cinemas" (Iglesias, Roma, Grottaferrata/Al Fellini, Pianoro -
-  /// Bologna): same one-day-per-film limitation as [programmingPage], but a
-  /// completely different WordPress page template - own splitter, own
-  /// booking-link shape with no `sc=`/`se=` params at all (just
-  /// `/info-e-acquisto/?performance={id}`), own day format - see
-  /// `webtic_madison_programming_page_parser.dart`. [Cinema.slug] here is
-  /// the venue's own full page slug (e.g.
-  /// "programmazione-cinema-madison-roma"), not a `/cinema/{slug}/...` path
-  /// segment like Giometti's.
+  /// Bologna): the `programmazione-...` page itself only ever server-renders
+  /// *today's* showtimes per film (superficially the same limit as
+  /// [programmingPage]) - but confirmed live that's just a limit of that one
+  /// page, not of the platform: every film's own booking widget calls a
+  /// WordPress AJAX action (`giorno_by_film_cinema`) that returns a full
+  /// week or more of real days/showtimes. So the programmazione page is used
+  /// only to discover *which* films are currently playing
+  /// (`parseWebticMadisonProgrammingPage`), then each one gets its own
+  /// `getMadisonFilmDays` call for its real schedule
+  /// (`parseWebticMadisonFilmDays`) - see
+  /// `webtic_madison_programming_page_parser.dart`. Booking-link shape has
+  /// no `sc=`/`se=` params at all (just
+  /// `/info-e-acquisto/?performance={id}`). [Cinema.slug] here is the
+  /// venue's own full page slug (e.g. "programmazione-cinema-madison-roma"),
+  /// not a `/cinema/{slug}/...` path segment like Giometti's.
   madisonProgrammingPage;
 
   static WebticCatalogSource fromJson(String? value) => switch (value) {

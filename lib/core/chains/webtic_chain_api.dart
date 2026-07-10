@@ -82,19 +82,40 @@ class WebticChainApi implements ChainApi {
             .toList();
 
       case WebticCatalogSource.madisonProgrammingPage:
-        final html = await _client.getMadisonProgrammingPage(
-          cinema.host!,
-          cinema.slug,
-        );
-        final films = parseWebticMadisonProgrammingPage(
-          html,
-          now: _clock.now(),
-        );
-        final days = films.map((f) => f.day).toSet().toList()..sort();
-        return days
+        final catalog = await _madisonCatalogFilmDays(cinema);
+        final days = <DateTime>{};
+        for (final filmDays in catalog.values) {
+          days.addAll(filmDays.map((d) => d.day));
+        }
+        final sortedDays = days.toList()..sort();
+        return sortedDays
             .map((d) => ShowingDate(date: d, hasShowings: true))
             .toList();
     }
+  }
+
+  // One `giorno_by_film_cinema` call per film currently listed on the venue's
+  // programmazione page - same "one request per film" cost already accepted
+  // for [WebticCatalogSource.filmSchedulePages], and for the same reason:
+  // the catalog page alone only ever shows today, the real multi-day
+  // schedule only exists per film (confirmed live - see PROJECT_NOTES.md).
+  Future<Map<ParsedMadisonCatalogFilm, List<ParsedMadisonDay>>>
+  _madisonCatalogFilmDays(Cinema cinema) async {
+    final host = cinema.host!;
+    final localId = cinema.webticLocalId!;
+    final html = await _client.getMadisonProgrammingPage(host, cinema.slug);
+    final catalog = parseWebticMadisonProgrammingPage(html);
+
+    final result = <ParsedMadisonCatalogFilm, List<ParsedMadisonDay>>{};
+    for (final film in catalog) {
+      final body = await _client.getMadisonFilmDays(
+        host,
+        localId,
+        film.filmId,
+      );
+      result[film] = parseWebticMadisonFilmDays(body);
+    }
+    return result;
   }
 
   @override
@@ -260,30 +281,33 @@ class WebticChainApi implements ChainApi {
     DateTime day,
   ) async {
     final host = cinema.host!;
-    final html = await _client.getMadisonProgrammingPage(host, cinema.slug);
-    final films = parseWebticMadisonProgrammingPage(html, now: _clock.now());
+    final catalog = await _madisonCatalogFilmDays(cinema);
 
     final result = <Film>[];
-    for (final film in films) {
-      if (film.day.year != day.year ||
-          film.day.month != day.month ||
-          film.day.day != day.day) {
-        continue;
-      }
+    for (final entry in catalog.entries) {
+      final film = entry.key;
+      final matchingDay = entry.value.where(
+        (d) =>
+            d.day.year == day.year &&
+            d.day.month == day.month &&
+            d.day.day == day.day,
+      );
+      if (matchingDay.isEmpty) continue;
+
       final sessions =
-          film.sessions.map((s) {
+          matchingDay.first.sessions.map((s) {
               final timeParts = s.time.split(':');
               final startTime = DateTime(
-                film.day.year,
-                film.day.month,
-                film.day.day,
+                day.year,
+                day.month,
+                day.day,
                 int.parse(timeParts[0]),
                 int.parse(timeParts[1]),
               );
               return Session(
                 sessionId: s.performanceId,
                 startTime: startTime,
-                // The programmazione page never gives an end time.
+                // Never given by the response.
                 endTime: startTime,
                 screenName: '',
                 isSoldOut: false,
@@ -306,7 +330,7 @@ class WebticChainApi implements ChainApi {
           title: film.title,
           posterImageSrc: film.posterUrl,
           runningTime: null,
-          showingGroups: [ShowingGroup(date: film.day, sessions: sessions)],
+          showingGroups: [ShowingGroup(date: day, sessions: sessions)],
         ),
       );
     }

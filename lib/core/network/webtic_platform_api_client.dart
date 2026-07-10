@@ -141,6 +141,39 @@ class WebticPlatformApiClient {
     return _get('https://$host/$slug/', const {});
   }
 
+  /// [WebticCatalogSource.madisonProgrammingPage] chains only: one film's
+  /// real schedule at one cinema - confirmed live to cover a full week or
+  /// more (unlike [getMadisonProgrammingPage] itself, which only ever
+  /// server-renders today). [cinemaLocalId] is `Cinema.webticLocalId`,
+  /// [filmId] is `ParsedMadisonCatalogFilm.filmId`.
+  Future<String> getMadisonFilmDays(
+    String host,
+    int cinemaLocalId,
+    String filmId,
+  ) async {
+    try {
+      final response = await _dio.post<String>(
+        'https://$host/wp-admin/admin-ajax.php',
+        data: {
+          'action': 'giorno_by_film_cinema',
+          'cinema': cinemaLocalId,
+          'film': filmId,
+        },
+        options: Options(
+          responseType: ResponseType.plain,
+          contentType: Headers.formUrlEncodedContentType,
+        ),
+      );
+      final body = response.data!;
+      if (body.isEmpty) {
+        throw ApiException(AppLocalizations.current.requestFailedError);
+      }
+      return body;
+    } on DioException catch (e) {
+      _throwFriendly(e);
+    }
+  }
+
   Future<String> _postWtService(String wtid, Map<String, dynamic> data) async {
     try {
       final response = await _dio.post<String>(

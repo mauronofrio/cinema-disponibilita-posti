@@ -372,10 +372,7 @@ void main() {
     });
 
     test('parses every film block, real Madison Alfellini sample', () {
-      final films = parseWebticMadisonProgrammingPage(
-        raw,
-        now: DateTime(2026, 7, 9),
-      );
+      final films = parseWebticMadisonProgrammingPage(raw);
       expect(films, hasLength(3));
       expect(
         films.map((f) => f.title),
@@ -383,21 +380,51 @@ void main() {
       );
     });
 
-    test('a film session, real performanceId/time/day/poster', () {
-      final films = parseWebticMadisonProgrammingPage(
-        raw,
-        now: DateTime(2026, 7, 9),
-      );
+    test('a film entry, real filmId/poster (no day/session on this page)', () {
+      final films = parseWebticMadisonProgrammingPage(raw);
       final backrooms = films.firstWhere((f) => f.title == 'Backrooms');
       expect(backrooms.filmId, '10231');
-      expect(backrooms.day, DateTime(2026, 7, 9));
-      expect(backrooms.sessions, hasLength(1));
-      expect(backrooms.sessions.single.performanceId, '16464');
-      expect(backrooms.sessions.single.time, '21:30');
       expect(
         backrooms.posterUrl,
         'https://secure.webtic.it/angwt/HandlerLocandinaEx.ashx?idcinema=5802&idevento=541&i=jpg-m&t=010620261303',
       );
+    });
+  });
+
+  group('parseWebticMadisonFilmDays', () {
+    late String raw;
+
+    setUpAll(() {
+      raw = File(
+        'test/fixtures/webtic_madison_alfellini_giorno_by_film_sample.json',
+      ).readAsStringSync();
+    });
+
+    test(
+      'a full week of real days, not just today - real Backrooms/Alfellini sample',
+      () {
+        final days = parseWebticMadisonFilmDays(raw);
+        expect(days, hasLength(6));
+        expect(
+          days.map((d) => d.day),
+          containsAll([
+            DateTime(2026, 7, 10),
+            DateTime(2026, 7, 11),
+            DateTime(2026, 7, 12),
+            DateTime(2026, 7, 13),
+            DateTime(2026, 7, 14),
+            DateTime(2026, 7, 15),
+          ]),
+        );
+      },
+    );
+
+    test('a day\'s session, real performanceId/time (double-encoded JSON)', () {
+      final days = parseWebticMadisonFilmDays(raw);
+      final tomorrow = days.firstWhere((d) => d.day == DateTime(2026, 7, 11));
+      expect(tomorrow.sessions, hasLength(1));
+      expect(tomorrow.sessions.single.performanceId, '16472');
+      expect(tomorrow.sessions.single.time, '21:30');
     });
   });
 

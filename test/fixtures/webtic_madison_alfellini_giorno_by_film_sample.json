@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "id": "11439619",
+      "event": "541",
+      "date": "2026-07-10T00:00:00",
+      "date2": "10/07/2026",
+      "wday": "Fri",
+      "performances": "[{\"PerformanceId\":16468,\"Time\":\"21:30\",\"Screen\":\"SALA 1 VENERI\",\"ScreenId\":233,\"StartTime\":\"2026-07-10T21:30:00\",\"EndTime\":\"2026-07-10T23:15:00\",\"Duration\":105,\"ScreenName\":\"SALA 1 VENERI\"}]",
+      "wdayIT": "Ven",
+      "date3": "Ven, 10.07"
+    },
+    {
+      "id": "11439620",
+      "event": "541",
+      "date": "2026-07-11T00:00:00",
+      "date2": "11/07/2026",
+      "wday": "Sat",
+      "performances": "[{\"PerformanceId\":16472,\"Time\":\"21:30\",\"Screen\":\"SALA 1 VENERI\",\"ScreenId\":233,\"StartTime\":\"2026-07-11T21:30:00\",\"EndTime\":\"2026-07-11T23:15:00\",\"Duration\":105,\"ScreenName\":\"SALA 1 VENERI\"}]",
+      "wdayIT": "Sab",
+      "date3": "Sab, 11.07"
+    },
+    {
+      "id": "11439621",
+      "event": "541",
+      "date": "2026-07-12T00:00:00",
+      "date2": "12/07/2026",
+      "wday": "Sun",
+      "performances": "[{\"PerformanceId\":16476,\"Time\":\"21:30\",\"Screen\":\"SALA 1 VENERI\",\"ScreenId\":233,\"StartTime\":\"2026-07-12T21:30:00\",\"EndTime\":\"2026-07-12T23:15:00\",\"Duration\":105,\"ScreenName\":\"SALA 1 VENERI\"}]",
+      "wdayIT": "Dom",
+      "date3": "Dom, 12.07"
+    },
+    {
+      "id": "11439622",
+      "event": "541",
+      "date": "2026-07-13T00:00:00",
+      "date2": "13/07/2026",
+      "wday": "Mon",
+      "performances": "[{\"PerformanceId\":16480,\"Time\":\"21:30\",\"Screen\":\"SALA 1 VENERI\",\"ScreenId\":233,\"StartTime\":\"2026-07-13T21:30:00\",\"EndTime\":\"2026-07-13T23:15:00\",\"Duration\":105,\"ScreenName\":\"SALA 1 VENERI\"}]",
+      "wdayIT": "Lun",
+      "date3": "Lun, 13.07"
+    },
+    {
+      "id": "11439623",
+      "event": "541",
+      "date": "2026-07-14T00:00:00",
+      "date2": "14/07/2026",
+      "wday": "Tue",
+      "performances": "[{\"PerformanceId\":16484,\"Time\":\"21:30\",\"Screen\":\"SALA 1 VENERI\",\"ScreenId\":233,\"StartTime\":\"2026-07-14T21:30:00\",\"EndTime\":\"2026-07-14T23:15:00\",\"Duration\":105,\"ScreenName\":\"SALA 1 VENERI\"}]",
+      "wdayIT": "Mar",
+      "date3": "Mar, 14.07"
+    },
+    {
+      "id": "11439624",
+      "event": "541",
+      "date": "2026-07-15T00:00:00",
+      "date2": "15/07/2026",
+      "wday": "Wed",
+      "performances": "[{\"PerformanceId\":16488,\"Time\":\"21:30\",\"Screen\":\"SALA 1 VENERI\",\"ScreenId\":233,\"StartTime\":\"2026-07-15T21:30:00\",\"EndTime\":\"2026-07-15T23:15:00\",\"Duration\":105,\"ScreenName\":\"SALA 1 VENERI\"}]",
+      "wdayIT": "Mer",
+      "date3": "Mer, 15.07"
+    }
+  ],
+  "event": "541"
+}
