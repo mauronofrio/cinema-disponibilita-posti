@@ -121,7 +121,7 @@ class WebticPlatformApiClient {
       }
       return body;
     } on DioException catch (e) {
-      _throwFriendly(e);
+      throwFriendlyDioError(e);
     }
   }
 
@@ -164,7 +164,7 @@ class WebticPlatformApiClient {
       }
       return body;
     } on DioException catch (e) {
-      _throwFriendly(e);
+      throwFriendlyDioError(e);
     }
   }
 
