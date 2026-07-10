@@ -131,7 +131,9 @@ class AreaCategory {
 }
 
 class SeatMap {
-  const SeatMap({
+  // Not `const`: `_categoriesByCode` below is a mutable memoization field
+  // for `categoryFor`, and a const constructor requires every field final.
+  SeatMap({
     required this.screenLabel,
     required this.totalRows,
     required this.totalColumns,
@@ -169,11 +171,19 @@ class SeatMap {
   final List<SeatRow> rows;
   final List<AreaCategory> areaCategories;
 
+  /// Lazily built and cached on first lookup: `areaCategories` is small
+  /// today but `categoryFor` is called once per rendered seat cell (hundreds
+  /// per room), so an O(n) scan per call is worth avoiding with an O(1) map
+  /// built once. Plain nullable field rather than `late final`, since
+  /// `SeatMap` has a `const` constructor and `late final` isn't allowed
+  /// there - this is manual memoization instead.
+  Map<String, AreaCategory>? _categoriesByCode;
+
   AreaCategory? categoryFor(String code) {
-    for (final category in areaCategories) {
-      if (category.code == code) return category;
-    }
-    return null;
+    final map = _categoriesByCode ??= {
+      for (final category in areaCategories) category.code: category,
+    };
+    return map[code];
   }
 
   /// Every real seat in the room (nulls are aisle gaps, not seats),
@@ -220,4 +230,46 @@ class SeatMap {
   /// than dividing by zero.
   double get occupancyRatio =>
       totalSeatCount == 0 ? 0 : occupiedSeatCount / totalSeatCount;
+
+  /// Same numbers as [totalSeatCount]/[occupiedSeatCount]/[occupancyRatio]
+  /// combined, but computed in a single pass over every row instead of
+  /// three (six, counting [occupiedSeatCount] and [occupancyRatio] each
+  /// recomputing [totalSeatCount] internally). Callers that need all three
+  /// - like `OccupancySummary` - should use this instead of reading the
+  /// separate getters back to back.
+  OccupancyStats get occupancyStats {
+    var total = 0;
+    var available = 0;
+    for (final row in rows) {
+      for (final seat in row.seats) {
+        if (seat == null ||
+            seat.isAccessibility ||
+            seat.status == SeatStatus.special) {
+          continue;
+        }
+        total++;
+        if (seat.status == SeatStatus.available) available++;
+      }
+    }
+    final occupied = total - available;
+    return OccupancyStats(
+      total: total,
+      occupied: occupied,
+      ratio: total == 0 ? 0 : occupied / total,
+    );
+  }
+}
+
+/// Bundled result of [SeatMap.occupancyStats]: total/occupied/ratio computed
+/// together in one traversal.
+class OccupancyStats {
+  const OccupancyStats({
+    required this.total,
+    required this.occupied,
+    required this.ratio,
+  });
+
+  final int total;
+  final int occupied;
+  final double ratio;
 }

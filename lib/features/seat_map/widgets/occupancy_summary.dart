@@ -15,9 +15,10 @@ class OccupancySummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = seatMap.totalSeatCount;
-    final occupied = seatMap.occupiedSeatCount;
-    final percent = (seatMap.occupancyRatio * 100).round();
+    final stats = seatMap.occupancyStats;
+    final total = stats.total;
+    final occupied = stats.occupied;
+    final percent = (stats.ratio * 100).round();
 
     return Row(
       mainAxisSize: MainAxisSize.min,

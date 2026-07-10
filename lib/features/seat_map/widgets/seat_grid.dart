@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/seat_map.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -77,7 +78,7 @@ class _ScreenIndicator extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'SCHERMO',
+            AppLocalizations.of(context).screenIndicator,
             style: AppTheme.mono(context).copyWith(
               fontSize: 11,
               letterSpacing: 4,
@@ -199,36 +200,43 @@ class _SeatBox extends StatelessWidget {
         : AppColors.seatOccupied;
     final standsOut = isAvailable || isAccessibility;
     final categoryName = category?.name;
-    return Tooltip(
-      message: [
-        seat.name,
-        labelForSeatStatus(seat.status, context),
-        if (categoryName?.isNotEmpty ?? false) categoryName!,
-      ].join(' · '),
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(size * 0.22),
-          border: standsOut ? null : Border.all(color: AppColors.hairline),
-          boxShadow: standsOut
-              ? [
-                  BoxShadow(
-                    color: color.withValues(alpha: 0.55),
-                    blurRadius: 6,
-                    spreadRadius: 0.5,
-                  ),
-                ]
+    final label = [
+      seat.name,
+      labelForSeatStatus(seat.status, context),
+      if (categoryName?.isNotEmpty ?? false) categoryName!,
+    ].join(' · ');
+    return Semantics(
+      // Seats are read-only in this app - purely informational, never
+      // tappable - so this is deliberately not `button: true`.
+      label: label,
+      enabled: false,
+      child: Tooltip(
+        message: label,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(size * 0.22),
+            border: standsOut ? null : Border.all(color: AppColors.hairline),
+            boxShadow: standsOut
+                ? [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.55),
+                      blurRadius: 6,
+                      spreadRadius: 0.5,
+                    ),
+                  ]
+                : null,
+          ),
+          child: isAccessibility
+              ? Icon(
+                  Icons.accessible,
+                  size: size * 0.7,
+                  color: AppColors.background,
+                )
               : null,
         ),
-        child: isAccessibility
-            ? Icon(
-                Icons.accessible,
-                size: size * 0.7,
-                color: AppColors.background,
-              )
-            : null,
       ),
     );
   }

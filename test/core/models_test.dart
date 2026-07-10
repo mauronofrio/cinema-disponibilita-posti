@@ -230,7 +230,7 @@ void main() {
         // this exclusion it would always count as "occupied"
         // (totalSeatCount - availableSeatCount), making a room using it
         // look far busier than it really is even when genuinely empty.
-        const seatMap = SeatMap(
+        final seatMap = SeatMap(
           screenLabel: '',
           totalRows: 1,
           totalColumns: 3,
