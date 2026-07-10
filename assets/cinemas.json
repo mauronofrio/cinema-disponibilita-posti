@@ -2215,5 +2215,100 @@
     "host": "madisoncinemas.it",
     "webticLocalId": 6258,
     "webticCatalogSource": "madisonProgrammingPage"
+  },
+  {
+    "cinemaId": "cinema-palma-trevignano",
+    "name": "Cinema Palma - Trevignano Romano",
+    "slug": "cinema-palma-trevignano",
+    "address": "Via Giuseppe Garibaldi 101, 00069 Trevignano Romano RM",
+    "lat": 42.1547321,
+    "lng": 12.2489705,
+    "chain": "webtic",
+    "host": "www.cinemapalma.com",
+    "webticLocalId": 5513,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "multiplex-delle-stelle-ascoli-piceno",
+    "name": "Multiplex delle Stelle - Ascoli Piceno",
+    "slug": "multiplex-delle-stelle-ascoli-piceno",
+    "address": "Viale dei Mutilati e Invalidi del Lavoro 106, 63100 Ascoli Piceno AP",
+    "lat": 42.8582282,
+    "lng": 13.7096668,
+    "chain": "webtic",
+    "host": "www.multiplexdellestelle.it",
+    "webticLocalId": 5332,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "cinema-di-francesca-cefalu",
+    "name": "Cinema Di Francesca - Cefalù",
+    "slug": "cinema-di-francesca-cefalu",
+    "address": "Corso Ruggero 65, 90015 Cefalù PA",
+    "lat": 38.0380447,
+    "lng": 14.0218366,
+    "chain": "webtic",
+    "host": "cinemadifrancesca.it",
+    "webticLocalId": 5739,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "megacine-la-spezia",
+    "name": "Megacine - La Spezia",
+    "slug": "megacine-la-spezia",
+    "address": "La Spezia Expò, Canaletto, 19138 La Spezia SP",
+    "lat": 44.1153018,
+    "lng": 9.8459415,
+    "chain": "webtic",
+    "host": "www.megacine.it",
+    "webticLocalId": 5083,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "cinema-il-portico-firenze",
+    "name": "Cinema Il Portico - Firenze",
+    "slug": "cinema-il-portico-firenze",
+    "address": "Via Capo di Mondo 66/68, 50136 Firenze FI",
+    "lat": 43.7746183,
+    "lng": 11.2781622,
+    "chain": "webtic",
+    "host": "cinemailportico.it",
+    "webticLocalId": 5506,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "cinema-multisala-marconi-palermo",
+    "name": "Cinema Multisala Marconi - Palermo",
+    "slug": "cinema-multisala-marconi-palermo",
+    "address": "Via Cuba 12, 90129 Palermo PA",
+    "lat": 38.1068999,
+    "lng": 13.3408104,
+    "chain": "webtic",
+    "host": "cinemarconipalermo.it",
+    "webticLocalId": 5515,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "lanteri-pisa",
+    "name": "Cinema Lanteri - Pisa",
+    "slug": "lanteri-pisa",
+    "address": "Via San Michele degli Scalzi 46, 56124 Pisa PI",
+    "lat": 43.708706,
+    "lng": 10.4143763,
+    "chain": "webtic",
+    "host": "cinemalanteri.com",
+    "webticLocalId": 5598,
+    "webticCatalogSource": "fullSchedulePortal"
+  },
+  {
+    "cinemaId": "multisala-aurelia-antica-grosseto",
+    "name": "Multisala Aurelia Antica - Grosseto",
+    "slug": "multisala-aurelia-antica-grosseto",
+    "address": "Via Aurelia Antica 46, 58100 Grosseto GR",
+    "lat": 42.7428617,
+    "lng": 11.1067215,
+    "chain": "webtic",
+    "host": "aureliaanticamultisala.it",
+    "webticLocalId": 5388
   }
 ]
