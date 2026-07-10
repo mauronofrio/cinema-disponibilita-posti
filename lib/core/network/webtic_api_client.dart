@@ -5,14 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../localization/app_localizations.dart';
 import 'api_client.dart' show ApiException;
+import 'dio_error.dart';
 import 'uci_dio_provider.dart';
-
-Never _throwFriendly(DioException e) {
-  if (e.response == null) {
-    throw ApiException(AppLocalizations.current.connectionError);
-  }
-  throw ApiException(AppLocalizations.current.requestFailedError);
-}
 
 /// WebTic reports its own logical failures (bad id, expired performance...)
 /// as a normal HTTP 200 with `Status.Success: false` in the body, not as an
@@ -50,7 +44,7 @@ class WebTicApiClient {
       );
       return _checkedBody(response.data!);
     } on DioException catch (e) {
-      _throwFriendly(e);
+      throwFriendlyDioError(e);
     }
   }
 
