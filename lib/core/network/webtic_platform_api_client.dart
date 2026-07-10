@@ -3,13 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../localization/app_localizations.dart';
 import 'api_client.dart' show ApiException;
-
-Never _throwFriendly(DioException e) {
-  if (e.response == null) {
-    throw ApiException(AppLocalizations.current.connectionError);
-  }
-  throw ApiException(AppLocalizations.current.requestFailedError);
-}
+import 'dio_error.dart';
 
 /// Client for the generic "Webtic" ticketing platform, as called *directly*
 /// by a chain's own front-end site (confirmed live for Notorious Cinemas'
@@ -47,7 +41,7 @@ class WebticPlatformApiClient {
       }
       return body;
     } on DioException catch (e) {
-      _throwFriendly(e);
+      throwFriendlyDioError(e);
     }
   }
 
@@ -187,7 +181,7 @@ class WebticPlatformApiClient {
       );
       return response.data!;
     } on DioException catch (e) {
-      _throwFriendly(e);
+      throwFriendlyDioError(e);
     }
   }
 
@@ -221,5 +215,12 @@ class WebticPlatformApiClient {
 final webticPlatformApiClientProvider = Provider<WebticPlatformApiClient>((
   ref,
 ) {
-  return WebticPlatformApiClient(Dio());
+  return WebticPlatformApiClient(
+    Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 20),
+      ),
+    ),
+  );
 });

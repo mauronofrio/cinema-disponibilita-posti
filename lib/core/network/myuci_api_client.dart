@@ -1,16 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../localization/app_localizations.dart';
-import 'api_client.dart' show ApiException;
+import 'dio_error.dart';
 import 'uci_dio_provider.dart';
-
-Never _throwFriendly(DioException e) {
-  if (e.response == null) {
-    throw ApiException(AppLocalizations.current.connectionError);
-  }
-  throw ApiException(AppLocalizations.current.requestFailedError);
-}
 
 /// Typed client for UCI's public content backend: theatre listing and daily
 /// programming (films/showtimes). Read-only, same philosophy as
@@ -27,7 +19,7 @@ class MyUciApiClient {
       );
       return (response.data ?? const []).cast<String>();
     } on DioException catch (e) {
-      _throwFriendly(e);
+      throwFriendlyDioError(e);
     }
   }
 
@@ -38,7 +30,7 @@ class MyUciApiClient {
       );
       return response.data!['data'] as List<dynamic>? ?? const [];
     } on DioException catch (e) {
-      _throwFriendly(e);
+      throwFriendlyDioError(e);
     }
   }
 }

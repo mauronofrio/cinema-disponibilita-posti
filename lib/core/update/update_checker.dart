@@ -98,7 +98,13 @@ bool isNewerVersion({required String current, required String latest}) {
 final updateCheckProvider = FutureProvider<AvailableUpdate?>((ref) async {
   try {
     final packageInfo = await PackageInfo.fromPlatform();
-    final response = await Dio().get<String>(
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 20),
+      ),
+    );
+    final response = await dio.get<String>(
       _latestReleaseUrl,
       options: Options(
         responseType: ResponseType.plain,
