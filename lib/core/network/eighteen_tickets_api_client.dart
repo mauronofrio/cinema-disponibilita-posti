@@ -1,15 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../localization/app_localizations.dart';
-import 'api_client.dart' show ApiException;
-
-Never _throwFriendly(DioException e) {
-  if (e.response == null) {
-    throw ApiException(AppLocalizations.current.connectionError);
-  }
-  throw ApiException(AppLocalizations.current.requestFailedError);
-}
+import 'dio_error.dart';
 
 /// Typed client for the "18tickets.net" platform - shared by every
 /// independent cinema built on it (confirmed live: RedCarpet Cinema -
@@ -47,7 +39,7 @@ class EighteenTicketsApiClient {
       );
       return response.data!;
     } on DioException catch (e) {
-      _throwFriendly(e);
+      throwFriendlyDioError(e);
     }
   }
 
@@ -123,5 +115,12 @@ class EighteenTicketsApiClient {
 final eighteenTicketsApiClientProvider = Provider<EighteenTicketsApiClient>((
   ref,
 ) {
-  return EighteenTicketsApiClient(Dio());
+  return EighteenTicketsApiClient(
+    Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 20),
+      ),
+    ),
+  );
 });

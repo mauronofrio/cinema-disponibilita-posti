@@ -16,7 +16,12 @@ const webTicBaseUrl =
 
 final myUciDioProvider = Provider<Dio>((ref) {
   return Dio(
-    BaseOptions(baseUrl: myUciBaseUrl, headers: {'Accept': 'application/json'}),
+    BaseOptions(
+      baseUrl: myUciBaseUrl,
+      headers: {'Accept': 'application/json'},
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 20),
+    ),
   );
 });
 
@@ -25,6 +30,8 @@ final webTicDioProvider = Provider<Dio>((ref) {
     BaseOptions(
       baseUrl: webTicBaseUrl,
       headers: {'Content-Type': 'application/json'},
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 20),
     ),
   );
 });
