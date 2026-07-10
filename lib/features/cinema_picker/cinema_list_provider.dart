@@ -31,14 +31,17 @@ final activeCinemaIdProvider = FutureProvider<String?>((ref) {
 });
 
 /// The user's favorite cinemas resolved to full [Cinema] records, in the
-/// order they were added.
+/// order they were added. A stored key with no matching cinema (e.g. an old
+/// bare-cinemaId entry from before favorites were namespaced by chain) is
+/// silently dropped, same as any other "cinema no longer in the list" case -
+/// no separate migration step.
 final favoriteCinemasProvider = FutureProvider<List<Cinema>>((ref) async {
   final ids = await ref.watch(favoriteCinemaIdsProvider.future);
   final cinemas = await ref.watch(cinemaListProvider.future);
-  final byId = {for (final c in cinemas) c.cinemaId: c};
+  final byKey = {for (final c in cinemas) FavoriteCinemaStore.keyFor(c): c};
   return [
     for (final id in ids)
-      if (byId[id] != null) byId[id]!,
+      if (byKey[id] != null) byKey[id]!,
   ];
 });
 
@@ -49,7 +52,7 @@ final activeCinemaProvider = FutureProvider<Cinema?>((ref) async {
   if (id == null) return null;
   final cinemas = await ref.watch(cinemaListProvider.future);
   for (final cinema in cinemas) {
-    if (cinema.cinemaId == id) return cinema;
+    if (FavoriteCinemaStore.keyFor(cinema) == id) return cinema;
   }
   return null;
 });

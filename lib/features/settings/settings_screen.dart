@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/localization/locale_provider.dart';
 import '../../core/models/cinema.dart';
+import '../../core/storage/favorite_cinema_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../cinema_picker/cinema_list_provider.dart';
 
@@ -13,12 +14,12 @@ class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   Future<void> _setActive(WidgetRef ref, Cinema cinema) async {
-    await ref.read(favoriteCinemaStoreProvider).setActive(cinema.cinemaId);
+    await ref.read(favoriteCinemaStoreProvider).setActive(cinema);
     ref.invalidate(activeCinemaIdProvider);
   }
 
   Future<void> _remove(WidgetRef ref, Cinema cinema) async {
-    await ref.read(favoriteCinemaStoreProvider).remove(cinema.cinemaId);
+    await ref.read(favoriteCinemaStoreProvider).remove(cinema);
     ref.invalidate(favoriteCinemaIdsProvider);
     ref.invalidate(activeCinemaIdProvider);
   }
@@ -26,6 +27,34 @@ class SettingsScreen extends ConsumerWidget {
   Future<void> _setLanguage(WidgetRef ref, String languageCode) async {
     await ref.read(languageStoreProvider).setOverride(languageCode);
     ref.invalidate(languageOverrideProvider);
+  }
+
+  Widget _cinemaCard(
+    WidgetRef ref,
+    AppLocalizations t,
+    Cinema cinema,
+    String? activeId,
+  ) {
+    final isActive = FavoriteCinemaStore.keyFor(cinema) == activeId;
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          isActive ? Icons.radio_button_checked : Icons.radio_button_off,
+          color: isActive ? AppColors.marquee : AppColors.textMuted,
+        ),
+        title: Text(cinema.displayName),
+        subtitle: Text(
+          cinema.address,
+          style: const TextStyle(color: AppColors.textMuted),
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete_outline),
+          tooltip: t.removeCinema,
+          onPressed: () => _remove(ref, cinema),
+        ),
+        onTap: isActive ? null : () => _setActive(ref, cinema),
+      ),
+    );
   }
 
   @override
@@ -61,31 +90,7 @@ class SettingsScreen extends ConsumerWidget {
               return Column(
                 children: [
                   for (final cinema in cinemas) ...[
-                    Card(
-                      child: ListTile(
-                        leading: Icon(
-                          cinema.cinemaId == activeId
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_off,
-                          color: cinema.cinemaId == activeId
-                              ? AppColors.marquee
-                              : AppColors.textMuted,
-                        ),
-                        title: Text(cinema.displayName),
-                        subtitle: Text(
-                          cinema.address,
-                          style: const TextStyle(color: AppColors.textMuted),
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          tooltip: t.removeCinema,
-                          onPressed: () => _remove(ref, cinema),
-                        ),
-                        onTap: cinema.cinemaId == activeId
-                            ? null
-                            : () => _setActive(ref, cinema),
-                      ),
-                    ),
+                    _cinemaCard(ref, t, cinema, activeId),
                     if (cinema != cinemas.last) const SizedBox(height: 8),
                   ],
                 ],

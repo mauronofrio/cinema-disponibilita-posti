@@ -26,7 +26,7 @@ class _CinemaPickerScreenState extends ConsumerState<CinemaPickerScreen> {
   }
 
   Future<void> _choose(Cinema cinema) async {
-    await ref.read(favoriteCinemaStoreProvider).addAndActivate(cinema.cinemaId);
+    await ref.read(favoriteCinemaStoreProvider).addAndActivate(cinema);
     ref.invalidate(favoriteCinemaIdsProvider);
     ref.invalidate(activeCinemaIdProvider);
     if (mounted) context.go('/');
