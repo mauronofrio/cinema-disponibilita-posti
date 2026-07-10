@@ -14,14 +14,25 @@ import 'webtic/webtic_madison_programming_page_parser.dart';
 import 'webtic/webtic_programming_page_parser.dart';
 import 'webtic/webtic_seat_map_parser.dart';
 
-/// [ChainApi] for [CinemaChain.webtic]. Three different catalog sources
+/// [ChainApi] for [CinemaChain.webtic]. Several different catalog sources
 /// exist on this platform depending on [Cinema.webticCatalogSource] (see
 /// [WebticCatalogSource]'s own doc and PROJECT_NOTES.md for how each was
 /// discovered) - none of them cached, all just fetched fresh every time,
 /// same "one-time cost either way" tradeoff `UciChainApi` already makes for
-/// its own "fetch everything, filter client-side" model.
+/// its own "fetch everything, filter client-side" model. The one exception
+/// is [WebticCatalogSource.madisonProgrammingPage] (see
+/// [_madisonCatalogFilmDays]): unlike every other source here, which costs
+/// exactly one request regardless of catalog size, Madison's real per-day
+/// schedule requires one request *per film currently playing* - confirmed
+/// live to be noticeably slow on a venue with a large catalog (Cinema
+/// Madison - Roma, 15 films) if paid twice in a row, which is exactly what
+/// happens every time `getShowingDates` is immediately followed by
+/// `getFilmsForDay` for the same cinema (the normal navigation flow into a
+/// cinema's programme) - so this one source gets a short-lived, per-cinema
+/// in-memory cache to avoid doing that expensive fetch twice for what is,
+/// from the user's perspective, a single screen load.
 ///
-/// Seat maps are identical across all three sources though: `getOccupancy`
+/// Seat maps are identical across every source though: `getOccupancy`
 /// alone (just `LocalId`+`PerformanceId`) always echoes back the real room
 /// id as `idsala` (confirmed live on every chain checked), so [getSeatMap]
 /// never needs to already know which room a showtime plays in - it calls
@@ -32,6 +43,9 @@ class WebticChainApi implements ChainApi {
 
   final WebticPlatformApiClient _client;
   final Clock _clock;
+
+  final _madisonCatalogCache = <String, _MadisonCatalogCacheEntry>{};
+  static const _madisonCatalogCacheTtl = Duration(minutes: 5);
 
   @override
   Future<List<ShowingDate>> getShowingDates(Cinema cinema) async {
@@ -49,10 +63,7 @@ class WebticChainApi implements ChainApi {
 
       case WebticCatalogSource.filmSchedulePages:
         final html = await _client.getFilmCatalogHomepage(cinema.host!);
-        final catalog = parseWebticFilmCatalog(
-          html,
-          siteCinemaId: cinema.slug,
-        );
+        final catalog = parseWebticFilmCatalog(html, siteCinemaId: cinema.slug);
         final days = <DateTime>{};
         for (final film in catalog) {
           days.addAll(film.playingDates);
@@ -102,9 +113,19 @@ class WebticChainApi implements ChainApi {
   // Fired concurrently (`Future.wait`), not one after another - a venue
   // with 15 films awaiting each call in turn is noticeably slow to load
   // (confirmed live on Cinema Madison - Roma) for no benefit, since none of
-  // these per-film requests depend on each other.
+  // these per-film requests depend on each other. Also cached briefly per
+  // cinema (see class doc) since `getShowingDates` and `getFilmsForDay`
+  // both need this exact same, expensive fetch back to back in the normal
+  // navigation flow.
   Future<Map<ParsedMadisonCatalogFilm, List<ParsedMadisonDay>>>
   _madisonCatalogFilmDays(Cinema cinema) async {
+    final cached = _madisonCatalogCache[cinema.cinemaId];
+    final now = _clock.now();
+    if (cached != null &&
+        now.difference(cached.fetchedAt) < _madisonCatalogCacheTtl) {
+      return cached.filmDays;
+    }
+
     final host = cinema.host!;
     final localId = cinema.webticLocalId!;
     final html = await _client.getMadisonProgrammingPage(host, cinema.slug);
@@ -115,10 +136,15 @@ class WebticChainApi implements ChainApi {
         (film) => _client.getMadisonFilmDays(host, localId, film.filmId),
       ),
     );
-    return Map.fromIterables(
+    final result = Map.fromIterables(
       catalog,
       allDays.map(parseWebticMadisonFilmDays),
     );
+    _madisonCatalogCache[cinema.cinemaId] = _MadisonCatalogCacheEntry(
+      filmDays: result,
+      fetchedAt: now,
+    );
+    return result;
   }
 
   @override
@@ -178,29 +204,25 @@ class WebticChainApi implements ChainApi {
     final result = <Film>[];
     for (final film in films) {
       if (film.sessionsByDay.isEmpty) continue;
-      final showingGroups =
-          film.sessionsByDay.entries.map((entry) {
-              final sessions =
-                  entry.value.map((parsed) {
-                      return Session(
-                        sessionId: parsed.performanceId,
-                        startTime: parsed.startTime,
-                        endTime: parsed.endTime,
-                        screenName: parsed.screenName,
-                        isSoldOut: false,
-                        formattedPrice: null,
-                        isPriceVisible: false,
-                        attributes: const [],
-                        // The chain's own quick-booking flow for this exact
-                        // showtime (see PROJECT_NOTES.md) - this app never
-                        // implements booking itself, it just hands off.
-                        bookingPath: bookingPathFor(parsed.performanceId),
-                      );
-                    }).toList()
-                    ..sort((a, b) => a.startTime.compareTo(b.startTime));
-              return ShowingGroup(date: entry.key, sessions: sessions);
-            }).toList()
-            ..sort((a, b) => a.date.compareTo(b.date));
+      final showingGroups = film.sessionsByDay.entries.map((entry) {
+        final sessions = entry.value.map((parsed) {
+          return Session(
+            sessionId: parsed.performanceId,
+            startTime: parsed.startTime,
+            endTime: parsed.endTime,
+            screenName: parsed.screenName,
+            isSoldOut: false,
+            formattedPrice: null,
+            isPriceVisible: false,
+            attributes: const [],
+            // The chain's own quick-booking flow for this exact
+            // showtime (see PROJECT_NOTES.md) - this app never
+            // implements booking itself, it just hands off.
+            bookingPath: bookingPathFor(parsed.performanceId),
+          );
+        }).toList()..sort((a, b) => a.startTime.compareTo(b.startTime));
+        return ShowingGroup(date: entry.key, sessions: sessions);
+      }).toList()..sort((a, b) => a.date.compareTo(b.date));
 
       result.add(
         Film(
@@ -237,33 +259,31 @@ class WebticChainApi implements ChainApi {
           film.day.day != day.day) {
         continue;
       }
-      final sessions =
-          film.sessions.map((s) {
-              final timeParts = s.time.split(':');
-              final startTime = DateTime(
-                film.day.year,
-                film.day.month,
-                film.day.day,
-                int.parse(timeParts[0]),
-                int.parse(timeParts[1]),
-              );
-              return Session(
-                sessionId: s.performanceId,
-                startTime: startTime,
-                // The programmazione page never gives an end time.
-                endTime: startTime,
-                screenName: '',
-                isSoldOut: false,
-                formattedPrice: null,
-                isPriceVisible: false,
-                attributes: const [],
-                bookingPath:
-                    'https://$host/cinema/acquisti'
-                    '?ep=loadPerformance&sc=$localId'
-                    '&se=${film.eventId}&sp=${s.performanceId}',
-              );
-            }).toList()
-            ..sort((a, b) => a.startTime.compareTo(b.startTime));
+      final sessions = film.sessions.map((s) {
+        final timeParts = s.time.split(':');
+        final startTime = DateTime(
+          film.day.year,
+          film.day.month,
+          film.day.day,
+          int.parse(timeParts[0]),
+          int.parse(timeParts[1]),
+        );
+        return Session(
+          sessionId: s.performanceId,
+          startTime: startTime,
+          // The programmazione page never gives an end time.
+          endTime: startTime,
+          screenName: '',
+          isSoldOut: false,
+          formattedPrice: null,
+          isPriceVisible: false,
+          attributes: const [],
+          bookingPath:
+              'https://$host/cinema/acquisti'
+              '?ep=loadPerformance&sc=$localId'
+              '&se=${film.eventId}&sp=${s.performanceId}',
+        );
+      }).toList()..sort((a, b) => a.startTime.compareTo(b.startTime));
 
       result.add(
         Film(
@@ -297,35 +317,33 @@ class WebticChainApi implements ChainApi {
       );
       if (matchingDay.isEmpty) continue;
 
-      final sessions =
-          matchingDay.first.sessions.map((s) {
-              final timeParts = s.time.split(':');
-              final startTime = DateTime(
-                day.year,
-                day.month,
-                day.day,
-                int.parse(timeParts[0]),
-                int.parse(timeParts[1]),
-              );
-              return Session(
-                sessionId: s.performanceId,
-                startTime: startTime,
-                // Never given by the response.
-                endTime: startTime,
-                screenName: '',
-                isSoldOut: false,
-                formattedPrice: null,
-                isPriceVisible: false,
-                attributes: const [],
-                // No `sc=`/`se=` params needed here - unlike Giometti's own
-                // booking path, this chain's site resolves everything from
-                // the performance id alone (confirmed live).
-                bookingPath:
-                    'https://$host/info-e-acquisto/'
-                    '?performance=${s.performanceId}#acquista_ora',
-              );
-            }).toList()
-            ..sort((a, b) => a.startTime.compareTo(b.startTime));
+      final sessions = matchingDay.first.sessions.map((s) {
+        final timeParts = s.time.split(':');
+        final startTime = DateTime(
+          day.year,
+          day.month,
+          day.day,
+          int.parse(timeParts[0]),
+          int.parse(timeParts[1]),
+        );
+        return Session(
+          sessionId: s.performanceId,
+          startTime: startTime,
+          // Never given by the response.
+          endTime: startTime,
+          screenName: '',
+          isSoldOut: false,
+          formattedPrice: null,
+          isPriceVisible: false,
+          attributes: const [],
+          // No `sc=`/`se=` params needed here - unlike Giometti's own
+          // booking path, this chain's site resolves everything from
+          // the performance id alone (confirmed live).
+          bookingPath:
+              'https://$host/info-e-acquisto/'
+              '?performance=${s.performanceId}#acquista_ora',
+        );
+      }).toList()..sort((a, b) => a.startTime.compareTo(b.startTime));
 
       result.add(
         Film(
@@ -370,43 +388,39 @@ class WebticChainApi implements ChainApi {
         film.filmId,
         siteCinemaId,
       );
-      final sessions = parseWebticFilmSchedulePage(
-        scheduleHtml,
-        now: _clock.now(),
-      ).where(
-        (s) =>
-            s.day.year == day.year &&
-            s.day.month == day.month &&
-            s.day.day == day.day,
-      );
+      final sessions =
+          parseWebticFilmSchedulePage(scheduleHtml, now: _clock.now()).where(
+            (s) =>
+                s.day.year == day.year &&
+                s.day.month == day.month &&
+                s.day.day == day.day,
+          );
       if (sessions.isEmpty) continue;
 
-      final sessionObjs =
-          sessions.map((s) {
-              final timeParts = s.time.split(':');
-              final startTime = DateTime(
-                day.year,
-                day.month,
-                day.day,
-                int.parse(timeParts[0]),
-                int.parse(timeParts[1]),
-              );
-              return Session(
-                sessionId: s.performanceId,
-                startTime: startTime,
-                // The schedule page never gives an end time.
-                endTime: startTime,
-                screenName: '',
-                isSoldOut: false,
-                formattedPrice: null,
-                isPriceVisible: false,
-                attributes: const [],
-                bookingPath:
-                    'https://$host/acquista/${film.slug}'
-                    '/${s.localId}/${s.eventId}/${s.performanceId}/',
-              );
-            }).toList()
-            ..sort((a, b) => a.startTime.compareTo(b.startTime));
+      final sessionObjs = sessions.map((s) {
+        final timeParts = s.time.split(':');
+        final startTime = DateTime(
+          day.year,
+          day.month,
+          day.day,
+          int.parse(timeParts[0]),
+          int.parse(timeParts[1]),
+        );
+        return Session(
+          sessionId: s.performanceId,
+          startTime: startTime,
+          // The schedule page never gives an end time.
+          endTime: startTime,
+          screenName: '',
+          isSoldOut: false,
+          formattedPrice: null,
+          isPriceVisible: false,
+          attributes: const [],
+          bookingPath:
+              'https://$host/acquista/${film.slug}'
+              '/${s.localId}/${s.eventId}/${s.performanceId}/',
+        );
+      }).toList()..sort((a, b) => a.startTime.compareTo(b.startTime));
 
       result.add(
         Film(
@@ -439,6 +453,16 @@ class WebticChainApi implements ChainApi {
       ),
     );
   }
+}
+
+class _MadisonCatalogCacheEntry {
+  const _MadisonCatalogCacheEntry({
+    required this.filmDays,
+    required this.fetchedAt,
+  });
+
+  final Map<ParsedMadisonCatalogFilm, List<ParsedMadisonDay>> filmDays;
+  final DateTime fetchedAt;
 }
 
 final webticChainApiProvider = Provider<WebticChainApi>((ref) {
