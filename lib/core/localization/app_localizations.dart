@@ -64,6 +64,7 @@ class AppLocalizations {
     'seatStatusAccessibility': {'en': 'Accessibility', 'it': 'Accessibilità'},
     'seatStatusUnavailable': {'en': 'Not available', 'it': 'Non disponibile'},
     'occupiedSummary': {'en': 'Occupied', 'it': 'Occupati'},
+    'screenIndicator': {'en': 'SCREEN', 'it': 'SCHERMO'},
     'buyTickets': {
       'en': 'Buy tickets on the official site',
       'it': 'Compra i biglietti sul sito ufficiale',
@@ -135,6 +136,7 @@ class AppLocalizations {
   String get seatStatusAccessibility => _t('seatStatusAccessibility');
   String get seatStatusUnavailable => _t('seatStatusUnavailable');
   String get occupiedSummary => _t('occupiedSummary');
+  String get screenIndicator => _t('screenIndicator');
   String get buyTickets => _t('buyTickets');
   String get getDirections => _t('getDirections');
   String get openMapsTitle => _t('openMapsTitle');
