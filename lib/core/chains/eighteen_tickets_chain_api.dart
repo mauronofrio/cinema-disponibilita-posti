@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../date/clock.dart';
 import '../models/cinema.dart';
 import '../models/film.dart';
 import '../models/seat_map.dart';
 import '../models/showing_date.dart';
 import '../network/eighteen_tickets_api_client.dart';
+import '../util/ttl_cache.dart';
 import 'chain_api.dart';
 import 'eighteen_tickets/eighteen_tickets_film_parser.dart';
 import 'eighteen_tickets/eighteen_tickets_seat_map_parser.dart';
@@ -18,13 +20,7 @@ import 'eighteen_tickets/eighteen_tickets_seat_map_parser.dart';
 /// is never re-fetched just because the other day's catalog lists it too
 /// (see the class doc for why that matters on this platform).
 class _FilmPageSchedule {
-  _FilmPageSchedule({
-    required this.fetchedAt,
-    required this.catalogById,
-    required this.sessionsById,
-  });
-
-  final DateTime fetchedAt;
+  _FilmPageSchedule({required this.catalogById, required this.sessionsById});
 
   /// The catalog entry (title/poster) for every film seen so far, across
   /// however many days' catalogs have actually been fetched.
@@ -57,14 +53,16 @@ class _FilmPageSchedule {
 /// asks for is ever fetched, never pre-loaded for days nobody's looking at
 /// yet.
 class EighteenTicketsChainApi implements ChainApi {
-  EighteenTicketsChainApi(this._client);
+  EighteenTicketsChainApi(this._client, this._clock)
+    : _filmPageSchedules = TtlCache(_clock, const Duration(minutes: 20));
 
   final EighteenTicketsApiClient _client;
+  final Clock _clock;
 
   /// Keyed by [Cinema.cinemaId] - only ever populated for
   /// [Cinema.scheduleFromFilmPages] cinemas, everyone else's showtimes come
   /// straight from the (much cheaper) `fetch_films` response every time.
-  final _filmPageSchedules = <String, _FilmPageSchedule>{};
+  final TtlCache<String, _FilmPageSchedule> _filmPageSchedules;
 
   String _dateKey(DateTime day) {
     String two(int n) => n.toString().padLeft(2, '0');
@@ -72,48 +70,50 @@ class EighteenTicketsChainApi implements ChainApi {
   }
 
   @override
-  Future<List<ShowingDate>> getShowingDates(Cinema cinema) async {
-    if (cinema.scheduleFromFilmPages) {
-      // fetch_films's own day picker still lists weeks of days here (it
-      // only fails to render *showtimes*, see getFilmsForDay), but every one
-      // of them would cost a full film-page-per-film fetch to actually
-      // check - hardcoding to just today/tomorrow keeps that bounded.
-      final today = DateTime.now();
-      final tomorrow = today.add(const Duration(days: 1));
-      return [
-        ShowingDate(
-          date: DateTime(today.year, today.month, today.day),
-          hasShowings: true,
-        ),
-        ShowingDate(
-          date: DateTime(tomorrow.year, tomorrow.month, tomorrow.day),
-          hasShowings: true,
-        ),
-      ];
-    }
-    // Just the homepage - the day picker itself lists a full month or more
-    // (23+ days observed live) at no extra cost, since it's baked into the
-    // one page load. Only fetching a specific day's *films* (below) has a
-    // real per-request cost, so there's no reason to trim this list.
-    final homepage = await _client.getHomepage(cinema.host!);
-    var days = parseEighteenTicketsProgrammingDays(homepage);
-    if (days.isEmpty) {
-      // Confirmed live on a handful of tenants (e.g. Cinema Savoia -
-      // Taranto): the day carousel isn't server-rendered into the bare
-      // homepage at all there, only injected client-side via the same
-      // XHR call `getFilmsForDay` already makes - whose response carries
-      // the identical balloon markup. One extra request, only paid on
-      // tenants where the homepage genuinely has nothing to parse.
-      final today = DateTime.now();
-      final filmsForToday = await _client.getFilmsForDay(
-        cinema.host!,
-        _dateKey(today),
-      );
-      days = parseEighteenTicketsProgrammingDays(filmsForToday);
-    }
-    return days
-        .map((d) => ShowingDate(date: DateTime.parse(d), hasShowings: true))
-        .toList();
+  Future<List<ShowingDate>> getShowingDates(Cinema cinema) {
+    return runChainParsing(() async {
+      if (cinema.scheduleFromFilmPages) {
+        // fetch_films's own day picker still lists weeks of days here (it
+        // only fails to render *showtimes*, see getFilmsForDay), but every
+        // one of them would cost a full film-page-per-film fetch to actually
+        // check - hardcoding to just today/tomorrow keeps that bounded.
+        final today = _clock.now();
+        final tomorrow = today.add(const Duration(days: 1));
+        return [
+          ShowingDate(
+            date: DateTime(today.year, today.month, today.day),
+            hasShowings: true,
+          ),
+          ShowingDate(
+            date: DateTime(tomorrow.year, tomorrow.month, tomorrow.day),
+            hasShowings: true,
+          ),
+        ];
+      }
+      // Just the homepage - the day picker itself lists a full month or more
+      // (23+ days observed live) at no extra cost, since it's baked into the
+      // one page load. Only fetching a specific day's *films* (below) has a
+      // real per-request cost, so there's no reason to trim this list.
+      final homepage = await _client.getHomepage(cinema.host!);
+      var days = parseEighteenTicketsProgrammingDays(homepage);
+      if (days.isEmpty) {
+        // Confirmed live on a handful of tenants (e.g. Cinema Savoia -
+        // Taranto): the day carousel isn't server-rendered into the bare
+        // homepage at all there, only injected client-side via the same
+        // XHR call `getFilmsForDay` already makes - whose response carries
+        // the identical balloon markup. One extra request, only paid on
+        // tenants where the homepage genuinely has nothing to parse.
+        final today = _clock.now();
+        final filmsForToday = await _client.getFilmsForDay(
+          cinema.host!,
+          _dateKey(today),
+        );
+        days = parseEighteenTicketsProgrammingDays(filmsForToday);
+      }
+      return days
+          .map((d) => ShowingDate(date: DateTime.parse(d), hasShowings: true))
+          .toList();
+    });
   }
 
   /// [Cinema.scheduleFromFilmPages] cinemas only - see the field doc and
@@ -136,16 +136,9 @@ class EighteenTicketsChainApi implements ChainApi {
     Cinema cinema,
     DateTime day,
   ) async {
-    var schedule = _filmPageSchedules[cinema.cinemaId];
-    if (schedule == null ||
-        DateTime.now().difference(schedule.fetchedAt) >=
-            const Duration(minutes: 20)) {
-      schedule = _FilmPageSchedule(
-        fetchedAt: DateTime.now(),
-        catalogById: {},
-        sessionsById: {},
-      );
-    }
+    final schedule =
+        _filmPageSchedules.get(cinema.cinemaId) ??
+        _FilmPageSchedule(catalogById: {}, sessionsById: {});
     final host = cinema.host!;
     final catalogHtml = await _client.getFilmsForDay(host, _dateKey(day));
     final catalog = parseEighteenTicketsFilmsForDay(catalogHtml, day).films;
@@ -163,7 +156,7 @@ class EighteenTicketsChainApi implements ChainApi {
         film.filmId,
       );
     }
-    _filmPageSchedules[cinema.cinemaId] = schedule;
+    _filmPageSchedules.set(cinema.cinemaId, schedule);
     return schedule;
   }
 
@@ -221,97 +214,104 @@ class EighteenTicketsChainApi implements ChainApi {
   }
 
   @override
-  Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) async {
-    if (cinema.scheduleFromFilmPages) {
-      return _getFilmsForDayFromFilmPages(cinema, day);
-    }
-    final host = cinema.host!;
-    final html = await _client.getFilmsForDay(host, _dateKey(day));
-    final programming = parseEighteenTicketsFilmsForDay(html, day);
+  Future<List<Film>> getFilmsForDay(Cinema cinema, DateTime day) {
+    return runChainParsing(() async {
+      if (cinema.scheduleFromFilmPages) {
+        return _getFilmsForDayFromFilmPages(cinema, day);
+      }
+      final host = cinema.host!;
+      final html = await _client.getFilmsForDay(host, _dateKey(day));
+      final programming = parseEighteenTicketsFilmsForDay(html, day);
 
-    final sessionsByFilm = <String, List<ParsedEighteenTicketsSession>>{};
-    for (final session in programming.sessions) {
-      sessionsByFilm.putIfAbsent(session.filmId, () => []).add(session);
-    }
+      final sessionsByFilm = <String, List<ParsedEighteenTicketsSession>>{};
+      for (final session in programming.sessions) {
+        sessionsByFilm.putIfAbsent(session.filmId, () => []).add(session);
+      }
 
-    final result = <Film>[];
-    for (final film in programming.films) {
-      final sessions = sessionsByFilm[film.filmId];
-      if (sessions == null || sessions.isEmpty) continue;
-      final showingGroup = ShowingGroup(
-        date: DateTime(day.year, day.month, day.day),
-        sessions:
-            sessions
-                .map(
-                  (parsed) => Session(
-                    sessionId: parsed.sessionId,
-                    startTime: parsed.startTime,
-                    // fetch_films never gives an end time - not shown
-                    // anywhere sessions are rendered, so an estimate is fine.
-                    endTime: parsed.startTime,
-                    screenName: parsed.theaterName,
-                    isSoldOut: false,
-                    formattedPrice: null,
-                    isPriceVisible: false,
-                    attributes: const [],
-                    // The one page this platform has for a single showtime
-                    // (also where getSeatMap reads the room id from, see
-                    // above) is itself the booking flow - the same
-                    // `fetch_films` markup links here as "Programmazione
-                    // Completa"/the time chip's own href.
-                    bookingPath:
-                        'https://$host/film/${film.filmId}/${parsed.sessionId}#theater-init',
-                    eighteenTicketsFilmId: film.filmId,
-                  ),
-                )
-                .toList()
-              ..sort((a, b) => a.startTime.compareTo(b.startTime)),
-      );
-      result.add(
-        Film(
-          filmId: film.filmId,
-          title: film.title,
-          posterImageSrc: film.posterUrl,
-          runningTime: null,
-          showingGroups: [showingGroup],
-        ),
-      );
-    }
-    result.sort((a, b) => a.title.compareTo(b.title));
-    return result;
+      final result = <Film>[];
+      for (final film in programming.films) {
+        final sessions = sessionsByFilm[film.filmId];
+        if (sessions == null || sessions.isEmpty) continue;
+        final showingGroup = ShowingGroup(
+          date: DateTime(day.year, day.month, day.day),
+          sessions:
+              sessions
+                  .map(
+                    (parsed) => Session(
+                      sessionId: parsed.sessionId,
+                      startTime: parsed.startTime,
+                      // fetch_films never gives an end time - not shown
+                      // anywhere sessions are rendered, so an estimate is fine.
+                      endTime: parsed.startTime,
+                      screenName: parsed.theaterName,
+                      isSoldOut: false,
+                      formattedPrice: null,
+                      isPriceVisible: false,
+                      attributes: const [],
+                      // The one page this platform has for a single showtime
+                      // (also where getSeatMap reads the room id from, see
+                      // above) is itself the booking flow - the same
+                      // `fetch_films` markup links here as "Programmazione
+                      // Completa"/the time chip's own href.
+                      bookingPath:
+                          'https://$host/film/${film.filmId}/${parsed.sessionId}#theater-init',
+                      eighteenTicketsFilmId: film.filmId,
+                    ),
+                  )
+                  .toList()
+                ..sort((a, b) => a.startTime.compareTo(b.startTime)),
+        );
+        result.add(
+          Film(
+            filmId: film.filmId,
+            title: film.title,
+            posterImageSrc: film.posterUrl,
+            runningTime: null,
+            showingGroups: [showingGroup],
+          ),
+        );
+      }
+      result.sort((a, b) => a.title.compareTo(b.title));
+      return result;
+    });
   }
 
   @override
-  Future<SeatMap> getSeatMap(Cinema cinema, Session session) async {
-    final host = cinema.host!;
-    final filmId = session.eighteenTicketsFilmId!;
-    // The room a showtime plays in isn't known upfront on this platform -
-    // only its own page exposes it (see eighteen_tickets_film_parser.dart).
-    final filmPage = await _client.getFilmSessionPage(
-      host,
-      filmId,
-      session.sessionId,
-    );
-    final theaterId = parseEighteenTicketsTheaterIdForSession(
-      filmPage,
-      session.sessionId,
-    )!;
-    final results = await Future.wait([
-      _client.getTheaterSvg(host, theaterId),
-      _client.getSeatOccupancy(host, session.sessionId),
-    ]);
-    return compute(
-      parseEighteenTicketsSeatMap,
-      EighteenTicketsSeatMapPayload(
-        theaterSvg: results[0],
-        occupancyJson: results[1],
-      ),
-    );
+  Future<SeatMap> getSeatMap(Cinema cinema, Session session) {
+    return runChainParsing(() async {
+      final host = cinema.host!;
+      final filmId = session.eighteenTicketsFilmId!;
+      // The room a showtime plays in isn't known upfront on this platform -
+      // only its own page exposes it (see eighteen_tickets_film_parser.dart).
+      final filmPage = await _client.getFilmSessionPage(
+        host,
+        filmId,
+        session.sessionId,
+      );
+      final theaterId = parseEighteenTicketsTheaterIdForSession(
+        filmPage,
+        session.sessionId,
+      )!;
+      final results = await Future.wait([
+        _client.getTheaterSvg(host, theaterId),
+        _client.getSeatOccupancy(host, session.sessionId),
+      ]);
+      return compute(
+        parseEighteenTicketsSeatMap,
+        EighteenTicketsSeatMapPayload(
+          theaterSvg: results[0],
+          occupancyJson: results[1],
+        ),
+      );
+    });
   }
 }
 
 final eighteenTicketsChainApiProvider = Provider<EighteenTicketsChainApi>((
   ref,
 ) {
-  return EighteenTicketsChainApi(ref.watch(eighteenTicketsApiClientProvider));
+  return EighteenTicketsChainApi(
+    ref.watch(eighteenTicketsApiClientProvider),
+    ref.watch(clockProvider),
+  );
 });
