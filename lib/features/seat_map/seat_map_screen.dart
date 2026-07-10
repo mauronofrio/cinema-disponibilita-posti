@@ -133,23 +133,7 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
   Widget build(BuildContext context) {
     final session = _selectedSession;
     final key = (widget.args.cinema, session);
-    final seatMapAsync = ref.watch(seatMapProvider(key));
     final now = ref.watch(clockProvider).now();
-    // Same cached provider the home screen already populated - for The
-    // Space/UCI this is a strict superset of `_groupsByDay`'s keys anyway
-    // (both come from the same one-shot fetch), for 18tickets-platform
-    // cinemas it's the whole cinema's calendar even though only one of its
-    // days has this film's sessions loaded yet. Falls back to what's already
-    // known from
-    // the nav args if this hasn't resolved yet, so the switcher never shows
-    // fewer days than it did a moment ago on the home screen.
-    final availableDates = ref
-        .watch(showingDatesProvider(widget.args.cinema))
-        .maybeWhen(
-          data: (days) =>
-              days.where((d) => d.hasShowings).map((d) => d.date).toList(),
-          orElse: () => widget.args.showingGroups.map((g) => g.date).toList(),
-        );
 
     return Scaffold(
       appBar: AppBar(
@@ -176,12 +160,38 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
             16 + MediaQuery.paddingOf(context).bottom,
           ),
           children: [
-            DateSwitcher(
-              availableDates: availableDates,
-              selectedDate: _selectedDate,
-              now: now,
-              onSelect: _selectDate,
-              loadingDate: _loadingDate,
+            // Its own Consumer: only this chip strip needs to rebuild when
+            // `showingDatesProvider` resolves/changes, not the seat grid
+            // below it.
+            Consumer(
+              builder: (context, ref, _) {
+                // Same cached provider the home screen already populated -
+                // for The Space/UCI this is a strict superset of
+                // `_groupsByDay`'s keys anyway (both come from the same
+                // one-shot fetch), for 18tickets-platform cinemas it's the
+                // whole cinema's calendar even though only one of its days
+                // has this film's sessions loaded yet. Falls back to what's
+                // already known from the nav args if this hasn't resolved
+                // yet, so the switcher never shows fewer days than it did a
+                // moment ago on the home screen.
+                final availableDates = ref
+                    .watch(showingDatesProvider(widget.args.cinema))
+                    .maybeWhen(
+                      data: (days) => days
+                          .where((d) => d.hasShowings)
+                          .map((d) => d.date)
+                          .toList(),
+                      orElse: () =>
+                          widget.args.showingGroups.map((g) => g.date).toList(),
+                    );
+                return DateSwitcher(
+                  availableDates: availableDates,
+                  selectedDate: _selectedDate,
+                  now: now,
+                  onSelect: _selectDate,
+                  loadingDate: _loadingDate,
+                );
+              },
             ),
             const SizedBox(height: 2),
             TimeSwitcher(
@@ -191,45 +201,58 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
               onSelect: _selectSession,
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  session.screenName,
-                  style: AppTheme.mono(
-                    context,
-                  ).copyWith(fontSize: 13, color: AppColors.textMuted),
-                ),
-                seatMapAsync.maybeWhen(
-                  data: (m) => OccupancySummary(seatMap: m),
-                  orElse: () => const SizedBox.shrink(),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            seatMapAsync.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 48),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (err, _) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 48),
-                child: Center(
-                  child: Text(
-                    '${AppLocalizations.of(context).seatsLoadError}\n$err',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              data: (seatMap) {
+            // Its own Consumer: only the occupancy count/grid/buy button
+            // need to rebuild on every `seatMapProvider` refetch (its short
+            // TTL means this can happen often), not the switchers above.
+            Consumer(
+              builder: (context, ref, _) {
+                final seatMapAsync = ref.watch(seatMapProvider(key));
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AreaLegend(seatMap: seatMap),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          session.screenName,
+                          style: AppTheme.mono(
+                            context,
+                          ).copyWith(fontSize: 13, color: AppColors.textMuted),
+                        ),
+                        seatMapAsync.maybeWhen(
+                          data: (m) => OccupancySummary(seatMap: m),
+                          orElse: () => const SizedBox.shrink(),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 12),
-                    SeatGrid(seatMap: seatMap),
-                    const SizedBox(height: 32),
-                    BuyTicketsButton(session: session),
+                    seatMapAsync.when(
+                      loading: () => const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 48),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                      error: (err, _) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 48),
+                        child: Center(
+                          child: Text(
+                            '${AppLocalizations.of(context).seatsLoadError}\n$err',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      data: (seatMap) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AreaLegend(seatMap: seatMap),
+                            const SizedBox(height: 12),
+                            SeatGrid(seatMap: seatMap),
+                            const SizedBox(height: 32),
+                            BuyTicketsButton(session: session),
+                          ],
+                        );
+                      },
+                    ),
                   ],
                 );
               },
