@@ -21,9 +21,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) async {
-      final activeId = await ref.read(activeCinemaIdProvider.future);
+      // Must check the *resolved* cinema, not just whether some id string is
+      // stored - a stored id that no longer matches any cinema (e.g. a
+      // favorite saved under an older, since-changed key format) needs the
+      // same redirect as "no favorite at all", or the home screen is left
+      // showing nothing forever waiting for a redirect that never comes
+      // (confirmed live: this exact case needed a full app-data reset to
+      // recover before this fix).
+      final activeCinema = await ref.read(activeCinemaProvider.future);
       final goingToPicker = state.matchedLocation == '/picker';
-      if (activeId == null && !goingToPicker) return '/picker';
+      if (activeCinema == null && !goingToPicker) return '/picker';
       return null;
     },
     routes: [
