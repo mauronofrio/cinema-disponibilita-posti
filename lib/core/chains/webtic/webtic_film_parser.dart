@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../parsing_utils.dart';
+
 /// One showtime for one film, on one specific day - as returned by
 /// `getFullSchedule`. Carries [screenId] (needed for the seat map's
 /// `getMapSeats` call) since it's only ever exposed here, not anywhere the
@@ -46,18 +48,6 @@ class ParsedWebticFilm {
   final Map<DateTime, List<ParsedWebticSession>> sessionsByDay;
 }
 
-int? _parseDurationMinutes(String? duration) {
-  // "01:50" -> 110. Absent or malformed just means "unknown", not an error -
-  // the UI already treats a null running time as fine to omit.
-  if (duration == null) return null;
-  final parts = duration.split(':');
-  if (parts.length != 2) return null;
-  final hours = int.tryParse(parts[0]);
-  final minutes = int.tryParse(parts[1]);
-  if (hours == null || minutes == null) return null;
-  return hours * 60 + minutes;
-}
-
 DateTime _dayKey(DateTime date) => DateTime(date.year, date.month, date.day);
 
 /// Parses a `getFullSchedule` response body into every film it lists, each
@@ -99,7 +89,7 @@ List<ParsedWebticFilm> parseWebticFullSchedule(String responseBody) {
       eventId: event['EventId'].toString(),
       title: (event['Title'] as String?) ?? '',
       posterPath: event['Picture'] as String?,
-      runningTimeMinutes: _parseDurationMinutes(event['Duration'] as String?),
+      runningTimeMinutes: parseDurationMinutes(event['Duration'] as String?),
       sessionsByDay: sessionsByDay,
     );
   }).toList();

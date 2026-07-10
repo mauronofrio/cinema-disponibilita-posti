@@ -1,4 +1,5 @@
 import '../../models/film.dart';
+import '../parsing_utils.dart';
 
 /// One film's showings on one specific day, before merging across every day
 /// the cinema publishes - see [UciChainApi.getFilmsForCinema] for why this
@@ -20,16 +21,6 @@ class ParsedUciDay {
   final int? runningTime;
   final DateTime date;
   final List<Session> sessions;
-}
-
-int? _parseDurationMinutes(String? duration) {
-  if (duration == null) return null;
-  final parts = duration.split(':');
-  if (parts.length != 2) return null;
-  final hours = int.tryParse(parts[0]);
-  final minutes = int.tryParse(parts[1]);
-  if (hours == null || minutes == null) return null;
-  return hours * 60 + minutes;
 }
 
 List<SessionAttribute> _attributesFor(
@@ -116,7 +107,7 @@ List<ParsedUciDay> parseUciProgrammingDay(
         title: (filmJson['title'] as String?) ?? '',
         posterImageSrc:
             (filmJson['poster'] as String?) ?? filmJson['top_image'] as String?,
-        runningTime: _parseDurationMinutes(runningTimeDuration),
+        runningTime: parseDurationMinutes(runningTimeDuration),
         date: date,
         sessions: sessions,
       ),
