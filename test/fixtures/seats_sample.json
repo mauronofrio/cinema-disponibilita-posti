@@ -1,9 +1,7 @@
 {
   "result": {
     "seatingData": {
-      "screenLabel": "Sala 5",
-      "totalRows": 19,
-      "totalColumns": 26
+      "screenLabel": "Sala 5"
     },
     "seatRows": [
       {

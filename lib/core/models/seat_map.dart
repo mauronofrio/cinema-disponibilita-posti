@@ -149,16 +149,24 @@ class SeatMap {
     final apiResponse = json.decode(responseBody) as Map<String, dynamic>;
     final result = apiResponse['result'] as Map<String, dynamic>;
     final seatingData = result['seatingData'] as Map<String, dynamic>;
+    // Rows are rendered in raw array order too, for the same reason as
+    // columns above - the reference userscript just does
+    // `seatRows.forEach(...)` with no sort.
+    final rows = (result['seatRows'] as List<dynamic>? ?? const [])
+        .map((r) => SeatRow.fromJson(r as Map<String, dynamic>))
+        .toList();
     return SeatMap(
       screenLabel: (seatingData['screenLabel'] as String?) ?? '',
-      totalRows: (seatingData['totalRows'] as num).toInt(),
-      totalColumns: (seatingData['totalColumns'] as num).toInt(),
-      // Rows are rendered in raw array order too, for the same reason as
-      // columns above - the reference userscript just does
-      // `seatRows.forEach(...)` with no sort.
-      rows: (result['seatRows'] as List<dynamic>? ?? const [])
-          .map((r) => SeatRow.fromJson(r as Map<String, dynamic>))
-          .toList(),
+      // `seatingData.totalRows`/`totalColumns` used to be trusted as-is, but
+      // the live API stopped sending them entirely (confirmed on multiple
+      // cinemas - `seatingData` now only ever has `screenLabel`), which
+      // turned every seat map load into a parse failure. Every other chain's
+      // parser (webtic/uci/18tickets) already derives these from the actual
+      // rows/columns instead of a server-declared total, so this does the
+      // same rather than trusting a field that may not be there.
+      totalRows: rows.length,
+      totalColumns: rows.fold(0, (max, row) => row.seats.length > max ? row.seats.length : max),
+      rows: rows,
       areaCategories: (result['areaCategories'] as List<dynamic>? ?? const [])
           .map((c) => AreaCategory.fromJson(c as Map<String, dynamic>))
           .toList(),

@@ -101,9 +101,50 @@ void main() {
     test('parses screen metadata', () {
       final seatMap = SeatMap.fromApiResponseJson(rawJson);
       expect(seatMap.screenLabel, 'Sala 5');
-      expect(seatMap.totalRows, 19);
+      expect(seatMap.totalRows, 3);
       expect(seatMap.totalColumns, 26);
     });
+
+    test(
+      'derives totalRows/totalColumns from the actual rows rather than '
+      'seatingData - the live API stopped sending those fields entirely '
+      '(confirmed on multiple The Space cinemas, seatingData now only ever '
+      'has screenLabel), which used to crash parsing outright',
+      () {
+        final noTotalsJson = jsonEncode({
+          'result': {
+            'seatingData': {'screenLabel': 'Sala 1'},
+            'seatRows': [
+              {
+                'rowLabel': 'A',
+                'rowIndex': 1,
+                'columns': [
+                  {
+                    'areaCategoryCode': 'PT',
+                    'columnIndex': 1,
+                    'rowIndex': 1,
+                    'name': 'A1',
+                    'seatStatus': 0,
+                  },
+                  null,
+                  {
+                    'areaCategoryCode': 'PT',
+                    'columnIndex': 3,
+                    'rowIndex': 1,
+                    'name': 'A3',
+                    'seatStatus': 0,
+                  },
+                ],
+              },
+            ],
+            'areaCategories': [],
+          },
+        });
+        final seatMap = SeatMap.fromApiResponseJson(noTotalsJson);
+        expect(seatMap.totalRows, 1);
+        expect(seatMap.totalColumns, 3);
+      },
+    );
 
     test('maps every known seatStatus code to the right enum value', () {
       final seatMap = SeatMap.fromApiResponseJson(rawJson);
