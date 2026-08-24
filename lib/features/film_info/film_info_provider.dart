@@ -12,26 +12,30 @@ import '../../core/storage/film_info_store.dart';
 class FilmInfoUnavailableException implements Exception {}
 
 /// Looks up a film's plot/trailer, in this order: the persistent cache
-/// (film_info_store.dart, keyed by the *cleaned* title, shared across every
-/// cinema/chain that shows this same film) first, then TMDb only if it
-/// wasn't already there. Never called just by building this provider - only
-/// by a widget actually watching/reading it, which only happens once the
-/// user taps the info button (see film_info_sheet.dart).
+/// (film_info_store.dart, keyed by the *cleaned* title plus the current
+/// language, shared across every cinema/chain that shows this same film)
+/// first, then TMDb only if it wasn't already there. Never called just by
+/// building this provider - only by a widget actually watching/reading it,
+/// which only happens once the user taps the info button (see
+/// film_info_sheet.dart).
 final filmInfoProvider = FutureProvider.family<FilmInfo, String>((
   ref,
   rawTitle,
 ) async {
+  // Locale (and therefore language/cacheKey) and the TMDb client are both
+  // read before any `await` so this provider re-runs whenever the app's
+  // language changes, on every code path - not just on a cache miss.
+  final locale = ref.watch(effectiveLocaleProvider);
+  final language = locale.languageCode == 'it' ? 'it-IT' : 'en-US';
   final title = cleanTitleForSearch(rawTitle);
+  final cacheKey = '$title|$language';
   final store = ref.watch(filmInfoStoreProvider);
+  final client = ref.watch(tmdbApiClientProvider);
 
-  final cached = await store.read(title);
+  final cached = await store.read(cacheKey);
   if (cached != null) return cached;
 
   if (tmdbReadAccessToken.isEmpty) throw FilmInfoUnavailableException();
-
-  final locale = ref.watch(effectiveLocaleProvider);
-  final language = locale.languageCode == 'it' ? 'it-IT' : 'en-US';
-  final client = ref.watch(tmdbApiClientProvider);
 
   final searchBody = await client.searchMovie(title, language);
   final searchResult = parseTmdbSearchResult(searchBody);
@@ -55,6 +59,6 @@ final filmInfoProvider = FutureProvider.family<FilmInfo, String>((
     trailerUrl: trailerUrl,
     fetchedAt: ref.read(clockProvider).now(),
   );
-  await store.write(title, info);
+  await store.write(cacheKey, info);
   return info;
 });

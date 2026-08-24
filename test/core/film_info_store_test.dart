@@ -105,5 +105,25 @@ void main() {
       await store.purgeOlderThan(DateTime(2026, 8, 1));
       expect(await store.read('Qualsiasi'), isNull);
     });
+
+    test(
+      'this is what makes a composite "title|language" cache key safe: two '
+      'different keys that happen to share a title prefix are fully '
+      'independent, never conflated',
+      () async {
+        final store = FilmInfoStore();
+        await store.write(
+          'Oceania|it-IT',
+          FilmInfo(
+            overview: 'Italiano',
+            trailerUrl: null,
+            fetchedAt: DateTime(2026, 8, 24),
+          ),
+        );
+
+        expect(await store.read('Oceania|en-US'), isNull);
+        expect((await store.read('Oceania|it-IT'))!.overview, 'Italiano');
+      },
+    );
   });
 }
