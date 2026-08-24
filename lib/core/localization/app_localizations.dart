@@ -110,6 +110,15 @@ class AppLocalizations {
     'updateLater': {'en': 'Later', 'it': 'Più tardi'},
     'updateDownload': {'en': 'Download', 'it': 'Scarica'},
     'sourceCode': {'en': 'Source code on GitHub', 'it': 'Codice sorgente su GitHub'},
+    'filmInfoTooltip': {
+      'en': 'Description and trailer',
+      'it': 'Descrizione e trailer',
+    },
+    'filmInfoUnavailable': {
+      'en': 'Description not available.',
+      'it': 'Descrizione non disponibile.',
+    },
+    'watchTrailer': {'en': 'Watch trailer', 'it': 'Guarda il trailer'},
   };
 
   String _t(String key) =>
@@ -168,6 +177,9 @@ class AppLocalizations {
   String get updateLater => _t('updateLater');
   String get updateDownload => _t('updateDownload');
   String get sourceCode => _t('sourceCode');
+  String get filmInfoTooltip => _t('filmInfoTooltip');
+  String get filmInfoUnavailable => _t('filmInfoUnavailable');
+  String get watchTrailer => _t('watchTrailer');
 
   /// "Version {latest} is available (installed: {current})." - method rather
   /// than getter since it interpolates both versions.
