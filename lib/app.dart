@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/date/clock.dart';
+import 'core/storage/film_info_store.dart';
 import 'core/date/day_label.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_provider.dart';
@@ -30,6 +31,16 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
     super.initState();
     _lastKnownDayKey = todayKey(ref.read(clockProvider).now());
     _lifecycleListener = AppLifecycleListener(onResume: _checkForDayRollover);
+    // Fire-and-forget, once per app process - same "housekeeping, not
+    // something the UI waits on" shape as the update check. 60 days is
+    // arbitrary but generous: this cache has no TTL otherwise (see
+    // film_info_store.dart), only this startup sweep keeps it from growing
+    // forever across months of use.
+    ref
+        .read(filmInfoStoreProvider)
+        .purgeOlderThan(
+          ref.read(clockProvider).now().subtract(const Duration(days: 60)),
+        );
   }
 
   @override
