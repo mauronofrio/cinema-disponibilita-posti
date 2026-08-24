@@ -55,7 +55,17 @@ class FilmCard extends ConsumerWidget {
     final languageGroups = groupSessionsByLanguage(sessions);
     final hasLanguageCaptions =
         languageGroups.length > 1 || languageGroups.keys.any(isNotableLanguage);
-    final split = hasLanguageCaptions
+    // The narrow "beside the poster" column only exists to rescue badged
+    // chips (see splitSessionsForPoster's own doc) from a tall, mostly-
+    // empty-on-the-left list - a plain time-only list has no such problem,
+    // and squeezing it into that narrower column just wraps it sooner than
+    // the card's real full width would (e.g. Oceania's 4 plain showtimes at
+    // UCI Seven Gioia del Colle wrapping to a lone second row, confirmed
+    // live, even though all 4 fit on one row at the card's full width).
+    final hasAnyBadge = sessions.any(
+      (s) => s.attributes.any((a) => a.attributeType != 'Language'),
+    );
+    final split = (hasLanguageCaptions || !hasAnyBadge)
         ? null
         : splitSessionsForPoster(sessions);
 
