@@ -350,4 +350,71 @@ void main() {
       },
     );
   });
+
+  group('groupSessionsByLanguage', () {
+    Session makeSession(String id, {List<SessionAttribute> attributes = const []}) {
+      return Session(
+        sessionId: id,
+        startTime: DateTime(2026, 9, 6, 18),
+        endTime: DateTime(2026, 9, 6, 20),
+        screenName: 'Sala 1',
+        isSoldOut: false,
+        formattedPrice: null,
+        isPriceVisible: false,
+        attributes: attributes,
+        bookingPath: null,
+      );
+    }
+
+    SessionAttribute language(String name) =>
+        SessionAttribute(name: name, attributeType: 'Language', color: null);
+
+    test(
+      'a single language (or a chain that never reports one) collapses '
+      'into one null-keyed group rather than splitting',
+      () {
+        final sessions = [makeSession('a'), makeSession('b')];
+        final groups = groupSessionsByLanguage(sessions);
+        expect(groups.keys, [null]);
+        expect(groups[null], sessions);
+      },
+    );
+
+    test(
+      'this is the actual feature: ITALIANO and LINGUA ORIGINALE showings '
+      'of the same film (e.g. Coyote vs Acme at The Space) split into '
+      'separate groups, each keeping its own sessions in order',
+      () {
+        final ita1 = makeSession('ita1', attributes: [language('ITALIANO')]);
+        final vo = makeSession(
+          'vo',
+          attributes: [language('LINGUA ORIGINALE')],
+        );
+        final ita2 = makeSession('ita2', attributes: [language('ITALIANO')]);
+
+        final groups = groupSessionsByLanguage([ita1, vo, ita2]);
+
+        expect(groups.keys, ['ITALIANO', 'LINGUA ORIGINALE']);
+        expect(groups['ITALIANO'], [ita1, ita2]);
+        expect(groups['LINGUA ORIGINALE'], [vo]);
+      },
+    );
+
+    test(
+      'a session with no Language attribute at all groups separately from '
+      'ones that do, under the null key',
+      () {
+        final tagged = makeSession(
+          'tagged',
+          attributes: [language('ITALIANO')],
+        );
+        final untagged = makeSession('untagged');
+
+        final groups = groupSessionsByLanguage([tagged, untagged]);
+
+        expect(groups['ITALIANO'], [tagged]);
+        expect(groups[null], [untagged]);
+      },
+    );
+  });
 }

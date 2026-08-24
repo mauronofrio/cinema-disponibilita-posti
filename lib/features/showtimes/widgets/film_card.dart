@@ -91,17 +91,12 @@ class FilmCard extends ConsumerWidget {
                     ),
                   ],
                   const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: sessions.map((session) {
-                      return _SessionTimeChip(
-                        session: session,
-                        isPast: now.isAfter(session.startTime),
-                        canOpenSeatMap: cinema.hasSeatMap,
-                        onTap: () => _openSeatMap(context, ref, session),
-                      );
-                    }).toList(),
+                  _SessionsByLanguage(
+                    sessions: sessions,
+                    now: now,
+                    canOpenSeatMap: cinema.hasSeatMap,
+                    onTapSession: (session) =>
+                        _openSeatMap(context, ref, session),
                   ),
                 ],
               ),
@@ -109,6 +104,68 @@ class FilmCard extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Splits [sessions] into one labeled row per `Language` value (see
+/// [groupSessionsByLanguage]) - but only when there's actually more than one
+/// to distinguish, so the common single-language case renders identically
+/// to a single unlabeled [Wrap] of chips, same as before this split existed.
+class _SessionsByLanguage extends StatelessWidget {
+  const _SessionsByLanguage({
+    required this.sessions,
+    required this.now,
+    required this.canOpenSeatMap,
+    required this.onTapSession,
+  });
+
+  final List<Session> sessions;
+  final DateTime now;
+  final bool canOpenSeatMap;
+  final ValueChanged<Session> onTapSession;
+
+  @override
+  Widget build(BuildContext context) {
+    final groups = groupSessionsByLanguage(sessions);
+    final showLabels = groups.length > 1;
+
+    Widget chipsFor(List<Session> groupSessions) => Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: groupSessions.map((session) {
+        return _SessionTimeChip(
+          session: session,
+          isPast: now.isAfter(session.startTime),
+          canOpenSeatMap: canOpenSeatMap,
+          onTap: () => onTapSession(session),
+        );
+      }).toList(),
+    );
+
+    if (!showLabels) return chipsFor(sessions);
+
+    final entries = groups.entries.toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < entries.length; i++) ...[
+          if (i > 0) const SizedBox(height: 10),
+          if (entries[i].key != null) ...[
+            Text(
+              entries[i].key!,
+              style: AppTheme.mono(context).copyWith(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textMuted,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 4),
+          ],
+          chipsFor(entries[i].value),
+        ],
+      ],
     );
   }
 }
@@ -137,6 +194,13 @@ class _SessionTimeChip extends StatelessWidget {
     // the same way, for the same reason: nothing to usefully tap through to.
     final disabled = soldOut || isPast || !canOpenSeatMap;
     final t = AppLocalizations.of(context);
+    // e.g. "SING ALONG", "Proiezione LASER 4K" - a different attribute than
+    // Language (see groupSessionsByLanguage), so shown on the chip itself
+    // rather than used to split sessions into rows.
+    final specials = session.attributes
+        .where((a) => a.attributeType == 'Session_Special')
+        .map((a) => a.name)
+        .toList();
     return Material(
       color: disabled ? AppColors.surfaceElevated : AppColors.background,
       shape: RoundedRectangleBorder(
@@ -148,15 +212,31 @@ class _SessionTimeChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          child: Text(
-            soldOut
-                ? '${DateFormat.Hm().format(session.startTime)} · ${t.soldOut}'
-                : DateFormat.Hm().format(session.startTime),
-            style: AppTheme.mono(context).copyWith(
-              fontSize: 13,
-              color: disabled ? AppColors.textMuted : AppColors.textPrimary,
-              decoration: soldOut ? TextDecoration.lineThrough : null,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                soldOut
+                    ? '${DateFormat.Hm().format(session.startTime)} · ${t.soldOut}'
+                    : DateFormat.Hm().format(session.startTime),
+                style: AppTheme.mono(context).copyWith(
+                  fontSize: 13,
+                  color: disabled
+                      ? AppColors.textMuted
+                      : AppColors.textPrimary,
+                  decoration: soldOut ? TextDecoration.lineThrough : null,
+                ),
+              ),
+              if (specials.isNotEmpty)
+                Text(
+                  specials.join(' · '),
+                  style: AppTheme.body(context).copyWith(
+                    fontSize: 10,
+                    color: AppColors.textMuted,
+                  ),
+                ),
+            ],
           ),
         ),
       ),

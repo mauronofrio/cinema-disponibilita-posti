@@ -97,6 +97,29 @@ class Session {
   int get hashCode => sessionId.hashCode;
 }
 
+/// Groups [sessions] by their `Language` session attribute (The Space uses
+/// this to flag "ITALIANO" vs "LINGUA ORIGINALE" showings of the same film,
+/// e.g. a sing-along matinee alongside the regular dubbed evening shows).
+/// `null` is the group key for sessions with no such attribute at all -
+/// every other chain, and the common case where a film only has one
+/// language - so those collapse into a single group instead of spuriously
+/// splitting. Both the sessions within a group and which group's key was
+/// first seen keep the original list's order.
+Map<String?, List<Session>> groupSessionsByLanguage(List<Session> sessions) {
+  final groups = <String?, List<Session>>{};
+  for (final session in sessions) {
+    String? language;
+    for (final attribute in session.attributes) {
+      if (attribute.attributeType == 'Language') {
+        language = attribute.name;
+        break;
+      }
+    }
+    (groups[language] ??= []).add(session);
+  }
+  return groups;
+}
+
 class ShowingGroup {
   const ShowingGroup({required this.date, required this.sessions});
 
