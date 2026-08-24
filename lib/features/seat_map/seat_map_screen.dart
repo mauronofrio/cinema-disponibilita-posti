@@ -240,11 +240,23 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          session.screenName,
-                          style: AppTheme.mono(
-                            context,
-                          ).copyWith(fontSize: 13, color: AppColors.textMuted),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.theaters_outlined,
+                              size: 14,
+                              color: AppColors.textMuted,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              session.screenName,
+                              style: AppTheme.mono(context).copyWith(
+                                fontSize: 13,
+                                color: AppColors.textMuted,
+                              ),
+                            ),
+                          ],
                         ),
                         seatMapAsync.maybeWhen(
                           data: (m) => OccupancySummary(seatMap: m),
