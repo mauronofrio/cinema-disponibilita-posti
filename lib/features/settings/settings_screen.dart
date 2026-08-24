@@ -148,16 +148,14 @@ class SettingsScreen extends ConsumerWidget {
                 const Icon(
                   Icons.code,
                   size: 16,
-                  color: AppColors.textMuted,
+                  color: AppColors.textPrimary,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   t.sourceCode,
-                  style: AppTheme.body(context).copyWith(
-                    color: AppColors.textMuted,
-                    fontSize: 12,
-                    decoration: TextDecoration.underline,
-                  ),
+                  style: AppTheme.body(
+                    context,
+                  ).copyWith(color: AppColors.textPrimary, fontSize: 13),
                 ),
               ],
             ),
