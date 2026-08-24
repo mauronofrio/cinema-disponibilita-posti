@@ -138,10 +138,22 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.args.filmTitle,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        // Same reasoning as ShowtimesHomeScreen's SliverAppBar: no true
+        // "wrap content" toolbar height in Flutter, so this is a fixed
+        // value tuned to sit just above the title text's own line height
+        // plus the 4px top/bottom padding below, not a real intrinsic
+        // measurement.
+        toolbarHeight: 40,
+        title: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text(
+              widget.args.filmTitle,
+              maxLines: 1,
+              softWrap: false,
+            ),
+          ),
         ),
         actions: [
           IconButton(
