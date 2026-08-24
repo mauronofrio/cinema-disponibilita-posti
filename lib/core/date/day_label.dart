@@ -20,6 +20,26 @@ DayLabelKind resolveDayLabel(DateTime showingDate, DateTime now) {
   return DayLabelKind.other;
 }
 
+/// Which day should show as selected, given what was previously chosen (by
+/// the user, or by an earlier auto-default) and the days actually available
+/// right now. Falls back to the first available day whenever [selected] is
+/// `null` **or** no longer present in [availableDates] - the latter is what
+/// makes a day rollover self-correct: once the calendar day advances, a
+/// previously-picked "today" ages out of the fresh list and this recomputes
+/// a real today instead of staying pinned to a date that's now in the past.
+DateTime pickSelectedDay(DateTime? selected, List<DateTime> availableDates) {
+  if (selected != null &&
+      availableDates.any(
+        (d) =>
+            d.year == selected.year &&
+            d.month == selected.month &&
+            d.day == selected.day,
+      )) {
+    return selected;
+  }
+  return availableDates.first;
+}
+
 /// The calendar-day string (`yyyy-MM-dd`) for [now], used as a cache-key /
 /// rollover marker so callers can detect "the real day changed" without
 /// pulling in `intl` just for this.

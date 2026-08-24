@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/date/clock.dart';
+import '../../core/date/day_label.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/models/cinema.dart';
 import '../../core/theme/app_theme.dart';
@@ -161,9 +162,19 @@ class _CinemaShowtimes extends ConsumerWidget {
                   ),
                 );
               }
-              final effectiveSelected = selectedDay ?? available.first.date;
+              // Re-derived every build against the *current* available days,
+              // not just defaulted once and cached - otherwise a day picked
+              // (explicitly or by auto-default) before a midnight rollover
+              // stays selected forever even once it's aged out of the fresh
+              // list, forcing a stale date until the user manually reselects.
+              final effectiveSelected = pickSelectedDay(
+                selectedDay,
+                available.map((d) => d.date).toList(),
+              );
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (selectedDay == null) onSelectDay(effectiveSelected);
+                if (effectiveSelected != selectedDay) {
+                  onSelectDay(effectiveSelected);
+                }
               });
               return Column(
                 children: [

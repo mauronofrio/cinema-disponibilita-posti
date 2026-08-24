@@ -22,7 +22,10 @@ import '../../core/models/film.dart';
 /// worst case a specific day's session list is up to 7 minutes stale after
 /// a rollover, which the TTL clears on its own shortly after.
 final filmsForDayProvider =
-    FutureProvider.family<List<Film>, (Cinema, DateTime)>((ref, args) async {
+    FutureProvider.autoDispose.family<List<Film>, (Cinema, DateTime)>((
+      ref,
+      args,
+    ) async {
       final (cinema, day) = args;
       final link = ref.keepAlive();
       final timer = Timer(const Duration(minutes: 7), link.close);

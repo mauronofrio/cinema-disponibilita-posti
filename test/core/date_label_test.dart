@@ -57,6 +57,44 @@ void main() {
     });
   });
 
+  group('pickSelectedDay', () {
+    test('no prior selection defaults to the first available day', () {
+      final available = [DateTime(2026, 7, 6), DateTime(2026, 7, 7)];
+      expect(pickSelectedDay(null, available), DateTime(2026, 7, 6));
+    });
+
+    test('keeps an explicit selection that is still available', () {
+      final available = [DateTime(2026, 7, 6), DateTime(2026, 7, 7)];
+      expect(
+        pickSelectedDay(DateTime(2026, 7, 7), available),
+        DateTime(2026, 7, 7),
+      );
+    });
+
+    test(
+      'this is the regression case: a previously-picked day that rolled '
+      'into the past (no longer in the fresh available list, e.g. the app '
+      'sat in the background overnight) falls back to the new first '
+      'available day instead of staying pinned to the stale one',
+      () {
+        final staleYesterday = DateTime(2026, 7, 6);
+        final freshAvailable = [DateTime(2026, 7, 7), DateTime(2026, 7, 8)];
+        expect(
+          pickSelectedDay(staleYesterday, freshAvailable),
+          DateTime(2026, 7, 7),
+        );
+      },
+    );
+
+    test('matches by calendar day, ignoring time-of-day components', () {
+      final available = [DateTime(2026, 7, 6, 9, 30)];
+      expect(
+        pickSelectedDay(DateTime(2026, 7, 6, 23, 59), available),
+        DateTime(2026, 7, 6, 23, 59),
+      );
+    });
+  });
+
   group('todayKey', () {
     test('formats as yyyy-MM-dd with zero padding', () {
       expect(todayKey(DateTime(2026, 1, 5)), '2026-01-05');
