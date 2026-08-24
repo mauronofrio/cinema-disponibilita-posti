@@ -55,17 +55,15 @@ class FilmCard extends ConsumerWidget {
     final languageGroups = groupSessionsByLanguage(sessions);
     final hasLanguageCaptions =
         languageGroups.length > 1 || languageGroups.keys.any(isNotableLanguage);
-    // Badged chips (see splitSessionsForPoster's own doc) always use the
-    // narrow-column heuristic - that's the case it exists to rescue from a
-    // tall, mostly-empty-on-the-left list. A plain time-only list is
-    // simpler: it goes beside the poster only when every chip fits on that
-    // column's one real row (confirmed live: 3 plain chips is what actually
-    // fits there); needing a second row there would either wrap awkwardly
-    // or orphan a lone chip below on its own line, so anything past one row
-    // skips the narrow column entirely and renders as a single full-width
-    // row instead (e.g. Oceania's 4 plain showtimes at UCI Seven Gioia del
-    // Colle, which all fit on one row at the card's full width but not in
-    // the narrower column next to the poster).
+    // Badged chips (see splitSessionsForPoster's own doc) use the narrow-
+    // column row/count heuristic - that's the case it exists to rescue from
+    // a tall, mostly-empty-on-the-left list (many wide, one-per-row badge
+    // chips). A plain time-only list never has that problem: even several
+    // short chips wrapping onto a couple of rows next to the poster stays
+    // roughly as tall as the poster itself, so there's no need to guess a
+    // per-row chip count at all - put all of them beside the poster and let
+    // Wrap's own real measurement decide how many fit per row, rather than
+    // a hardcoded estimate that only matches one specific screen width.
     final hasAnyBadge = sessions.any(
       (s) => s.attributes.any((a) => a.attributeType != 'Language'),
     );
@@ -74,10 +72,8 @@ class FilmCard extends ConsumerWidget {
       split = null;
     } else if (hasAnyBadge) {
       split = splitSessionsForPoster(sessions);
-    } else if (sessions.length <= _plainChipsPerRow) {
-      split = (beside: sessions, below: const []);
     } else {
-      split = null;
+      split = (beside: sessions, below: const []);
     }
 
     return Card(
