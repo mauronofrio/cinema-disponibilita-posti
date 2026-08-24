@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:thespace_companion/core/chains/uci/uci_film_parser.dart';
 import 'package:thespace_companion/core/chains/uci/uci_seat_map_parser.dart';
+import 'package:thespace_companion/core/models/film.dart';
 import 'package:thespace_companion/core/models/seat_map.dart';
 
 void main() {
@@ -59,6 +60,62 @@ void main() {
         );
       }
     });
+
+    test(
+      'every session carries a Language attribute, matching The Space\'s own '
+      'convention - the real fixture is ITA-only, confirmed live at UCI '
+      'Bicocca Milano for its "Oceania" showings',
+      () {
+        final date = DateTime(2026, 7, 7);
+        final days = parseUciProgrammingDay(filmsJson, date);
+        final minions = days.firstWhere((d) => d.title == 'Minions & Monsters');
+        for (final session in minions.sessions) {
+          final language = session.attributes.where(
+            (a) => a.attributeType == 'Language',
+          );
+          expect(language, hasLength(1));
+          expect(language.first.name, 'ITA');
+        }
+      },
+    );
+
+    test(
+      'this is the actual feature: ITA and original-language (name "ENG") '
+      'performances of the same film both get tagged, so they can be split '
+      'into groups the same way The Space\'s ITALIANO/LINGUA ORIGINALE are',
+      () {
+        final mixedLanguageJson = jsonDecode('''
+        {"data": [{
+          "id": 1, "title": "Oceania", "slug": "oceania",
+          "screens": [{"2D": [
+            {
+              "language": {"name": "ITA", "slug": "ITA"},
+              "duration": "01:40",
+              "performances": [
+                {"external_id": 1, "starts_at": "2026-08-24 18:00:00", "ends_at": "2026-08-24 19:40:00", "room": "SALA 1"}
+              ]
+            },
+            {
+              "language": {"name": "ENG", "slug": "EN"},
+              "duration": "01:40",
+              "performances": [
+                {"external_id": 2, "starts_at": "2026-08-24 14:00:00", "ends_at": "2026-08-24 15:40:00", "room": "SALA 6"}
+              ]
+            }
+          ]}]
+        }]}
+        ''') as Map<String, dynamic>;
+        final days = parseUciProgrammingDay(
+          mixedLanguageJson['data'] as List<dynamic>,
+          DateTime(2026, 8, 24),
+        );
+        final oceania = days.first;
+        final groups = groupSessionsByLanguage(oceania.sessions);
+        expect(groups.keys, containsAll(['ITA', 'ENG']));
+        expect(groups['ITA'], hasLength(1));
+        expect(groups['ENG'], hasLength(1));
+      },
+    );
 
     test('films with no performances that day are skipped entirely', () {
       final date = DateTime(2026, 7, 7);

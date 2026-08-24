@@ -33,13 +33,19 @@ List<SessionAttribute> _attributesFor(
       SessionAttribute(name: formatKey, attributeType: 'screen', color: null),
     );
   }
+  // Every variant carries its own language (name "ITA"/"ENG", not just non-
+  // Italian ones - confirmed live, e.g. UCI Bicocca Milano's "Oceania" has
+  // both ITA and EN performances the same day). Tagged unconditionally, the
+  // same way The Space always tags its own Language attribute, so a mixed
+  // film's Italian and original-language showings both get a group label
+  // instead of only the non-Italian one - see groupSessionsByLanguage.
   final language = variant['language'] as Map<String, dynamic>?;
-  final languageSlug = language?['slug'] as String?;
-  if (languageSlug != null && languageSlug != 'ITA') {
+  final languageName = language?['name'] as String?;
+  if (languageName != null) {
     attributes.add(
       SessionAttribute(
-        name: languageSlug,
-        attributeType: 'language',
+        name: languageName,
+        attributeType: 'Language',
         color: null,
       ),
     );

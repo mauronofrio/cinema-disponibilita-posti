@@ -194,11 +194,15 @@ class _SessionTimeChip extends StatelessWidget {
     // the same way, for the same reason: nothing to usefully tap through to.
     final disabled = soldOut || isPast || !canOpenSeatMap;
     final t = AppLocalizations.of(context);
-    // e.g. "SING ALONG", "Proiezione LASER 4K" - a different attribute than
-    // Language (see groupSessionsByLanguage), so shown on the chip itself
-    // rather than used to split sessions into rows.
+    // Every non-Language attribute becomes a badge on the chip itself
+    // instead of splitting sessions into rows the way Language does (see
+    // groupSessionsByLanguage) - e.g. The Space's "SING ALONG"/"Proiezione
+    // LASER 4K" (attributeType Session_Special), or UCI's own format tags
+    // like "XL"/"3D"/"2D - SING ALONG" (attributeType screen). Deliberately
+    // chain-agnostic: a new chain's own attribute types show up here for
+    // free without this widget needing to know their names.
     final specials = session.attributes
-        .where((a) => a.attributeType == 'Session_Special')
+        .where((a) => a.attributeType != 'Language')
         .map((a) => a.name)
         .toList();
     return Material(
