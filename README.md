@@ -9,6 +9,7 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 - Scegli il tuo cinema preferito da una lista ricercabile per nome, catena o città (o più di uno, e passa dall'uno all'altro dalle impostazioni)
 - Vedi gli spettacoli divisi per giorno, con locandina e orari
 - Apri uno spettacolo e vedi subito la mappa posti: liberi, occupati, riservati, accessibilità - con legenda
+- Un tasto "i" su ogni film apre trama (nella lingua dell'app) e trailer YouTube, presi da TMDb solo quando lo tocchi - mai richiesti in anticipo, e mai una seconda volta per lo stesso film
 - Da lì puoi cambiare giorno o orario senza tornare indietro alla lista film
 - Un tasto ti manda alla pagina ufficiale se vuoi comprare davvero il biglietto
 - Ti avvisa in automatico quando è disponibile una versione più recente (l'app non passa da nessuno store)
@@ -30,8 +31,8 @@ Ognuna di queste catene parla un'API diversa (alcune un JSON pulito, altre solo 
 
 Flutter, nessun backend proprio: l'app chiama direttamente le API/i siti pubblici delle catene supportate.
 
-- **Stato**: Riverpod (`flutter_riverpod`), cache in-memory con TTL brevi - niente persistenza locale oltre al cinema preferito (`shared_preferences`)
-- **Rete**: `dio`, un client per catena
+- **Stato**: Riverpod (`flutter_riverpod`), cache in-memory con TTL brevi. Persistenza locale (`shared_preferences`) solo per il cinema preferito e per la cache di trama/trailer (per titolo film, non per cinema - un film richiesto una volta non lo richiede più nemmeno da un altro cinema, pulita ogni 60 giorni)
+- **Rete**: `dio`, un client per catena, più un client TMDb indipendente dalle catene per trama/trailer
 - **Routing**: `go_router`
 - **Un'astrazione, quattro implementazioni**: ogni catena implementa la stessa `ChainApi` (`getShowingDates`/`getFilmsForDay`/`getSeatMap`); schermate e provider non sanno mai con quale catena stanno parlando. Aggiungere una nuova catena (o un nuovo cinema indipendente sulla stessa piattaforma) è una nuova classe più una riga nel registro, senza toccare l'interfaccia utente
 
