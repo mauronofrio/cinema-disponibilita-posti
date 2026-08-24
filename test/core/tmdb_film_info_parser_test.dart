@@ -5,9 +5,8 @@ import 'package:thespace_companion/core/chains/tmdb/tmdb_film_info_parser.dart';
 
 void main() {
   group('cleanTitleForSearch', () {
-    test('a plain title with no disambiguation suffix is unchanged', () {
-      expect(cleanTitleForSearch('OCEANIA (LIVE ACTION 2026)'),
-          'OCEANIA (LIVE ACTION 2026)');
+    test('a plain title with nothing to strip is unchanged', () {
+      expect(cleanTitleForSearch('Coyote vs ACME'), 'Coyote vs ACME');
     });
 
     test(
@@ -17,11 +16,42 @@ void main() {
       'since TMDb has never heard of "OCEANIA (MOANA) · Sing-Along"',
       () {
         expect(
-          cleanTitleForSearch('OCEANIA (MOANA) · 🎤 Sing-Along'),
-          'OCEANIA (MOANA)',
+          cleanTitleForSearch('MINIONS & MONSTERS · 🎤 Sing-Along'),
+          'MINIONS & MONSTERS',
         );
       },
     );
+
+    test(
+      'this is the other actual regression case: a "(...)" release-variant '
+      'note some chains bake straight into the title (The Space\'s own '
+      '"OCEANIA (LIVE ACTION 2026)") is stripped too, since TMDb catalogs '
+      'the film as plain "Oceania"',
+      () {
+        expect(
+          cleanTitleForSearch('OCEANIA (LIVE ACTION 2026)'),
+          'OCEANIA',
+        );
+      },
+    );
+
+    test(
+      'both strips compose: a disambiguated 18tickets title that also has '
+      'a parenthetical note loses both, in order',
+      () {
+        expect(
+          cleanTitleForSearch('OCEANIA (MOANA) · 🎤 Sing-Along'),
+          'OCEANIA',
+        );
+      },
+    );
+
+    test('a title with no parentheses at all is untouched by the parenthetical strip', () {
+      expect(
+        cleanTitleForSearch('HARRY POTTER E LA PIETRA FILOSOFALE - 25MO ANNIVERSARIO'),
+        'HARRY POTTER E LA PIETRA FILOSOFALE - 25MO ANNIVERSARIO',
+      );
+    });
   });
 
   group('parseTmdbSearchResult', () {

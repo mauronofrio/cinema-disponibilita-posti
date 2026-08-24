@@ -1,12 +1,20 @@
 import 'dart:convert';
 
+final _parentheticalRe = RegExp(r'\s*\([^)]*\)');
+
 /// TMDb has never heard of the " · {label}" suffix this app itself appends
 /// to disambiguate duplicate 18tickets titles (see
-/// eighteen_tickets_film_parser.dart's `_disambiguateDuplicateTitles`) - it
-/// isn't part of the real film title, so it's stripped before searching.
+/// eighteen_tickets_film_parser.dart's `_disambiguateDuplicateTitles`), nor
+/// of the "(...)" release-variant notes some chains bake into the title
+/// itself (e.g. The Space's "OCEANIA (LIVE ACTION 2026)" or "OCEANIA
+/// (MOANA)") - neither is part of the real film title, so both are
+/// stripped before searching.
 String cleanTitleForSearch(String title) {
   final separatorIndex = title.indexOf(' · ');
-  return separatorIndex == -1 ? title : title.substring(0, separatorIndex);
+  final withoutSuffix = separatorIndex == -1
+      ? title
+      : title.substring(0, separatorIndex);
+  return withoutSuffix.replaceAll(_parentheticalRe, '').trim();
 }
 
 /// The one TMDb search result this app actually needs: enough to fetch the

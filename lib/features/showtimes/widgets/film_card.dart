@@ -96,7 +96,7 @@ class FilmCard extends ConsumerWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Expanded(
+                          Flexible(
                             child: Text(
                               film.title,
                               style: AppTheme.display(
