@@ -183,6 +183,88 @@ void main() {
       expect(seat.status, SeatStatus.accessibility);
     });
 
+    test(
+      'this is the actual regression case: accessibility seats sharing a '
+      'numeric Row with a lettered row - and listed first in the raw array '
+      '- do not steal that row\'s label (confirmed live at UCI Bicocca '
+      'Milano: row "G" merges with two "HX" wheelchair seats under the '
+      'same Row index, HX first in the array - the row must still read as '
+      '"G", the letter the other 12 seats actually share, not "HX")',
+      () {
+        final mergedRowPayload = UciSeatMapPayload(
+          screenResponseBody: jsonEncode({
+            'Data': {
+              'Screen': {
+                'LocalId': 5068,
+                'ScreenId': 80,
+                'Seats': [
+                  {
+                    'SeatId': 'HX/1',
+                    'SeatAlias': 'P.D.',
+                    'SeatType': 'DISABILE',
+                    'SectorId': 'UN',
+                    'Row': 9,
+                    'Column': 7,
+                  },
+                  {
+                    'SeatId': 'HX/2',
+                    'SeatAlias': 'P.D.',
+                    'SeatType': 'DISABILE',
+                    'SectorId': 'UN',
+                    'Row': 9,
+                    'Column': 8,
+                  },
+                  {
+                    'SeatId': 'G/12',
+                    'SeatAlias': 'G/12',
+                    'SeatType': 'STANDARD',
+                    'SectorId': 'PT',
+                    'Row': 9,
+                    'Column': 9,
+                  },
+                  {
+                    'SeatId': 'G/11',
+                    'SeatAlias': 'G/11',
+                    'SeatType': 'STANDARD',
+                    'SectorId': 'PT',
+                    'Row': 9,
+                    'Column': 10,
+                  },
+                  {
+                    'SeatId': 'G/10',
+                    'SeatAlias': 'G/10',
+                    'SeatType': 'STANDARD',
+                    'SectorId': 'PT',
+                    'Row': 9,
+                    'Column': 11,
+                  },
+                ],
+                'Sectors': [],
+              },
+            },
+            'Status': {'Success': true},
+          }),
+          occupancyResponseBody: jsonEncode({
+            'Data': {
+              'Occupancy': {'LocalId': 5068, 'PerformanceId': 1, 'Seats': []},
+            },
+            'Status': {'Success': true},
+          }),
+        );
+
+        final seatMap = parseUciSeatMap(mergedRowPayload);
+        expect(seatMap.rows, hasLength(1));
+        expect(seatMap.rows.single.rowLabel, 'G');
+
+        final accessibilitySeats = seatMap.rows
+            .expand((r) => r.seats)
+            .whereType<Seat>()
+            .where((s) => s.isAccessibility)
+            .toList();
+        expect(accessibilitySeats, hasLength(2));
+      },
+    );
+
     test('area categories come from Sectors, keyed by SectorId', () {
       final seatMap = parseUciSeatMap(payload);
       expect(seatMap.categoryFor('PT'), isNotNull);

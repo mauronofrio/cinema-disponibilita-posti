@@ -35,6 +35,24 @@ SeatStatus _statusFor(
   }
 }
 
+/// Most UCI rows share one numeric `Row` index with a handful of dedicated
+/// accessibility seats too (`SeatId` prefix "HX", `SeatAlias` "P.D.") -
+/// confirmed live at UCI Bicocca Milano, where a 14-seat "G" row's two
+/// wheelchair spots (`HX/1`, `HX/2`) appear *first* in the raw array,
+/// ahead of the other 12 "G/..." seats. Labeling the row after whichever
+/// seat happened to come first would call this whole row "HX" and make the
+/// real "G" row (and its accessibility seats) impossible to find - the
+/// label should follow the row's own majority letter instead, which the
+/// one or two accessibility seats are never it.
+String _rowLabelFor(List<Map<String, dynamic>> seatsInRow) {
+  final counts = <String, int>{};
+  for (final seatJson in seatsInRow) {
+    final prefix = (seatJson['SeatId'] as String).split('/').first;
+    counts[prefix] = (counts[prefix] ?? 0) + 1;
+  }
+  return counts.entries.reduce((a, b) => b.value > a.value ? b : a).key;
+}
+
 /// Merges a `Screen` response (the room's physical layout - every seat with
 /// its row/column/type/sector) with an `Occupancy` response (which of those
 /// seats aren't free right now) into the same [SeatMap] model the UI already
@@ -97,8 +115,11 @@ SeatMap parseUciSeatMap(UciSeatMapPayload payload) {
         isAccessibility: seatType == 'DISABILE',
       );
     }
-    final rowLabel = seatsInRow.first['SeatId'].toString().split('/').first;
-    return SeatRow(rowLabel: rowLabel, rowIndex: rowIndex, seats: slots);
+    return SeatRow(
+      rowLabel: _rowLabelFor(seatsInRow),
+      rowIndex: rowIndex,
+      seats: slots,
+    );
   }).toList();
 
   return SeatMap(
