@@ -55,19 +55,30 @@ class FilmCard extends ConsumerWidget {
     final languageGroups = groupSessionsByLanguage(sessions);
     final hasLanguageCaptions =
         languageGroups.length > 1 || languageGroups.keys.any(isNotableLanguage);
-    // The narrow "beside the poster" column only exists to rescue badged
-    // chips (see splitSessionsForPoster's own doc) from a tall, mostly-
-    // empty-on-the-left list - a plain time-only list has no such problem,
-    // and squeezing it into that narrower column just wraps it sooner than
-    // the card's real full width would (e.g. Oceania's 4 plain showtimes at
-    // UCI Seven Gioia del Colle wrapping to a lone second row, confirmed
-    // live, even though all 4 fit on one row at the card's full width).
+    // Badged chips (see splitSessionsForPoster's own doc) always use the
+    // narrow-column heuristic - that's the case it exists to rescue from a
+    // tall, mostly-empty-on-the-left list. A plain time-only list is
+    // simpler: it goes beside the poster only when every chip fits on that
+    // column's one real row (confirmed live: 3 plain chips is what actually
+    // fits there); needing a second row there would either wrap awkwardly
+    // or orphan a lone chip below on its own line, so anything past one row
+    // skips the narrow column entirely and renders as a single full-width
+    // row instead (e.g. Oceania's 4 plain showtimes at UCI Seven Gioia del
+    // Colle, which all fit on one row at the card's full width but not in
+    // the narrower column next to the poster).
     final hasAnyBadge = sessions.any(
       (s) => s.attributes.any((a) => a.attributeType != 'Language'),
     );
-    final split = (hasLanguageCaptions || !hasAnyBadge)
-        ? null
-        : splitSessionsForPoster(sessions);
+    final PosterSplit? split;
+    if (hasLanguageCaptions) {
+      split = null;
+    } else if (hasAnyBadge) {
+      split = splitSessionsForPoster(sessions);
+    } else if (sessions.length <= _plainChipsPerRow) {
+      split = (beside: sessions, below: const []);
+    } else {
+      split = null;
+    }
 
     return Card(
       child: Padding(
