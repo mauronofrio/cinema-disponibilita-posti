@@ -79,6 +79,48 @@ void main() {
       },
     );
 
+    test(
+      'this is the actual feature: two distinct films that collide on the '
+      'exact same title (RedCarpet Monopoli lists a regular and a '
+      'sing-along "OCEANIA (MOANA)" as separate catalog entries with no '
+      'other visible difference) get the labeled one\'s badge appended, so '
+      'they read as two different cards instead of duplicates',
+      () {
+        final dupHtml = File(
+          'test/fixtures/eighteen_tickets_duplicate_title_sample.html',
+        ).readAsStringSync();
+        final programming = parseEighteenTicketsFilmsForDay(
+          dupHtml,
+          DateTime(2026, 8, 24),
+        );
+        expect(programming.films, hasLength(2));
+        final regular = programming.films.firstWhere(
+          (f) => f.filmId == '113627',
+        );
+        final singAlong = programming.films.firstWhere(
+          (f) => f.filmId == '114287',
+        );
+        expect(regular.title, 'OCEANIA (MOANA)');
+        expect(singAlong.title, 'OCEANIA (MOANA) · 🎤 Sing-Along');
+      },
+    );
+
+    test(
+      'a lone film keeps its plain title even if it happens to carry a '
+      'label - only an actual title collision triggers disambiguation',
+      () {
+        final soloHtml = File(
+          'test/fixtures/eighteen_tickets_lone_labeled_film_sample.html',
+        ).readAsStringSync();
+        final programming = parseEighteenTicketsFilmsForDay(
+          soloHtml,
+          DateTime(2026, 8, 24),
+        );
+        expect(programming.films, hasLength(1));
+        expect(programming.films.single.title, 'OCEANIA (MOANA)');
+      },
+    );
+
     test('sessionId is unique across every film/showtime that day', () {
       final programming = parseEighteenTicketsFilmsForDay(
         html,

@@ -69,6 +69,13 @@ final _filmLinkRe = RegExp(
 final _posterRe = RegExp(
   "<img[^>]*class=$_q[^'\"]*img-thumbnail[^'\"]*$_q[^>]*src=$_q([^'\"\\\\]+)$_q",
 );
+// A small badge overlaid on the poster - reused for several unrelated
+// things (age rating, a price note, a variant like "Sing-Along"), so it's
+// only trusted as a variant label, not parsed into the film unconditionally
+// (see the duplicate-title handling below).
+final _smallLabelRe = RegExp(
+  "film-label small-label$_q>\\s*([^<]+?)\\s*${_close('div')}",
+);
 
 final _dayBalloonRe = RegExp(
   "class=${_q}m18-day-elem select-date[^'\"]*$_q\\s+data-target=$_q(\\d{4}-\\d{2}-\\d{2})$_q",
@@ -134,6 +141,7 @@ EighteenTicketsDayProgramming parseEighteenTicketsFilmsForDay(
   final films = <EighteenTicketsFilmSummary>[];
   final sessions = <ParsedEighteenTicketsSession>[];
   final seenIds = <String>{};
+  final labelsByFilmId = <String, String>{};
   for (final block in blocks.skip(1)) {
     final linkMatch = _filmLinkRe.firstMatch(block);
     if (linkMatch == null) continue;
@@ -147,6 +155,12 @@ EighteenTicketsDayProgramming parseEighteenTicketsFilmsForDay(
           posterUrl: posterMatch?.group(1),
         ),
       );
+      final labelMatch = _smallLabelRe.firstMatch(block);
+      if (labelMatch != null) {
+        labelsByFilmId[filmId] = _decodeHtmlEntities(
+          labelMatch.group(1)!.trim(),
+        );
+      }
     }
     for (final anchorMatch in _sessionAnchorRe.allMatches(block)) {
       final sessionId = anchorMatch.group(1)!;
@@ -168,7 +182,40 @@ EighteenTicketsDayProgramming parseEighteenTicketsFilmsForDay(
       );
     }
   }
-  return EighteenTicketsDayProgramming(films: films, sessions: sessions);
+  return EighteenTicketsDayProgramming(
+    films: _disambiguateDuplicateTitles(films, labelsByFilmId),
+    sessions: sessions,
+  );
+}
+
+/// This platform lists language/format variants of the same film as
+/// separate catalog entries (a different `filmId` each) rather than as
+/// attributes of one film the way The Space/UCI do - confirmed live at
+/// RedCarpet Cinema - Monopoli, where a regular "OCEANIA (MOANA)" and its
+/// sing-along showing are two distinct films with the exact same title and
+/// no other visible difference, which otherwise renders as two identical,
+/// unexplained film cards. Only films whose title collides with another
+/// film that same day are touched - a lone film keeps its title exactly as
+/// scraped, even if it happens to carry a label - and only when a label
+/// (see [_smallLabelRe]) was actually found for it; a collision with no
+/// label to show stays as-is rather than guessing.
+List<EighteenTicketsFilmSummary> _disambiguateDuplicateTitles(
+  List<EighteenTicketsFilmSummary> films,
+  Map<String, String> labelsByFilmId,
+) {
+  final titleCounts = <String, int>{};
+  for (final film in films) {
+    titleCounts[film.title] = (titleCounts[film.title] ?? 0) + 1;
+  }
+  return films.map((film) {
+    final label = labelsByFilmId[film.filmId];
+    if (label == null || titleCounts[film.title]! < 2) return film;
+    return EighteenTicketsFilmSummary(
+      filmId: film.filmId,
+      title: '${film.title} · $label',
+      posterUrl: film.posterUrl,
+    );
+  }).toList();
 }
 
 final _projectionTagRe = RegExp("<a class=${_q}film-projection[^>]*>");
