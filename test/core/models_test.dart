@@ -417,4 +417,26 @@ void main() {
       },
     );
   });
+
+  group('isNotableLanguage', () {
+    test('null (no Language attribute at all) is not notable', () {
+      expect(isNotableLanguage(null), isFalse);
+    });
+
+    test('the two known default-language spellings are not notable', () {
+      expect(isNotableLanguage('ITALIANO'), isFalse);
+      expect(isNotableLanguage('ITA'), isFalse);
+    });
+
+    test(
+      'this is the actual regression case: a lone original-language '
+      'showing with no dubbed alternative that day (e.g. UCI Seven Gioia '
+      'del Colle\'s "Katy Perry: The Lifetimes Tour", ENG only, no ITA '
+      'showing at all) is notable, so it still gets flagged',
+      () {
+        expect(isNotableLanguage('ENG'), isTrue);
+        expect(isNotableLanguage('LINGUA ORIGINALE'), isTrue);
+      },
+    );
+  });
 }

@@ -128,7 +128,13 @@ class _SessionsByLanguage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final groups = groupSessionsByLanguage(sessions);
-    final showLabels = groups.length > 1;
+    // More than one group always gets labels, for the same "which is which"
+    // reason as before; a single group still gets one when its own language
+    // isn't the default (see isNotableLanguage) - otherwise a lone
+    // original-language showing with no dubbed alternative that day would
+    // look exactly like an ordinary Italian one.
+    final showLabels =
+        groups.length > 1 || groups.keys.any(isNotableLanguage);
 
     Widget chipsFor(List<Session> groupSessions) => Wrap(
       spacing: 8,

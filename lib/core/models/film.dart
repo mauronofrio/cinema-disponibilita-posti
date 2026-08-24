@@ -120,6 +120,22 @@ Map<String?, List<Session>> groupSessionsByLanguage(List<Session> sessions) {
   return groups;
 }
 
+/// Language values common enough that they're not worth labeling on their
+/// own - confirmed live for the two chains that currently tag Language: The
+/// Space uses "ITALIANO", UCI uses "ITA".
+const _defaultLanguages = {'ITALIANO', 'ITA'};
+
+/// Whether [language] is worth showing a caption for even when it's the
+/// *only* language a film has that day. A lone default-language group (or
+/// no Language attribute at all) stays silent, same as before this
+/// existed; but a lone non-default one - most notably an original-language
+/// showing with no dubbed alternative that day, e.g. UCI Seven Gioia del
+/// Colle's "Katy Perry: The Lifetimes Tour" (ENG only, 5 Sept 2026, no
+/// ITA showing at all) - would otherwise render with no indication
+/// whatsoever that it isn't a normal Italian showing.
+bool isNotableLanguage(String? language) =>
+    language != null && !_defaultLanguages.contains(language);
+
 class ShowingGroup {
   const ShowingGroup({required this.date, required this.sessions});
 
