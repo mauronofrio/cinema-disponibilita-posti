@@ -1,0 +1,26 @@
+{
+  "id": 1241436,
+  "results": [
+    {
+      "key": "def456uvw",
+      "site": "YouTube",
+      "type": "Teaser",
+      "official": false,
+      "name": "Teaser"
+    },
+    {
+      "key": "abc123xyz",
+      "site": "YouTube",
+      "type": "Trailer",
+      "official": true,
+      "name": "Trailer Ufficiale"
+    },
+    {
+      "key": "ghi789rst",
+      "site": "Vimeo",
+      "type": "Trailer",
+      "official": true,
+      "name": "Trailer (Vimeo mirror)"
+    }
+  ]
+}
