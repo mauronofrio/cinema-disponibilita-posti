@@ -96,7 +96,7 @@ class FilmCard extends ConsumerWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Flexible(
+                          Expanded(
                             child: Text(
                               film.title,
                               style: AppTheme.display(
@@ -111,6 +111,16 @@ class FilmCard extends ConsumerWidget {
                             tooltip: AppLocalizations.of(context).filmInfoTooltip,
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
+                            // IconButton's Material 3 default style keeps a
+                            // full 48x48 tap target around the 20px icon
+                            // even with the zero padding/constraints above -
+                            // that invisible padding is what actually reads
+                            // as "space between title and icon", not the
+                            // Row layout itself.
+                            style: IconButton.styleFrom(
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
                             onPressed: () => showFilmInfoSheet(
                               context,
                               FilmInfoArgs(
@@ -123,7 +133,6 @@ class FilmCard extends ConsumerWidget {
                         ],
                       ),
                       if (film.runningTime != null) ...[
-                        const SizedBox(height: 2),
                         Text(
                           '${film.runningTime} min',
                           style: AppTheme.body(context).copyWith(
