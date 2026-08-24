@@ -42,7 +42,15 @@ class FilmInfoStore {
   Future<Map<String, dynamic>> _readAll(SharedPreferences prefs) async {
     final raw = prefs.getString(_prefsKey);
     if (raw == null) return {};
-    return json.decode(raw) as Map<String, dynamic>;
+    try {
+      return json.decode(raw) as Map<String, dynamic>;
+    } catch (_) {
+      // Corrupted/unparseable cache (partial write, format change, ...) -
+      // degrade to "cache is empty" rather than throwing forever on every
+      // subsequent read/write/purge, which would otherwise be unrecoverable
+      // without the user clearing app storage themselves.
+      return {};
+    }
   }
 
   Future<FilmInfo?> read(String title) async {
@@ -65,12 +73,22 @@ class FilmInfoStore {
   Future<void> purgeOlderThan(DateTime cutoff) async {
     final prefs = await SharedPreferences.getInstance();
     final all = await _readAll(prefs);
+    final sizeBefore = all.length;
     all.removeWhere((_, value) {
-      final fetchedAt = DateTime.parse(
-        (value as Map<String, dynamic>)['fetchedAt'] as String,
-      );
-      return fetchedAt.isBefore(cutoff);
+      final fetchedAtRaw = (value as Map<String, dynamic>)['fetchedAt'];
+      // A corrupted/unparseable fetchedAt means we can't vouch for this
+      // entry's freshness at all - treat it as expired (remove it) rather
+      // than keep serving data we can no longer validate. It'll simply be
+      // re-fetched from TMDb next time it's needed.
+      try {
+        return DateTime.parse(fetchedAtRaw as String).isBefore(cutoff);
+      } catch (_) {
+        return true;
+      }
     });
+    // Skip the write entirely when nothing was actually removed - avoids a
+    // disk write on every single app launch in the common case.
+    if (all.length == sizeBefore) return;
     await prefs.setString(_prefsKey, json.encode(all));
   }
 }

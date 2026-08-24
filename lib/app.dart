@@ -40,7 +40,8 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
         .read(filmInfoStoreProvider)
         .purgeOlderThan(
           ref.read(clockProvider).now().subtract(const Duration(days: 60)),
-        );
+        )
+        .ignore();
   }
 
   @override

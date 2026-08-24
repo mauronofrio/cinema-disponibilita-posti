@@ -93,7 +93,7 @@ class FilmInfoSheet extends ConsumerWidget {
                     child: CircularProgressIndicator(),
                   ),
                 ),
-                error: (err, _) => Text(
+                error: (_, _) => Text(
                   t.filmInfoUnavailable,
                   style: AppTheme.body(
                     context,

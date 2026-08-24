@@ -125,5 +125,18 @@ void main() {
         expect((await store.read('Oceania|it-IT'))!.overview, 'Italiano');
       },
     );
+
+    test(
+      'a corrupted cache (unparseable JSON) degrades to empty instead of '
+      'throwing on every subsequent read',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'film_info_cache': 'not valid json',
+        });
+        final store = FilmInfoStore();
+
+        expect(await store.read('Oceania'), isNull);
+      },
+    );
   });
 }
