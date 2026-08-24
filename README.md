@@ -41,7 +41,7 @@ Flutter, nessun backend proprio: l'app chiama direttamente le API/i siti pubblic
 flutter pub get
 flutter test
 flutter run          # debug, su emulatore o device connesso
-flutter build apk --release
+flutter build apk --release --dart-define=TMDB_READ_ACCESS_TOKEN=...  # trama/trailer film (facoltativo, senza la app funziona lo stesso)
 ```
 
 ## Disclaimer
