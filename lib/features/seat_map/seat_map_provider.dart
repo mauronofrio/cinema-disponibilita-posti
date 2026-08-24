@@ -26,6 +26,8 @@ class SeatMapArgs {
     required this.cinema,
     required this.filmId,
     required this.filmTitle,
+    required this.posterImageSrc,
+    required this.runningTime,
     required this.showingGroups,
     required this.initialSessionId,
   });
@@ -33,6 +35,8 @@ class SeatMapArgs {
   final Cinema cinema;
   final String filmId;
   final String filmTitle;
+  final String? posterImageSrc;
+  final int? runningTime;
   final List<ShowingGroup> showingGroups;
   final String initialSessionId;
 }

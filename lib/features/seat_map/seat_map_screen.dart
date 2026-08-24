@@ -5,6 +5,7 @@ import '../../core/date/clock.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/models/film.dart';
 import '../../core/theme/app_theme.dart';
+import '../film_info/film_info_sheet.dart';
 import '../showtimes/films_provider.dart';
 import '../showtimes/showing_dates_provider.dart';
 import 'seat_map_provider.dart';
@@ -142,6 +143,20 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: AppLocalizations.of(context).filmInfoTooltip,
+            onPressed: () => showFilmInfoSheet(
+              context,
+              FilmInfoArgs(
+                title: widget.args.filmTitle,
+                posterImageSrc: widget.args.posterImageSrc,
+                runningTime: widget.args.runningTime,
+              ),
+            ),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {

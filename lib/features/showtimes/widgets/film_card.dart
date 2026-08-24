@@ -34,6 +34,8 @@ class FilmCard extends ConsumerWidget {
         cinema: cinema,
         filmId: film.filmId,
         filmTitle: film.title,
+        posterImageSrc: film.posterImageSrc,
+        runningTime: film.runningTime,
         showingGroups: film.showingGroups,
         initialSessionId: session.sessionId,
       ),
