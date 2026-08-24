@@ -303,8 +303,8 @@ class _ChipsWrap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: 4,
+      runSpacing: 4,
       children: sessions.map((session) {
         return _SessionTimeChip(
           session: session,
