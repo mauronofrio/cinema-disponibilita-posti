@@ -18,7 +18,18 @@ class FilmInfoUnavailableException implements Exception {}
 /// building this provider - only by a widget actually watching/reading it,
 /// which only happens once the user taps the info button (see
 /// film_info_sheet.dart).
-final filmInfoProvider = FutureProvider.family<FilmInfo, String>((
+///
+/// `autoDispose`, with no TTL: unlike the chain-API providers above, this is
+/// keyed on raw film title, so without it the key space would grow with
+/// every distinct film ever tapped for the life of the app. There's no
+/// keep-alive to lose any freshness over - the persistent store above
+/// already dedupes the real network fetches - so this simply disposes as
+/// soon as film_info_sheet.dart's `ref.watch` goes away (the sheet closes),
+/// and rebuilds from the persistent cache on the next tap. It still re-runs
+/// on language change while the sheet is open, same as before: that comes
+/// from `ref.watch(effectiveLocaleProvider)` below, not from being kept
+/// alive.
+final filmInfoProvider = FutureProvider.autoDispose.family<FilmInfo, String>((
   ref,
   rawTitle,
 ) async {
