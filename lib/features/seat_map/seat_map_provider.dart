@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/chains/chain_registry.dart';
 import '../../core/models/cinema.dart';
 import '../../core/models/film.dart';
 import '../../core/models/seat_map.dart';
+import '../../core/util/provider_ttl.dart';
 
 typedef SeatMapKey = (Cinema cinema, Session session);
 
@@ -45,13 +44,23 @@ class SeatMapArgs {
 /// showtimes/films caches): occupancy is the most volatile data in the app,
 /// so this TTL exists only to make an accidental back-then-forward
 /// navigation instant, never to serve minutes-old booking state.
-final seatMapProvider = FutureProvider.family<SeatMap, SeatMapKey>((
+///
+/// `autoDispose` matters here in a way it doesn't for its siblings: without
+/// it, [keepAliveFor]'s `link.close()` after the TTL would be a no-op (a
+/// keep-alive link only ever *prevents* a disposal that `autoDispose` would
+/// otherwise schedule), so occupancy would stay cached - and a transient
+/// fetch error along with it - for the rest of the app's process lifetime.
+/// The two fire-and-forget prefetch call sites
+/// (`ref.read(seatMapProvider(...).future).ignore()` in film_card.dart and
+/// seat_map_screen.dart) still work with `autoDispose`: [keepAliveFor] runs
+/// synchronously inside `create`, before Riverpod ever gets a chance to
+/// notice the listener count is zero, so the keep-alive link is already in
+/// place by the time there would be anything to dispose.
+final seatMapProvider = FutureProvider.autoDispose.family<SeatMap, SeatMapKey>((
   ref,
   key,
 ) async {
-  final link = ref.keepAlive();
-  final timer = Timer(const Duration(seconds: 45), link.close);
-  ref.onDispose(timer.cancel);
+  keepAliveFor(ref, const Duration(seconds: 45));
 
   final (cinema, session) = key;
   return ref.read(chainApiProvider(cinema.chain)).getSeatMap(cinema, session);
