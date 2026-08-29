@@ -127,15 +127,19 @@ class FilmCard extends ConsumerWidget {
                             icon: const Icon(Icons.info_outline, size: 20),
                             tooltip: AppLocalizations.of(context).filmInfoTooltip,
                             padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
                             // IconButton's Material 3 default style keeps a
-                            // full 48x48 tap target around the 20px icon
-                            // even with the zero padding/constraints above -
-                            // that invisible padding is what actually reads
-                            // as "space between title and icon", not the
-                            // Row layout itself.
+                            // full 48x48 tap target around the 20px icon -
+                            // that invisible padding is what used to read as
+                            // "space between title and icon", not the Row
+                            // layout itself. Shrinking it to exactly the
+                            // 20x20 icon (an earlier version of this code
+                            // did, via Size.zero) went too far the other
+                            // way: confirmed live, an area that small misses
+                            // real-finger taps often enough to feel broken.
+                            // 40x40 is still visually tight (well short of
+                            // the full 48) but a real, reliable touch target.
                             style: IconButton.styleFrom(
-                              minimumSize: Size.zero,
+                              minimumSize: const Size(40, 40),
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             onPressed: () => showFilmInfoSheet(
