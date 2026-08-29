@@ -1,10 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/chains/chain_registry.dart';
 import '../../core/models/cinema.dart';
 import '../../core/models/film.dart';
+import '../../core/util/provider_ttl.dart';
 
 /// Films playing at a cinema with sessions on one specific day. The Space
 /// and UCI fetch every day at once regardless (cheap for them, see their
@@ -21,15 +20,10 @@ import '../../core/models/film.dart';
 /// mislabeling risk from a stale cache the way the original app bug worked -
 /// worst case a specific day's session list is up to 7 minutes stale after
 /// a rollover, which the TTL clears on its own shortly after.
-final filmsForDayProvider =
-    FutureProvider.autoDispose.family<List<Film>, (Cinema, DateTime)>((
-      ref,
-      args,
-    ) async {
+final filmsForDayProvider = FutureProvider.autoDispose
+    .family<List<Film>, (Cinema, DateTime)>((ref, args) async {
       final (cinema, day) = args;
-      final link = ref.keepAlive();
-      final timer = Timer(const Duration(minutes: 7), link.close);
-      ref.onDispose(timer.cancel);
+      keepAliveFor(ref, const Duration(minutes: 7));
       return ref
           .read(chainApiProvider(cinema.chain))
           .getFilmsForDay(cinema, day);
