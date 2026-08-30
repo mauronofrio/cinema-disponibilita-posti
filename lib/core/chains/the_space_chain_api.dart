@@ -18,7 +18,14 @@ class TheSpaceChainApi implements ChainApi {
 
   @override
   Future<List<ShowingDate>> getShowingDates(Cinema cinema) {
-    return _client.getShowingDates(cinema.cinemaId);
+    // Same reasoning as getSeatMap below: _client.getShowingDates already
+    // turns a network/HTTP failure into a friendly ApiException, but the
+    // model mapping that runs after that (ShowingDate.fromJson's
+    // `json['hasShowings'] as bool` hard cast, no default) is not - a
+    // backend schema change there would otherwise surface as a raw Dart
+    // type error in the UI instead of the same friendly message every
+    // other chain gives.
+    return runChainParsing(() => _client.getShowingDates(cinema.cinemaId));
   }
 
   @override
@@ -26,7 +33,11 @@ class TheSpaceChainApi implements ChainApi {
     // The Space's own endpoint already returns every day in one cheap
     // response - [day] doesn't change what's fetched, only which of the
     // returned films end up shown (the caller filters that).
-    return _client.getFilmsForCinema(cinema.cinemaId);
+    //
+    // Wrapped for the same reason as getShowingDates above: Film.fromJson's
+    // `json['filmId'] as String` hard cast runs unprotected after
+    // _client.getFilmsForCinema's own transport-error handling.
+    return runChainParsing(() => _client.getFilmsForCinema(cinema.cinemaId));
   }
 
   @override
