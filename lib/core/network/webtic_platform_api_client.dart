@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,6 +14,34 @@ import 'dio_error.dart';
 /// Cloud Run proxy in front of the same underlying backend, not this raw
 /// surface - the two are not interchangeable even though both ultimately
 /// reach the same `secure.webtic.it` infrastructure.
+/// This raw native endpoint (`wtjsonservices.ashx`, called from
+/// [WebticPlatformApiClient._postWtService]) reports its own logical
+/// failures (bad id, expired performance...) as a normal HTTP 200 with
+/// `userdata.StatusOk: false` in the body, not as an HTTP error status - so
+/// those never reach a `DioException` at all. Every real response sampled so
+/// far (`getMapSeats`/`getOccupancy` fixtures across Notorious/Giometti/
+/// Cineplexx) has `StatusOk: true` with an empty `Message`, but the field is
+/// there precisely for the failure case. This is the same kind of check
+/// `webtic_api_client.dart`'s `_checkedBody` already does for UCI's own
+/// WebTic Api2 proxy - same underlying `secure.webtic.it` platform, but a
+/// different response shape here (`userdata.StatusOk`/`userdata.Message`,
+/// not `Status.Success`/`Status.Message`), so it isn't the literal same
+/// function, just the same defensive idea applied to this endpoint's own
+/// JSON.
+String _checkedWtServiceBody(String raw) {
+  final decoded = json.decode(raw);
+  final userdata = decoded is Map ? decoded['userdata'] : null;
+  if (userdata is Map && userdata['StatusOk'] == false) {
+    final message = (userdata['Message'] as String?)?.trim();
+    throw ApiException(
+      message?.isNotEmpty == true
+          ? message!
+          : AppLocalizations.current.requestFailedError,
+    );
+  }
+  return raw;
+}
+
 class WebticPlatformApiClient {
   WebticPlatformApiClient(this._dio);
 
@@ -179,7 +209,15 @@ class WebticPlatformApiClient {
           headers: {'Content-Type': 'application/json'},
         ),
       );
-      return response.data!;
+      final body = response.data!;
+      // Same reasoning as _get above: an empty body would otherwise reach
+      // json.decode (in _checkedWtServiceBody) as a confusing
+      // FormatException instead of the friendly message every other
+      // method in this class already falls back to.
+      if (body.isEmpty) {
+        throw ApiException(AppLocalizations.current.requestFailedError);
+      }
+      return _checkedWtServiceBody(body);
     } on DioException catch (e) {
       throwFriendlyDioError(e);
     }
