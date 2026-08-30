@@ -50,8 +50,15 @@ class Seat {
   factory Seat.fromJson(Map<String, dynamic> json) {
     final status = seatStatusFromCode((json['seatStatus'] as num).toInt());
     return Seat(
-      rowIndex: json['rowIndex'] as int,
-      columnIndex: json['columnIndex'] as int,
+      // Neither of these is actually read anywhere in lib/features/ - the
+      // grid renders row.seats positionally and keys off SeatRow.rowLabel,
+      // never rowIndex/columnIndex (confirmed with a grep before making
+      // this change). Still given the same safe-fallback treatment as
+      // every neighbouring field rather than a hard cast, so a malformed
+      // or missing value here can never crash a seat map load over data
+      // nothing actually consumes.
+      rowIndex: (json['rowIndex'] as int?) ?? 0,
+      columnIndex: (json['columnIndex'] as int?) ?? 0,
       name: (json['name'] as String?) ?? '',
       status: status,
       areaCategoryCode: (json['areaCategoryCode'] as String?) ?? '',
@@ -93,7 +100,10 @@ class SeatRow {
   factory SeatRow.fromJson(Map<String, dynamic> json) {
     return SeatRow(
       rowLabel: (json['rowLabel'] as String?) ?? '',
-      rowIndex: json['rowIndex'] as int,
+      // Not read anywhere in lib/features/ either (the grid keys off
+      // rowLabel, not rowIndex) - same reasoning as Seat.rowIndex/
+      // columnIndex above, given a safe fallback instead of a hard cast.
+      rowIndex: (json['rowIndex'] as int?) ?? 0,
       seats: (json['columns'] as List<dynamic>? ?? const [])
           .map(
             (c) => c == null ? null : Seat.fromJson(c as Map<String, dynamic>),
@@ -117,7 +127,14 @@ class AreaCategory {
 
   factory AreaCategory.fromJson(Map<String, dynamic> json) {
     return AreaCategory(
-      code: json['areaCategoryCode'] as String,
+      // Unlike rowIndex/columnIndex above, this one IS read - see
+      // area_legend.dart's visibleAreaCategories, matched against each
+      // seat's own areaCategoryCode. A missing/malformed value here just
+      // means that category never matches any seat (the same as any
+      // other made-up code would), not a crash - so it gets the same
+      // safe-fallback treatment as every neighbouring field instead of a
+      // hard cast.
+      code: (json['areaCategoryCode'] as String?) ?? '',
       name: (json['areaName'] as String?) ?? '',
       color: json['areaColor'] as String?,
       isSoldOut: (json['isSoldOut'] as bool?) ?? false,

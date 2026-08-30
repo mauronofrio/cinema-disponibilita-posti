@@ -146,6 +146,42 @@ void main() {
       },
     );
 
+    test(
+      'a seat/row missing rowIndex, columnIndex or areaCategoryCode does not '
+      'crash the parse - neither rowIndex/columnIndex is read anywhere in '
+      "lib/features/ (the grid renders row.seats positionally, keyed off "
+      'rowLabel), so they get the same safe-fallback treatment as every '
+      'neighbouring field instead of a hard cast',
+      () {
+        final missingFieldsJson = jsonEncode({
+          'result': {
+            'seatingData': {'screenLabel': 'Sala 1'},
+            'seatRows': [
+              {
+                'rowLabel': 'A',
+                'columns': [
+                  {
+                    'name': 'A1',
+                    'seatStatus': 0,
+                  },
+                ],
+              },
+            ],
+            'areaCategories': [
+              {'areaName': 'Platea', 'isSoldOut': false},
+            ],
+          },
+        });
+        final seatMap = SeatMap.fromApiResponseJson(missingFieldsJson);
+        expect(seatMap.rows.single.rowIndex, 0);
+        final seat = seatMap.rows.single.seats.single!;
+        expect(seat.rowIndex, 0);
+        expect(seat.columnIndex, 0);
+        expect(seat.areaCategoryCode, '');
+        expect(seatMap.areaCategories.single.code, '');
+      },
+    );
+
     test('maps every known seatStatus code to the right enum value', () {
       final seatMap = SeatMap.fromApiResponseJson(rawJson);
       final byStatus = <SeatStatus, int>{};
