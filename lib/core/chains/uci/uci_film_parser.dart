@@ -87,6 +87,9 @@ List<ParsedUciDay> parseUciProgrammingDay(
                 startTime: DateTime.parse(performance['starts_at'] as String),
                 endTime: DateTime.parse(performance['ends_at'] as String),
                 screenName: (performance['room'] as String?) ?? '',
+                // Always false off The Space - see [Session.isSoldOut]: no other
+                // chain publishes it, and deriving it would cost one seat-map
+                // request per showtime.
                 isSoldOut: false,
                 formattedPrice: null,
                 isPriceVisible: false,

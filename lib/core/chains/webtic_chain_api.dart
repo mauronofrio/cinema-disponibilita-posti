@@ -218,6 +218,9 @@ class WebticChainApi implements ChainApi {
             startTime: parsed.startTime,
             endTime: parsed.endTime,
             screenName: parsed.screenName,
+            // Always false off The Space - see [Session.isSoldOut]: no other
+            // chain publishes it, and deriving it would cost one seat-map
+            // request per showtime.
             isSoldOut: false,
             formattedPrice: null,
             isPriceVisible: false,
@@ -281,6 +284,9 @@ class WebticChainApi implements ChainApi {
           // The programmazione page never gives an end time.
           endTime: startTime,
           screenName: '',
+          // Always false off The Space - see [Session.isSoldOut]: no other
+          // chain publishes it, and deriving it would cost one seat-map
+          // request per showtime.
           isSoldOut: false,
           formattedPrice: null,
           isPriceVisible: false,
@@ -338,6 +344,9 @@ class WebticChainApi implements ChainApi {
           startTime: startTime,
           endTime: s.endTime,
           screenName: s.screenName,
+          // Always false off The Space - see [Session.isSoldOut]: no other
+          // chain publishes it, and deriving it would cost one seat-map
+          // request per showtime.
           isSoldOut: false,
           formattedPrice: null,
           isPriceVisible: false,
@@ -418,6 +427,9 @@ class WebticChainApi implements ChainApi {
           // The schedule page never gives an end time.
           endTime: startTime,
           screenName: '',
+          // Always false off The Space - see [Session.isSoldOut]: no other
+          // chain publishes it, and deriving it would cost one seat-map
+          // request per showtime.
           isSoldOut: false,
           formattedPrice: null,
           isPriceVisible: false,

@@ -150,12 +150,8 @@ SeatMap parseWebticSeatMap(WebticSeatMapPayload payload) {
     rows: rows,
     areaCategories: sectorCodes
         .map(
-          (code) => AreaCategory(
-            code: code,
-            name: '',
-            color: null,
-            isSoldOut: false,
-          ),
+          (code) =>
+              AreaCategory(code: code, name: '', color: null, isSoldOut: false),
         )
         .toList(),
   );

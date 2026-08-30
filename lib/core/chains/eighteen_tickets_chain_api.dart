@@ -197,10 +197,8 @@ class EighteenTicketsChainApi implements ChainApi {
         host,
         film.filmId,
       );
-      schedule.sessionsById[film.filmId] = parseEighteenTicketsAllSessionsForFilm(
-        occupationsHtml,
-        film.filmId,
-      );
+      schedule.sessionsById[film.filmId] =
+          parseEighteenTicketsAllSessionsForFilm(occupationsHtml, film.filmId);
     }
     // Only stamp storedAt the first time this schedule is actually
     // created, not on every touch. TtlCache.set() resets the entry's
@@ -230,9 +228,8 @@ class EighteenTicketsChainApi implements ChainApi {
     final dayKey = _dateKey(day);
 
     final result = <Film>[];
-    for (final MapEntry(key: filmId, value: film) in schedule
-        .catalogById
-        .entries) {
+    for (final MapEntry(key: filmId, value: film)
+        in schedule.catalogById.entries) {
       final sessionsThatDay = (schedule.sessionsById[filmId] ?? const [])
           .where((s) => _dateKey(s.startTime) == dayKey)
           .toList();
@@ -254,6 +251,9 @@ class EighteenTicketsChainApi implements ChainApi {
                           startTime: parsed.startTime,
                           endTime: parsed.startTime,
                           screenName: parsed.theaterName,
+                          // Always false off The Space - see [Session.isSoldOut]: no other
+                          // chain publishes it, and deriving it would cost one seat-map
+                          // request per showtime.
                           isSoldOut: false,
                           formattedPrice: null,
                           isPriceVisible: false,
@@ -305,6 +305,9 @@ class EighteenTicketsChainApi implements ChainApi {
                       // anywhere sessions are rendered, so an estimate is fine.
                       endTime: parsed.startTime,
                       screenName: parsed.theaterName,
+                      // Always false off The Space - see [Session.isSoldOut]: no other
+                      // chain publishes it, and deriving it would cost one seat-map
+                      // request per showtime.
                       isSoldOut: false,
                       formattedPrice: null,
                       isPriceVisible: false,

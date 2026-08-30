@@ -189,7 +189,9 @@ SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
       ),
     );
   }
-  final screenY = double.parse(_screenYRe.firstMatch(payload.theaterSvg)!.group(1)!);
+  final screenY = double.parse(
+    _screenYRe.firstMatch(payload.theaterSvg)!.group(1)!,
+  );
 
   final occupancy = json.decode(payload.occupancyJson) as Map<String, dynamic>;
   final busyBySeatId = <String, Set<String>>{
@@ -232,8 +234,8 @@ SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
     for (final entry in byRow.entries)
       entry.key:
           (entry.value.map((s) => s.y).reduce((a, b) => a + b) /
-                  entry.value.length -
-              screenY)
+                      entry.value.length -
+                  screenY)
               .abs(),
   };
   final rowLabels = byRow.keys.toList()

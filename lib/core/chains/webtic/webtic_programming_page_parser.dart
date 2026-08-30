@@ -1,7 +1,10 @@
 /// One showtime, as listed under a film's single day-block on the
 /// "programmazione" page.
 class ParsedGiomettiSession {
-  const ParsedGiomettiSession({required this.performanceId, required this.time});
+  const ParsedGiomettiSession({
+    required this.performanceId,
+    required this.time,
+  });
 
   final String performanceId;
 

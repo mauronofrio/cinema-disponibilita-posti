@@ -64,6 +64,31 @@ class Session {
   final DateTime startTime;
   final DateTime endTime;
   final String screenName;
+
+  /// **Only ever true on The Space.** The other three chains hardcode this
+  /// to `false`, and that is deliberate, not an oversight - please don't
+  /// "fix" it without reading this first.
+  ///
+  /// The Space publishes a real sold-out flag in the same cheap response
+  /// that lists the showtimes, so it costs nothing there. UCI, Webtic and
+  /// the 18tickets platform publish no such field anywhere in their
+  /// programme responses: the only way to know a showtime is full is to
+  /// fetch its seat map and find every seat taken - one extra request per
+  /// showtime, for every showtime on screen.
+  ///
+  /// That directly contradicts the constraint the whole app is built
+  /// around: seat maps are fetched lazily, one at a time, only when the
+  /// user actually opens one. The 18tickets platform in particular starts
+  /// returning HTTP 429 after roughly 4-5 requests in a short window (see
+  /// `EighteenTicketsChainApi`'s class doc), so speculatively fetching a
+  /// seat map per showtime would get the app rate-limited on the very
+  /// screen it's trying to populate.
+  ///
+  /// Consequence to be aware of: on those three chains a sold-out showtime
+  /// looks bookable in the list (no strikethrough, still tappable) and can
+  /// be auto-selected as the seat map screen's default session. The impact
+  /// is bounded - opening it shows a correctly all-occupied room - but it
+  /// is a real, knowing difference in behaviour between chains.
   final bool isSoldOut;
   final String? formattedPrice;
   final bool isPriceVisible;
