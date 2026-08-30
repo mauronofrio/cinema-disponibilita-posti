@@ -50,13 +50,30 @@ List<ParsedCineplexxCatalogFilm> parseWebticFilmCatalog(
       continue;
     }
 
+    // A blank data-prog_{id} attribute has been seen live on one film of an
+    // otherwise-healthy catalog page ("".split('|') yields [""], and
+    // DateTime.parse("") throws) - DateTime.parse (no tryParse guard) used
+    // to let that single bad attribute blow up the whole catalog parse via
+    // runChainParsing, turning one film's bad date into zero films for the
+    // whole cinema. tryParse drops just the unparseable token(s); if none
+    // of them parse, this film has no real playing date to show, so it's
+    // skipped exactly like the missing-field blocks above, rather than
+    // taking every other film down with it.
+    final playingDates = progMatch
+        .group(1)!
+        .split('|')
+        .map(DateTime.tryParse)
+        .whereType<DateTime>()
+        .toList();
+    if (playingDates.isEmpty) continue;
+
     result.add(
       ParsedCineplexxCatalogFilm(
         filmId: idFilmMatch.group(1)!,
         slug: slugMatch.group(1)!,
         title: titleMatch.group(1)!,
         posterUrl: _catalogPosterRe.firstMatch(block)?.group(1),
-        playingDates: progMatch.group(1)!.split('|').map(DateTime.parse).toList(),
+        playingDates: playingDates,
       ),
     );
   }

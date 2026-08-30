@@ -467,6 +467,34 @@ void main() {
         containsAll([DateTime(2026, 7, 9), DateTime(2026, 7, 15)]),
       );
     });
+
+    test(
+      'a blank data-prog_{id} attribute on one film drops just that film, '
+      'not the whole catalog',
+      () {
+        // A bad `data-prog_2360=""` used to blow up DateTime.parse on
+        // ''.split('|') == [''], throwing out of the loop entirely and
+        // leaving the whole cinema with zero films. Injected into the real
+        // Cineplexx Bolzano homepage sample here (THE ODYSSEY [2026],
+        // filmId 48146, otherwise a perfectly normal single-date entry) to
+        // exercise exactly that shape without needing a second full fixture.
+        final blanked = raw.replaceFirst(
+          'data-prog_2360="2026-07-17"',
+          'data-prog_2360=""',
+        );
+        final films = parseWebticFilmCatalog(blanked, siteCinemaId: '2360');
+        // 10 films normally parse for this cinema (see the test above) - one
+        // fewer now that THE ODYSSEY's own attribute is unparseable, but
+        // every other film is untouched.
+        expect(films, hasLength(9));
+        expect(films.any((f) => f.filmId == '48146'), isFalse);
+        expect(
+          films.any((f) => f.filmId == '47588'),
+          isTrue,
+          reason: 'MINIONS & MONSTERS should be unaffected',
+        );
+      },
+    );
   });
 
   group('parseWebticFilmSchedulePage', () {
