@@ -25,6 +25,12 @@ Future<void> showFilmInfoSheet(BuildContext context, FilmInfoArgs args) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    // Without this, Flutter wraps the sheet in a
+    // `MediaQuery.removePadding(removeTop: true)`, which makes the SafeArea
+    // *inside* FilmInfoSheet a no-op at the top - and since
+    // `isScrollControlled` lets the sheet grow to the full viewport, a film
+    // with a long synopsis pushed its poster up under the status bar/notch.
+    useSafeArea: true,
     builder: (context) => FilmInfoSheet(args: args),
   );
 }

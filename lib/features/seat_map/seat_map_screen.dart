@@ -56,6 +56,15 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
 
   DateTime _dayKey(DateTime d) => DateTime(d.year, d.month, d.day);
 
+  /// [dates] plus the currently-shown day if it isn't already there, in
+  /// chronological order - see the call site for why the selected day is
+  /// added to the list rather than the selection being moved into it.
+  List<DateTime> _withSelectedDate(List<DateTime> dates) {
+    final selectedKey = _dayKey(_selectedDate);
+    if (dates.any((d) => _dayKey(d) == selectedKey)) return dates;
+    return [...dates, _selectedDate]..sort();
+  }
+
   ShowingGroup get _selectedGroup => _groupsByDay[_dayKey(_selectedDate)]!;
 
   Session get _selectedSession => _selectedGroup.sessions.firstWhere(
@@ -78,6 +87,19 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
     final key = _dayKey(date);
     final known = _groupsByDay[key];
     if (known != null) {
+      // Same emptiness guard the fetched path below already applies before
+      // storing a group. `ShowingGroup.fromJson` tolerates `sessions: []`,
+      // so a dated-but-empty group can reach here from the nav args too -
+      // and `_applyGroup`'s `orElse: () => group.sessions.first` would then
+      // throw a StateError inside setState, i.e. a red screen.
+      if (known.sessions.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).noShowingsForFilmThatDay),
+          ),
+        );
+        return;
+      }
       _applyGroup(known, date);
       return;
     }
@@ -201,7 +223,7 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
                 // already known from the nav args if this hasn't resolved
                 // yet, so the switcher never shows fewer days than it did a
                 // moment ago on the home screen.
-                final availableDates = ref
+                final liveDates = ref
                     .watch(showingDatesProvider(widget.args.cinema))
                     .maybeWhen(
                       data: (days) => days
@@ -211,6 +233,20 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
                       orElse: () =>
                           widget.args.showingGroups.map((g) => g.date).toList(),
                     );
+                // The live list can drift from what this screen is actually
+                // showing (day rollover, background refetch), and when it
+                // no longer contains `_selectedDate` the switcher finds no
+                // match: no chip renders selected and the strip silently
+                // scrolls back to the start while the grid below keeps
+                // showing the old day's session. Deliberately NOT solved by
+                // re-deriving `_selectedDate` the way the home screen does
+                // with `pickSelectedDay` - there the selection is just a
+                // filter, here it's bound to the sessions already loaded
+                // into `_groupsByDay`, so silently moving it would leave
+                // `_selectedGroup` pointing at a day that was never fetched.
+                // Instead the currently-shown day is always kept in the
+                // list, so the highlight always matches the grid.
+                final availableDates = _withSelectedDate(liveDates);
                 return DateSwitcher(
                   availableDates: availableDates,
                   selectedDate: _selectedDate,
