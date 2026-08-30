@@ -10,9 +10,13 @@ import '../../../core/theme/app_theme.dart';
 /// whose size is already known up front (`totalRows` x `totalColumns`, both
 /// small).
 ///
-/// The grid always fits the available width - seat size shrinks to fit
-/// rather than the row scrolling horizontally, so the whole room is visible
-/// at a glance without side-scrolling any individual row.
+/// Seat size shrinks to fit the available width, so an ordinary room is
+/// visible whole at a glance with no side-scrolling. Past a floor
+/// ([_minSeatSize]) shrinking stops and the seats scroll sideways instead -
+/// below that size the seats stop being individually readable, which
+/// defeats the point of showing the whole room. Row labels stay pinned
+/// outside the scroll view, so the row you're looking at is always
+/// identifiable.
 ///
 /// Available seats are filled with their own pricing/seat-type category
 /// color (Standard, VIP, ... - the venue's own `areaColor`), so category is
@@ -26,6 +30,23 @@ class SeatGrid extends StatelessWidget {
   final SeatMap seatMap;
 
   static const _maxSeatSize = 22.0;
+
+  /// How small a seat is allowed to get before the grid starts scrolling
+  /// sideways instead of shrinking further.
+  ///
+  /// Shrinking to fit is still the preferred behaviour - seeing the whole
+  /// room at once is the point - but it can't go on forever: with no floor
+  /// at all, Orfeo Multisala's 44-column "ROSSA" screen came out at roughly
+  /// 4.7px per seat on a normal phone, smaller than the glow drawn around
+  /// each free seat, so neighbouring seats smeared into one blur and no
+  /// individual seat could be read or tapped for its tooltip.
+  ///
+  /// 8px is deliberately low, so only genuinely huge rooms scroll: on a
+  /// 360dp-wide phone everything up to about 29 columns still fits, which
+  /// covers the ordinary 15-26 column rooms across all four chains. Raise
+  /// it for bigger seats and more scrolling.
+  static const _minSeatSize = 8.0;
+
   static const _gap = 2.0;
   static const _rowLabelWidth = 16.0;
 
@@ -36,24 +57,77 @@ class SeatGrid extends StatelessWidget {
         final columns = seatMap.totalColumns;
         final forSeats =
             constraints.maxWidth - _rowLabelWidth * 2 - _gap * (columns + 1);
-        // No lower floor: a genuinely wide room (e.g. a 40+ column single
-        // screen) must still shrink to fit the available width exactly, or
-        // the row overflows past the row-label column on the right (seen
-        // live on Orfeo Multisala's 44-column "ROSSA" screen) - the row
-        // never scrolls horizontally (see class doc), so seat size is the
-        // only thing that can give.
-        final seatSize = columns > 0
-            ? (forSeats / columns).clamp(0.0, _maxSeatSize)
-            : _maxSeatSize;
-        return Column(
+        final naturalSize = columns > 0 ? forSeats / columns : _maxSeatSize;
+        final seatSize = naturalSize.clamp(_minSeatSize, _maxSeatSize);
+        // Below the floor the row genuinely can't fit any more, so the seats
+        // area scrolls. The row labels stay pinned outside that scroll view
+        // on both sides, so you never lose track of which row you're
+        // looking at while panning across a wide room.
+        final scrolls = naturalSize < _minSeatSize;
+
+        final seatRows = Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _ScreenIndicator(width: constraints.maxWidth),
             for (final row in seatMap.rows)
               _SeatRowWidget(row: row, seatMap: seatMap, seatSize: seatSize),
           ],
         );
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _ScreenIndicator(width: constraints.maxWidth),
+            Row(
+              children: [
+                _RowLabelColumn(seatMap: seatMap, seatSize: seatSize),
+                Expanded(
+                  child: scrolls
+                      ? SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: seatRows,
+                        )
+                      : seatRows,
+                ),
+                _RowLabelColumn(seatMap: seatMap, seatSize: seatSize),
+              ],
+            ),
+          ],
+        );
       },
+    );
+  }
+}
+
+/// The row letters running down one side of the grid. Pulled out of the
+/// rows themselves so they can sit outside the horizontal scroll view when
+/// a wide room scrolls - each entry is pinned to the same height as its
+/// row so the two columns stay aligned.
+class _RowLabelColumn extends StatelessWidget {
+  const _RowLabelColumn({required this.seatMap, required this.seatSize});
+
+  final SeatMap seatMap;
+  final double seatSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final row in seatMap.rows)
+          SizedBox(
+            width: SeatGrid._rowLabelWidth,
+            height: seatSize + SeatGrid._gap,
+            child: Center(
+              child: Text(
+                row.rowLabel,
+                textAlign: TextAlign.center,
+                style: AppTheme.mono(
+                  context,
+                ).copyWith(fontSize: 11, color: AppColors.textMuted),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
@@ -123,49 +197,30 @@ class _SeatRowWidget extends StatelessWidget {
   final SeatMap seatMap;
   final double seatSize;
 
-  Widget _rowLabel(BuildContext context) {
-    return SizedBox(
-      width: SeatGrid._rowLabelWidth,
-      child: Text(
-        row.rowLabel,
-        textAlign: TextAlign.center,
-        style: AppTheme.mono(
-          context,
-        ).copyWith(fontSize: 11, color: AppColors.textMuted),
-      ),
-    );
-  }
-
+  /// Just the seats - the row's own label lives in [_RowLabelColumn],
+  /// outside any horizontal scroll view, so it stays visible while a wide
+  /// room is panned sideways.
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: SeatGrid._gap / 2),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _rowLabel(context),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (final seat in row.seats)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: SeatGrid._gap / 2,
+          for (final seat in row.seats)
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: SeatGrid._gap / 2,
+              ),
+              child: seat == null
+                  ? SizedBox(width: seatSize, height: seatSize)
+                  : _SeatBox(
+                      seat: seat,
+                      category: seatMap.categoryFor(seat.areaCategoryCode),
+                      size: seatSize,
                     ),
-                    child: seat == null
-                        ? SizedBox(width: seatSize, height: seatSize)
-                        : _SeatBox(
-                            seat: seat,
-                            category: seatMap.categoryFor(
-                              seat.areaCategoryCode,
-                            ),
-                            size: seatSize,
-                          ),
-                  ),
-              ],
             ),
-          ),
-          _rowLabel(context),
         ],
       ),
     );
