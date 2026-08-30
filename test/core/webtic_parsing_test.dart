@@ -34,7 +34,6 @@ void main() {
         expect(sessions, hasLength(2));
         expect(sessions.map((s) => s.performanceId), containsAll(['45019', '45026']));
         expect(sessions.every((s) => s.screenName == 'SALA 3'), isTrue);
-        expect(sessions.every((s) => s.screenId == 235), isTrue);
       },
     );
 
@@ -78,7 +77,6 @@ void main() {
           final sessions = film.sessionsByDay[day]!;
           expect(sessions.single.performanceId, '35974');
           expect(sessions.single.screenName, 'NUOVO EDEN');
-          expect(sessions.single.screenId, 73);
         },
       );
     },

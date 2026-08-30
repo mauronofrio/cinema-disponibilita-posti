@@ -3,23 +3,31 @@ import 'dart:convert';
 import '../parsing_utils.dart';
 
 /// One showtime for one film, on one specific day - as returned by
-/// `getFullSchedule`. Carries [screenId] (needed for the seat map's
-/// `getMapSeats` call) since it's only ever exposed here, not anywhere the
-/// seat map screen could re-derive it from later.
+/// `getFullSchedule`.
+///
+/// Used to also carry `screenId` (`ScreenId` from the raw response) on the
+/// claim it was "needed for the seat map's getMapSeats call" - that stopped
+/// being true once `WebticChainApi.getSeatMap` started deriving the room id
+/// from `getOccupancy`'s own `idsala` field instead (see that class's doc
+/// comment, "the idsala shortcut"), but the field itself, and its hard
+/// `as num` cast on every single performance in the catalog, stuck around
+/// unused. Removed rather than given a safe fallback like the audit's other
+/// stale-cast fixes: nothing reads it (confirmed with a grep), so there's no
+/// behaviour to preserve, only a cast to stop letting one performance
+/// missing `ScreenId` kill an entire cinema's catalog for a field nothing
+/// uses.
 class ParsedWebticSession {
   const ParsedWebticSession({
     required this.performanceId,
     required this.startTime,
     required this.endTime,
     required this.screenName,
-    required this.screenId,
   });
 
   final String performanceId;
   final DateTime startTime;
   final DateTime endTime;
   final String screenName;
-  final int screenId;
 }
 
 /// One film's full catalog entry - every session it has, across every day
@@ -79,7 +87,6 @@ List<ParsedWebticFilm> parseWebticFullSchedule(String responseBody) {
               startTime: DateTime.parse(p['StartTime'] as String),
               endTime: DateTime.parse(p['EndTime'] as String),
               screenName: (p['Screen'] as String?) ?? '',
-              screenId: (p['ScreenId'] as num).toInt(),
             ),
           )
           .toList();
