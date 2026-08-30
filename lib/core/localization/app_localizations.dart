@@ -88,6 +88,10 @@ class AppLocalizations {
     'active': {'en': 'Active', 'it': 'Attivo'},
     'language': {'en': 'Language', 'it': 'Lingua'},
     'languageAuto': {'en': 'Auto', 'it': 'Auto'},
+    'linkOpenError': {
+      'en': 'Couldn\'t open the link on this device.',
+      'it': 'Impossibile aprire il link su questo dispositivo.',
+    },
     // Kept deliberately chain-neutral: this app covers 226 cinemas across
     // four different operators/platforms, so naming any one of them (as an
     // earlier version did, when The Space was the only supported chain)
@@ -192,6 +196,7 @@ class AppLocalizations {
   String get active => _t('active');
   String get language => _t('language');
   String get languageAuto => _t('languageAuto');
+  String get linkOpenError => _t('linkOpenError');
   String get disclaimer => _t('disclaimer');
   String get connectionError => _t('connectionError');
   String get requestFailedError => _t('requestFailedError');

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/localization/app_localizations.dart';
 import '../../core/localization/locale_provider.dart';
 import '../../core/models/cinema.dart';
 import '../../core/storage/favorite_cinema_store.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/util/open_external_url.dart';
 import '../cinema_picker/cinema_list_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -178,11 +178,11 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           InkWell(
-            onTap: () => launchUrl(
+            onTap: () => openExternalUrl(
+              context,
               Uri.parse(
                 'https://github.com/mauronofrio/cinema-disponibilita-posti',
               ),
-              mode: LaunchMode.externalApplication,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

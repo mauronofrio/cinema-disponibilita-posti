@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/date/clock.dart';
 import '../../core/date/day_label.dart';
@@ -9,6 +8,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../core/models/cinema.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/film_perforation_divider.dart';
+import '../../core/util/open_external_url.dart';
 import '../../core/update/update_checker.dart';
 import '../../core/update/update_dialog.dart';
 import '../cinema_picker/cinema_list_provider.dart';
@@ -104,12 +104,12 @@ class _CinemaShowtimes extends ConsumerWidget {
         ],
       ),
     );
-    if (confirmed == true) {
-      await launchUrl(
+    if (confirmed == true && context.mounted) {
+      await openExternalUrl(
+        context,
         Uri.parse(
           'https://www.google.com/maps/dir/?api=1&destination=${cinema.lat},${cinema.lng}',
         ),
-        mode: LaunchMode.externalApplication,
       );
     }
   }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/localization/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/util/open_external_url.dart';
 import 'film_info_provider.dart';
 
 /// Just enough to show the header immediately (poster/title/runtime are
@@ -112,9 +112,9 @@ class FilmInfoSheet extends ConsumerWidget {
                     if (info.trailerUrl != null) ...[
                       const SizedBox(height: 16),
                       FilledButton.icon(
-                        onPressed: () => launchUrl(
+                        onPressed: () => openExternalUrl(
+                          context,
                           Uri.parse(info.trailerUrl!),
-                          mode: LaunchMode.externalApplication,
                         ),
                         icon: const Icon(Icons.play_arrow),
                         label: Text(t.watchTrailer),
