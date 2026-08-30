@@ -72,3 +72,6 @@ app.*.map.json
 /android/key.properties
 /android/*.keystore
 /android/*.jks
+
+# Report degli audit interni: note di lavoro, non parte del progetto.
+.audit-fixes/
