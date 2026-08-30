@@ -16,7 +16,23 @@ class NoStretchScrollBehavior extends MaterialScrollBehavior {
     return child;
   }
 
+  /// The "no stretch" part of this class is [buildOverscrollIndicator]
+  /// above, not this - the indicator is what draws the rubber-band, the
+  /// physics only decide whether a drag is accepted at all.
+  ///
+  /// That distinction matters: plain [ClampingScrollPhysics] refuses the
+  /// drag outright when the content already fits on screen
+  /// (`shouldAcceptUserOffset` is false once `minScrollExtent ==
+  /// maxScrollExtent`), so no scroll notification is ever emitted and any
+  /// `RefreshIndicator` above it never arms. That silently disabled
+  /// pull-to-refresh in exactly the cases where it's needed most: a short
+  /// error message, or a small screening room - the user pulls, nothing
+  /// moves, and there's no other way to retry.
+  ///
+  /// [AlwaysScrollableScrollPhysics] restores "always accept the drag"
+  /// while delegating the actual feel to the clamping parent, so the list
+  /// still doesn't rubber-band and still has no glow.
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) =>
-      const ClampingScrollPhysics();
+      const AlwaysScrollableScrollPhysics(parent: ClampingScrollPhysics());
 }

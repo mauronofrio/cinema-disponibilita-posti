@@ -5,6 +5,7 @@ import '../../core/date/clock.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/models/film.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/error_with_retry.dart';
 import '../film_info/film_info_sheet.dart';
 import '../showtimes/films_provider.dart';
 import '../showtimes/showing_dates_provider.dart';
@@ -95,7 +96,9 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
       if (known.sessions.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context).noShowingsForFilmThatDay),
+            content: Text(
+              AppLocalizations.of(context).noShowingsForFilmThatDay,
+            ),
           ),
         );
         return;
@@ -170,11 +173,7 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Text(
-              widget.args.filmTitle,
-              maxLines: 1,
-              softWrap: false,
-            ),
+            child: Text(widget.args.filmTitle, maxLines: 1, softWrap: false),
           ),
         ),
         actions: [
@@ -307,12 +306,11 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
                         child: Center(child: CircularProgressIndicator()),
                       ),
                       error: (err, _) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 48),
-                        child: Center(
-                          child: Text(
-                            '${AppLocalizations.of(context).seatsLoadError}\n$err',
-                            textAlign: TextAlign.center,
-                          ),
+                        padding: const EdgeInsets.symmetric(vertical: 32),
+                        child: ErrorWithRetry(
+                          message:
+                              '${AppLocalizations.of(context).seatsLoadError}\n$err',
+                          onRetry: () => ref.invalidate(seatMapProvider(key)),
                         ),
                       ),
                       data: (seatMap) {

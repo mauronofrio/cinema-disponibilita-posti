@@ -72,6 +72,7 @@ class AppLocalizations {
     'getDirections': {'en': 'Get directions', 'it': 'Indicazioni stradali'},
     'openMapsTitle': {'en': 'Open Maps?', 'it': 'Aprire Maps?'},
     'cancel': {'en': 'Cancel', 'it': 'Annulla'},
+    'retry': {'en': 'Retry', 'it': 'Riprova'},
     'open': {'en': 'Open', 'it': 'Apri'},
     'settingsTitle': {'en': 'Settings', 'it': 'Impostazioni'},
     'yourCinemas': {'en': 'Your cinemas', 'it': 'I tuoi cinema'},
@@ -166,6 +167,7 @@ class AppLocalizations {
   String get getDirections => _t('getDirections');
   String get openMapsTitle => _t('openMapsTitle');
   String get cancel => _t('cancel');
+  String get retry => _t('retry');
   String get open => _t('open');
 
   /// "Get directions to the {cinemaName} cinema?" - kept as a method rather

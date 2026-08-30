@@ -8,6 +8,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../core/models/cinema.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/film_perforation_divider.dart';
+import '../../core/theme/error_with_retry.dart';
 import '../../core/util/open_external_url.dart';
 import '../../core/update/update_checker.dart';
 import '../../core/update/update_dialog.dart';
@@ -60,10 +61,23 @@ class _ShowtimesHomeScreenState extends ConsumerState<ShowtimesHomeScreen> {
             _selectedDayCinema = cinema;
             _selectedDay = null;
           }
-          return _CinemaShowtimes(
-            cinema: cinema,
-            selectedDay: _selectedDay,
-            onSelectDay: (d) => setState(() => _selectedDay = d),
+          // The home screen had no refresh affordance at all, so a failed
+          // day/film load ("Errore giorni: ...") had no way back short of
+          // restarting the app - the providers stay subscribed, so their
+          // TTL never fires while the failed screen is on show.
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(showingDatesProvider(cinema));
+              if (_selectedDay != null) {
+                ref.invalidate(filmsForDayProvider((cinema, _selectedDay!)));
+              }
+              await ref.read(showingDatesProvider(cinema).future);
+            },
+            child: _CinemaShowtimes(
+              cinema: cinema,
+              selectedDay: _selectedDay,
+              onSelectDay: (d) => setState(() => _selectedDay = d),
+            ),
           );
         },
       ),
@@ -138,11 +152,7 @@ class _CinemaShowtimes extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Text(
-                cinema.displayName,
-                maxLines: 1,
-                softWrap: false,
-              ),
+              child: Text(cinema.displayName, maxLines: 1, softWrap: false),
             ),
           ),
           pinned: true,
@@ -170,9 +180,9 @@ class _CinemaShowtimes extends ConsumerWidget {
               padding: EdgeInsets.all(24),
               child: Center(child: CircularProgressIndicator()),
             ),
-            error: (err, _) => Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text('${t.daysLoadError} $err'),
+            error: (err, _) => ErrorWithRetry(
+              message: '${t.daysLoadError} $err',
+              onRetry: () => ref.invalidate(showingDatesProvider(cinema)),
             ),
             data: (days) {
               final available = days.where((d) => d.hasShowings).toList();
@@ -224,9 +234,11 @@ class _CinemaShowtimes extends ConsumerWidget {
                   ),
                 ),
                 error: (err, _) => SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text('${t.filmsLoadError} $err'),
+                  child: ErrorWithRetry(
+                    message: '${t.filmsLoadError} $err',
+                    onRetry: () => ref.invalidate(
+                      filmsForDayProvider((cinema, selectedDay!)),
+                    ),
                   ),
                 ),
                 data: (films) {
