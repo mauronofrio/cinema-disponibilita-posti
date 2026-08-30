@@ -64,6 +64,10 @@ class EighteenTicketsChainApi implements ChainApi {
   /// straight from the (much cheaper) `fetch_films` response every time.
   final TtlCache<String, _FilmPageSchedule> _filmPageSchedules;
 
+  /// One [Cinema.cinemaId]'s in-progress [_loadFilmPageSchedule] call, if
+  /// any - see the dedup note in that method's own doc comment.
+  final _inFlightSchedules = <String, Future<_FilmPageSchedule>>{};
+
   String _dateKey(DateTime day) {
     String two(int n) => n.toString().padLeft(2, '0');
     return '${day.year}-${two(day.month)}-${two(day.day)}';
@@ -132,13 +136,55 @@ class EighteenTicketsChainApi implements ChainApi {
   /// confirmed live that even 600ms between requests wasn't enough, 2.5s
   /// reliably was, at the cost of a slower first load per cache window
   /// (masked by the 20-minute cache after that).
+  ///
+  /// Two calls for different days (e.g. switching the today/tomorrow tab
+  /// faster than a previous call finished) used to both read the same
+  /// schedule before either had written anything back, so both went on to
+  /// fetch the exact same per-film occupations for whatever films they had
+  /// in common - on a platform documented above to 429 after only 4-5
+  /// requests. [_inFlightSchedules] serializes calls per cinema instead: a
+  /// call that finds one already running for this cinema waits for it to
+  /// finish first, so it builds on whatever that call already fetched
+  /// (via the shared, mutated-in-place [_FilmPageSchedule]) instead of
+  /// duplicating it. A failure in the call being waited on is swallowed
+  /// here, not inherited - this call still gets to make its own attempt
+  /// below regardless of why the other one didn't finish cleanly.
   Future<_FilmPageSchedule> _loadFilmPageSchedule(
     Cinema cinema,
     DateTime day,
   ) async {
+    final cinemaId = cinema.cinemaId;
+    final inFlight = _inFlightSchedules[cinemaId];
+    if (inFlight != null) {
+      try {
+        await inFlight;
+      } catch (_) {
+        // Swallowed deliberately - see doc comment above.
+      }
+    }
+    final future = _loadFilmPageScheduleOnce(cinema, day);
+    _inFlightSchedules[cinemaId] = future;
+    try {
+      return await future;
+    } finally {
+      // Only clear the slot if it's still this call's own future - a
+      // waiting call that started its own fetch after this one finished
+      // will have already replaced it with its own by the time this runs.
+      if (identical(_inFlightSchedules[cinemaId], future)) {
+        _inFlightSchedules.remove(cinemaId);
+      }
+    }
+  }
+
+  /// The actual fetch-and-merge work [_loadFilmPageSchedule] serializes per
+  /// cinema - see that method's doc comment for why it's split out.
+  Future<_FilmPageSchedule> _loadFilmPageScheduleOnce(
+    Cinema cinema,
+    DateTime day,
+  ) async {
+    final cached = _filmPageSchedules.get(cinema.cinemaId);
     final schedule =
-        _filmPageSchedules.get(cinema.cinemaId) ??
-        _FilmPageSchedule(catalogById: {}, sessionsById: {});
+        cached ?? _FilmPageSchedule(catalogById: {}, sessionsById: {});
     final host = cinema.host!;
     final catalogHtml = await _client.getFilmsForDay(host, _dateKey(day));
     final catalog = parseEighteenTicketsFilmsForDay(catalogHtml, day).films;
@@ -156,7 +202,22 @@ class EighteenTicketsChainApi implements ChainApi {
         film.filmId,
       );
     }
-    _filmPageSchedules.set(cinema.cinemaId, schedule);
+    // Only stamp storedAt the first time this schedule is actually
+    // created, not on every touch. TtlCache.set() resets the entry's
+    // clock, so re-calling it here unconditionally - even when every film
+    // in [catalog] was already in schedule.sessionsById and nothing new
+    // was fetched at all - turned the 20-minute TTL into a sliding/idle
+    // timeout: a user switching the today/tomorrow tab more often than
+    // that kept the very first showtimes ever fetched alive for the whole
+    // session, immune to a showtime added, moved or cancelled afterwards.
+    // Mutating the already-cached schedule object in place (above, since
+    // Dart maps/objects are shared by reference) already keeps whatever's
+    // stored up to date with anything genuinely new - re-`set`ting on top
+    // of that would only extend its life without reflecting a real
+    // refresh.
+    if (cached == null) {
+      _filmPageSchedules.set(cinema.cinemaId, schedule);
+    }
     return schedule;
   }
 
