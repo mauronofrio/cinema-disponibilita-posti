@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/chains/chain_registry.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/models/cinema.dart';
 import '../../core/models/film.dart';
 import '../../core/models/seat_map.dart';
+import '../../core/network/api_client.dart' show ApiException;
 import '../../core/util/provider_ttl.dart';
 
 typedef SeatMapKey = (Cinema cinema, Session session);
@@ -63,5 +65,25 @@ final seatMapProvider = FutureProvider.autoDispose.family<SeatMap, SeatMapKey>((
   keepAliveFor(ref, const Duration(seconds: 45));
 
   final (cinema, session) = key;
-  return ref.read(chainApiProvider(cinema.chain)).getSeatMap(cinema, session);
+  final seatMap = await ref
+      .read(chainApiProvider(cinema.chain))
+      .getSeatMap(cinema, session);
+
+  // A room with no seats at all is missing data, not an empty screening -
+  // but nothing downstream could tell the difference: the grid renders
+  // blank and OccupancySummary reads "Occupati 0/0 · 0%", which a user
+  // reasonably takes as "wide open, plenty of seats". Silently wrong is
+  // worse than an error here, since seat availability is the one thing
+  // this app exists to answer.
+  //
+  // This is a real backend state, not a hypothetical: some venues return
+  // `idsala: 0, capienza: 0, posti: []` for every performance (see
+  // PROJECT_NOTES.md), and the parsers happily turn that into a valid but
+  // empty SeatMap. Guarded here rather than in each of the four parsers
+  // because this is the single point every chain's seat map passes
+  // through.
+  if (seatMap.rows.isEmpty) {
+    throw ApiException(AppLocalizations.current.seatsLoadError);
+  }
+  return seatMap;
 });
