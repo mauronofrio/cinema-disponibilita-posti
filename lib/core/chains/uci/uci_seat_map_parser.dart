@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../models/seat_map.dart';
+import '../parsing_utils.dart';
 
 /// Bundles both raw response bodies into one argument so parsing can still
 /// happen in a single `compute()` call, same reasoning as
@@ -39,18 +40,13 @@ SeatStatus _statusFor(
 /// accessibility seats too (`SeatId` prefix "HX", `SeatAlias` "P.D.") -
 /// confirmed live at UCI Bicocca Milano, where a 14-seat "G" row's two
 /// wheelchair spots (`HX/1`, `HX/2`) appear *first* in the raw array,
-/// ahead of the other 12 "G/..." seats. Labeling the row after whichever
-/// seat happened to come first would call this whole row "HX" and make the
-/// real "G" row (and its accessibility seats) impossible to find - the
-/// label should follow the row's own majority letter instead, which the
-/// one or two accessibility seats are never it.
+/// ahead of the other 12 "G/..." seats. See [rowLabelByMajorityPrefix]
+/// (shared with Webtic, the same underlying platform for this - see
+/// `webtic_seat_map_parser.dart`) for why a majority vote fixes this.
 String _rowLabelFor(List<Map<String, dynamic>> seatsInRow) {
-  final counts = <String, int>{};
-  for (final seatJson in seatsInRow) {
-    final prefix = (seatJson['SeatId'] as String).split('/').first;
-    counts[prefix] = (counts[prefix] ?? 0) + 1;
-  }
-  return counts.entries.reduce((a, b) => b.value > a.value ? b : a).key;
+  return rowLabelByMajorityPrefix(
+    seatsInRow.map((seatJson) => seatJson['SeatId'] as String),
+  );
 }
 
 /// Merges a `Screen` response (the room's physical layout - every seat with

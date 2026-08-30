@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../models/seat_map.dart';
+import '../parsing_utils.dart';
 
 /// Bundles both raw response bodies into one argument so parsing can still
 /// happen in a single `compute()` call - same reasoning as
@@ -115,7 +116,16 @@ SeatMap parseWebticSeatMap(WebticSeatMapPayload payload) {
         isAccessibility: _accessibilityRelatedSeatTypes.contains(seatType),
       );
     }
-    final rowLabel = seatsInRow.first['idposto'].toString().split('/').first;
+    // Same bug UCI's own Webtic proxy already had (see
+    // uci_seat_map_parser.dart's rowLabelByMajorityPrefix doc comment) on
+    // the same underlying secure.webtic.it backend, reachable natively
+    // here on Notorious/Giometti/Cineplexx rooms too: `idposto`'s prefix
+    // isn't reliably the row's own real label when read off just the
+    // first seat, since a row's accessibility seat(s) can sort ahead of
+    // its regular ones in the raw array.
+    final rowLabel = rowLabelByMajorityPrefix(
+      seatsInRow.map((seatJson) => seatJson['idposto'] as String),
+    );
     return SeatRow(rowLabel: rowLabel, rowIndex: rowIndex, seats: slots);
   }).toList();
 

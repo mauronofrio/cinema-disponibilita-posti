@@ -227,6 +227,43 @@ void main() {
     );
   });
 
+  group('parseWebticSeatMap (row label majority vote)', () {
+    test(
+      'a row whose accessibility seat sorts first in the raw array still '
+      'gets the row\'s own real (majority) label, not the accessibility '
+      "seat's prefix",
+      () {
+        // Every real fixture checked so far happens to have a stable
+        // idposto prefix across a whole physical row, so this can't be
+        // reproduced off one of them - but this is exactly the shape that
+        // bit UCI's own Webtic proxy live (see uci_seat_map_parser.dart:
+        // UCI Bicocca Milano's row "G" had its two wheelchair seats,
+        // prefixed "HX", sort ahead of the other 12 "G/..." seats). Both
+        // parsers read the same secure.webtic.it backend - UCI through a
+        // translating proxy, this one natively - so the same raw shape is
+        // reachable here too. `seatsInRow.first` would read this row's
+        // label as "HX"; the majority-vote fix must read "G".
+        const mapSeatsJson = '''
+        {"DS":{"MapSeats":{"posti":[
+          {"idposto":"HX/1","fila":2,"colonna":1,"alias":"HX/1","settore":"PT","tipologia":"DISABILE"},
+          {"idposto":"G/1","fila":2,"colonna":2,"alias":"G/1","settore":"PT","tipologia":"STANDARD"},
+          {"idposto":"G/2","fila":2,"colonna":3,"alias":"G/2","settore":"PT","tipologia":"STANDARD"},
+          {"idposto":"G/3","fila":2,"colonna":4,"alias":"G/3","settore":"PT","tipologia":"STANDARD"}
+        ]}}}
+        ''';
+        const occupancyJson = '{"DS":{"Occupancy":{"posti":[]}}}';
+        final seatMap = parseWebticSeatMap(
+          WebticSeatMapPayload(
+            mapSeatsResponseBody: mapSeatsJson,
+            occupancyResponseBody: occupancyJson,
+          ),
+        );
+        expect(seatMap.rows, hasLength(1));
+        expect(seatMap.rows.single.rowLabel, 'G');
+      },
+    );
+  });
+
   group('parseWebticScreenIdFromOccupancy', () {
     test('reads idsala off a real Occupancy response, no ScreenId needed upfront', () {
       final raw = File(
