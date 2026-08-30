@@ -424,6 +424,65 @@ void main() {
     );
 
     test(
+      'row order is computed after dropping not-for-sale seats, so a '
+      'gallery that reuses the stalls\' row letters (Multisala Massimo - '
+      'Lecce) does not scramble the front-to-back order',
+      () {
+        // Real fixture, confirmed live: grouping by row label before
+        // filtering isNotForSale produced
+        // "A, B, O, P, Q, M, R, N, C, S, D, T, F, G, L, H, E, I, U" because
+        // 15 of 19 row letters are shared between the stalls and the
+        // gallery above them, dragging each shared letter's average y
+        // toward the gallery. Filtering first restores plain A...U.
+        final gallerySvg = File(
+          'test/fixtures/eighteen_tickets_theater_reused_class_gallery_sample.svg',
+        ).readAsStringSync();
+        final seatMap = parseEighteenTicketsSeatMap(
+          EighteenTicketsSeatMapPayload(
+            theaterSvg: gallerySvg,
+            occupancyJson: emptyOccupancy,
+          ),
+        );
+        expect(seatMap.rows.map((r) => r.rowLabel).toList(), [
+          'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'L',
+          'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+        ]);
+      },
+    );
+
+    test(
+      'a row label that only exists in the not-for-sale gallery section is '
+      'dropped entirely, not rendered as a fully blank row',
+      () {
+        // Synthetic minimal SVG: row "A" has two real, bookable seats; row
+        // "Z" only ever appears tagged "special userhide" with a non-empty
+        // data-note (the gallery marker) - it should never surface as a row
+        // at all once isNotForSale seats are filtered out before grouping.
+        const svg = '''
+<svg>
+<rect class='m18-th-screen' x='0' y='10' width='100' height='5'></rect>
+<g class='posto' data-area='PT' data-row='A' data-seat='1'>
+<rect id='1_1' x='10' y='100'></rect>
+</g>
+<g class='posto' data-area='PT' data-row='A' data-seat='2'>
+<rect id='1_2' x='30' y='100'></rect>
+</g>
+<g class='posto special userhide' data-area='PT' data-row='Z' data-seat='1' data-note='Galleria'>
+<rect id='2_1' x='10' y='200'></rect>
+</g>
+</svg>
+''';
+        final seatMap = parseEighteenTicketsSeatMap(
+          EighteenTicketsSeatMapPayload(
+            theaterSvg: svg,
+            occupancyJson: emptyOccupancy,
+          ),
+        );
+        expect(seatMap.rows.map((r) => r.rowLabel).toList(), ['A']);
+      },
+    );
+
+    test(
       'a busy-array entry shaped as {"sid", "x", "y"} matches the seat whose SVG rect id is "y_x"',
       () {
         // Confirmed live on Multicinema Galleria: unlike RedCarpet's plain

@@ -205,8 +205,21 @@ SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
   };
   final totalColumns = distinctX.length;
 
+  // Not-for-sale seats (see _RawSeat.isNotForSale) are dropped before
+  // grouping into rows, not just before rendering. Multisala Massimo -
+  // Lecce's upper gallery reuses the exact same row *letters* as the
+  // stalls below it - grouping first and filtering afterwards let every
+  // shared letter's [distanceFromScreen] average in the gallery seats'
+  // `y`, dragging the sort key toward the gallery and scrambling the whole
+  // room's front-to-back order (confirmed live: rendered as
+  // "A, B, O, P, Q, M, R, N, C, S, D, T, F, G, L, H, E, I, U" instead of
+  // "A...U"). Filtering first means each row's average `y` - and therefore
+  // its distance from the screen - only ever reflects that row's own real,
+  // bookable seats.
+  final saleableSeats = rawSeats.where((s) => !s.isNotForSale).toList();
+
   final byRow = <String, List<_RawSeat>>{};
-  for (final seat in rawSeats) {
+  for (final seat in saleableSeats) {
     // "DD" isn't a real row of its own (confirmed by the user) - every
     // example seen is a single companion/accessible seat sitting right next
     // to row A on the exact same physical line, just labelled separately in
@@ -229,12 +242,9 @@ SeatMap parseEighteenTicketsSeatMap(EighteenTicketsSeatMapPayload payload) {
   final rows = rowLabels.map((rowLabel) {
     final rowIndex = rowLabel.isEmpty ? 0 : rowLabel.codeUnitAt(0);
     final slots = List<Seat?>.filled(totalColumns, null);
-    // Not-for-sale seats (see _RawSeat.isNotForSale) are left out of the row
-    // entirely - not rendered as a grey/occupied-looking seat, just an
-    // empty gap, same as a real aisle. They were never real bookable seats
-    // to begin with, so a seat-shaped placeholder there would only read as
-    // "taken" rather than "not part of this room's real seating".
-    final seatsInRow = byRow[rowLabel]!.where((s) => !s.isNotForSale).toList();
+    // Every seat already had isNotForSale ones removed above, when rows
+    // were grouped - nothing left to filter out here.
+    final seatsInRow = byRow[rowLabel]!;
     // The merged-in "DD" seat always carries its own raw seat number "1",
     // which can collide with a real seat already numbered "1" in the row it
     // merges into - detected here (rather than assumed only for merges) so
