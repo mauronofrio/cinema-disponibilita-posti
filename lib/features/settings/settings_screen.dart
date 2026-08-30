@@ -19,18 +19,52 @@ class SettingsScreen extends ConsumerWidget {
     ref.invalidate(activeCinemaIdProvider);
   }
 
-  Future<void> _remove(WidgetRef ref, Cinema cinema) async {
+  /// Confirms first, for the same reason `_confirmAndOpenDirections` does
+  /// (see showtimes_home_screen.dart): this trash icon sits in the trailing
+  /// slot of every row and is easy to brush against. Removing the *last*
+  /// favorite also clears the active cinema, so a mis-tap here changes what
+  /// the whole app shows.
+  Future<void> _confirmAndRemove(
+    BuildContext context,
+    WidgetRef ref,
+    Cinema cinema,
+  ) async {
+    final t = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(t.removeCinemaTitle),
+        content: Text(t.removeCinemaMessage(cinema.displayName)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(t.removeCinema),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
     await ref.read(favoriteCinemaStoreProvider).remove(cinema);
     ref.invalidate(favoriteCinemaIdsProvider);
     ref.invalidate(activeCinemaIdProvider);
   }
 
-  Future<void> _setLanguage(WidgetRef ref, String languageCode) async {
+  /// `null` restores the automatic device-locale fallback (see
+  /// locale_provider.dart). That path used to be unreachable: the old
+  /// two-state Switch could only ever send 'it' or 'en', so once a user
+  /// touched it there was no way back to automatic short of clearing app
+  /// data.
+  Future<void> _setLanguage(WidgetRef ref, String? languageCode) async {
     await ref.read(languageStoreProvider).setOverride(languageCode);
     ref.invalidate(languageOverrideProvider);
   }
 
   Widget _cinemaCard(
+    BuildContext context,
     WidgetRef ref,
     AppLocalizations t,
     Cinema cinema,
@@ -51,7 +85,7 @@ class SettingsScreen extends ConsumerWidget {
         trailing: IconButton(
           icon: const Icon(Icons.delete_outline),
           tooltip: t.removeCinema,
-          onPressed: () => _remove(ref, cinema),
+          onPressed: () => _confirmAndRemove(context, ref, cinema),
         ),
         onTap: isActive ? null : () => _setActive(ref, cinema),
       ),
@@ -62,7 +96,6 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favoritesAsync = ref.watch(favoriteCinemasProvider);
     final activeIdAsync = ref.watch(activeCinemaIdProvider);
-    final locale = ref.watch(effectiveLocaleProvider);
     final t = AppLocalizations.of(context);
 
     return Scaffold(
@@ -91,7 +124,7 @@ class SettingsScreen extends ConsumerWidget {
               return Column(
                 children: [
                   for (final cinema in cinemas) ...[
-                    _cinemaCard(ref, t, cinema, activeId),
+                    _cinemaCard(context, ref, t, cinema, activeId),
                     if (cinema != cinemas.last) const SizedBox(height: 8),
                   ],
                 ],
@@ -112,17 +145,25 @@ class SettingsScreen extends ConsumerWidget {
           Card(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('EN'),
-                  Switch(
-                    value: locale.languageCode == 'it',
-                    onChanged: (isItalian) =>
-                        _setLanguage(ref, isItalian ? 'it' : 'en'),
-                  ),
-                  const Text('IT'),
-                ],
+              child: Consumer(
+                builder: (context, ref, _) {
+                  // Keyed off the stored override, not the resolved locale:
+                  // "Automatico" is a distinct state from whichever language
+                  // it currently resolves to, and only the override can tell
+                  // them apart.
+                  final override = ref.watch(languageOverrideProvider).value;
+                  return SegmentedButton<String?>(
+                    segments: [
+                      ButtonSegment(value: null, label: Text(t.languageAuto)),
+                      const ButtonSegment(value: 'it', label: Text('IT')),
+                      const ButtonSegment(value: 'en', label: Text('EN')),
+                    ],
+                    selected: {override},
+                    showSelectedIcon: false,
+                    onSelectionChanged: (selection) =>
+                        _setLanguage(ref, selection.first),
+                  );
+                },
               ),
             ),
           ),

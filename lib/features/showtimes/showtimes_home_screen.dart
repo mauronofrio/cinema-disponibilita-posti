@@ -44,9 +44,17 @@ class _ShowtimesHomeScreenState extends ConsumerState<ShowtimesHomeScreen> {
         error: (err, _) => Center(child: Text('${t.genericError} $err')),
         data: (cinema) {
           if (cinema == null) {
-            // No active cinema yet - redirect handled by the router; this
-            // frame just avoids flashing an empty screen.
-            return const SizedBox.shrink();
+            // Deliberately a real, actionable screen rather than an empty
+            // placeholder waiting on the router's redirect. That redirect
+            // only runs through the route parser - it does NOT run on a
+            // back-button pop (confirmed in go_router 17.3.0: pop goes
+            // Delegate.pop -> _completeRouteMatch -> notifyListeners with no
+            // redirect pass). So removing your last favorite from settings
+            // and pressing back used to land here with nothing on screen at
+            // all: no app bar, no button, no way out short of restarting
+            // the app. This screen no longer depends on router internals to
+            // be escapable.
+            return _NoCinemaSelected();
           }
           if (_selectedDayCinema != cinema) {
             _selectedDayCinema = cinema;
@@ -271,6 +279,45 @@ class _CinemaShowtimes extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Shown when there's no active cinema - most often right after removing
+/// the last favorite from settings. Carries its own way out (the picker),
+/// so this state is never a dead end regardless of how it was reached.
+class _NoCinemaSelected extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.local_movies_outlined,
+              size: 48,
+              color: AppColors.textMuted,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              t.noCinemaSelected,
+              textAlign: TextAlign.center,
+              style: AppTheme.body(
+                context,
+              ).copyWith(color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 20),
+            FilledButton.icon(
+              onPressed: () => context.push('/picker'),
+              icon: const Icon(Icons.add),
+              label: Text(t.addCinema),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

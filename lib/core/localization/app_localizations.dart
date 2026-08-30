@@ -23,8 +23,8 @@ class AppLocalizations {
 
   static const _strings = <String, Map<String, String>>{
     'pickCinemaTitle': {
-      'en': 'Choose your The Space',
-      'it': 'Scegli il tuo The Space',
+      'en': 'Choose your cinema',
+      'it': 'Scegli il tuo cinema',
     },
     'searchHint': {
       'en': 'Search city or cinema…',
@@ -81,17 +81,29 @@ class AppLocalizations {
     },
     'addCinema': {'en': 'Add a cinema', 'it': 'Aggiungi un cinema'},
     'removeCinema': {'en': 'Remove', 'it': 'Rimuovi'},
+    'removeCinemaTitle': {
+      'en': 'Remove this cinema?',
+      'it': 'Rimuovere questo cinema?',
+    },
     'active': {'en': 'Active', 'it': 'Attivo'},
     'language': {'en': 'Language', 'it': 'Lingua'},
+    'languageAuto': {'en': 'Auto', 'it': 'Auto'},
+    // Kept deliberately chain-neutral: this app covers 226 cinemas across
+    // four different operators/platforms, so naming any one of them (as an
+    // earlier version did, when The Space was the only supported chain)
+    // would be wrong for the large majority of them. Mirrors the README's
+    // own disclaimer.
     'disclaimer': {
       'en':
-          'Unofficial app, with no affiliation to The Space Cinema or Vue International. '
+          'Unofficial app, with no affiliation to any of the cinemas or chains it lists. '
           'It doesn\'t handle accounts, payments, tickets or bookings: it only shows the programme '
-          'and seat availability, data that is already publicly visible on the official site.',
+          'and seat availability, data that is already publicly visible on each cinema\'s own '
+          'official site.',
       'it':
-          'App non ufficiale, senza alcun legame con The Space Cinema o Vue International. '
+          'App non ufficiale, senza alcun legame con i cinema o le catene elencate. '
           'Non gestisce account, pagamenti, biglietti o prenotazioni: mostra soltanto '
-          'programmazione e disponibilità posti, dati pubblicamente visibili sul sito ufficiale.',
+          'programmazione e disponibilità posti, dati già pubblicamente visibili sui siti '
+          'ufficiali di ciascun cinema.',
     },
     'connectionError': {
       'en':
@@ -168,8 +180,18 @@ class AppLocalizations {
   String get noCinemaSelected => _t('noCinemaSelected');
   String get addCinema => _t('addCinema');
   String get removeCinema => _t('removeCinema');
+  String get removeCinemaTitle => _t('removeCinemaTitle');
+
+  /// "Remove {name} from your cinemas?" - a method rather than a getter
+  /// since it interpolates the name, same as [openMapsMessage].
+  String removeCinemaMessage(String cinemaName) {
+    return locale.languageCode == 'it'
+        ? 'Vuoi rimuovere $cinemaName dai tuoi cinema?'
+        : 'Remove $cinemaName from your cinemas?';
+  }
   String get active => _t('active');
   String get language => _t('language');
+  String get languageAuto => _t('languageAuto');
   String get disclaimer => _t('disclaimer');
   String get connectionError => _t('connectionError');
   String get requestFailedError => _t('requestFailedError');
