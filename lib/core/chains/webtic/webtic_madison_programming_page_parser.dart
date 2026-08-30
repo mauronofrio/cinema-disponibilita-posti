@@ -23,13 +23,31 @@ class ParsedMadisonCatalogFilm {
 
 /// One showtime, as returned by [parseWebticMadisonFilmDays].
 class ParsedMadisonSession {
-  const ParsedMadisonSession({required this.performanceId, required this.time});
+  const ParsedMadisonSession({
+    required this.performanceId,
+    required this.time,
+    required this.screenName,
+    required this.endTime,
+  });
 
   final String performanceId;
 
   /// "HH:MM", parsed straight off the response - no date attached (that
   /// lives on the enclosing [ParsedMadisonDay.day] instead).
   final String time;
+
+  /// The room name (e.g. "SALA 1 VENERI") - confirmed live in the real
+  /// `giorno_by_film_cinema` response (`Screen`, same value duplicated as
+  /// `ScreenName`), despite an earlier comment here claiming this was
+  /// "never given by the response". [webtic_film_parser.dart] reads the
+  /// same field name (`Screen`) off its own, differently-shaped Webtic
+  /// response, so this follows that same convention rather than
+  /// `ScreenName`.
+  final String screenName;
+
+  /// Also confirmed live in the same response (`EndTime`, a full ISO
+  /// datetime) - same correction as [screenName] above.
+  final DateTime endTime;
 }
 
 /// One calendar day's worth of showtimes for one film at one cinema, as
@@ -94,6 +112,8 @@ List<ParsedMadisonDay> parseWebticMadisonFilmDays(String responseBody) {
         return ParsedMadisonSession(
           performanceId: performance['PerformanceId'].toString(),
           time: performance['Time'] as String,
+          screenName: (performance['Screen'] as String?) ?? '',
+          endTime: DateTime.parse(performance['EndTime'] as String),
         );
       }).toList(),
     );

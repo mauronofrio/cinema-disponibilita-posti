@@ -336,9 +336,8 @@ class WebticChainApi implements ChainApi {
         return Session(
           sessionId: s.performanceId,
           startTime: startTime,
-          // Never given by the response.
-          endTime: startTime,
-          screenName: '',
+          endTime: s.endTime,
+          screenName: s.screenName,
           isSoldOut: false,
           formattedPrice: null,
           isPriceVisible: false,

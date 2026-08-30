@@ -461,6 +461,21 @@ void main() {
       expect(tomorrow.sessions.single.performanceId, '16472');
       expect(tomorrow.sessions.single.time, '21:30');
     });
+
+    test(
+      'screenName and endTime are read off the response, not left blank/'
+      'estimated - the response does carry them despite an earlier comment '
+      'claiming otherwise',
+      () {
+        // Real Alfellini/Backrooms sample, performance 16472: Screen/
+        // ScreenName both "SALA 1 VENERI", EndTime a real ISO datetime.
+        final days = parseWebticMadisonFilmDays(raw);
+        final tomorrow = days.firstWhere((d) => d.day == DateTime(2026, 7, 11));
+        final session = tomorrow.sessions.single;
+        expect(session.screenName, 'SALA 1 VENERI');
+        expect(session.endTime, DateTime(2026, 7, 11, 23, 15));
+      },
+    );
   });
 
   group('parseWebticFilmCatalog', () {
