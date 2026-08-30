@@ -284,7 +284,43 @@ void main() {
             .toList();
         // The fixture's HX row (P.D. x2) are the only DISABILE seats.
         expect(accessibilitySeats, hasLength(2));
-        expect(seatMap.totalSeatCount, allSeats.length - 2);
+        // The same fixture also has 28 RISERVATO seats, excluded too - see
+        // the dedicated test below.
+        expect(seatMap.totalSeatCount, allSeats.length - 2 - 28);
+      },
+    );
+
+    test(
+      'this is the actual regression case: RISERVATO seats come from the '
+      'room layout (SeatType), not from this showing\'s occupancy, so they '
+      'are withheld from sale in EVERY showing - counting them as occupied '
+      'made this real 242-seat room report "Occupati 41/240 - 17%" when '
+      'only 13 seats were genuinely sold',
+      () {
+        final seatMap = parseUciSeatMap(payload);
+        final allSeats = seatMap.rows
+            .expand((r) => r.seats)
+            .whereType<Seat>()
+            .toList();
+
+        final permanentlyReserved = allSeats
+            .where((s) => s.isPermanentlyReserved)
+            .toList();
+        expect(permanentlyReserved, hasLength(28));
+
+        // This room breaks down as 212 STANDARD + 28 RISERVATO + 2
+        // DISABILE = 242, and its Occupancy response lists 41 seats busy -
+        // but 28 of those are exactly the RISERVATO ones, which this
+        // backend reports as busy in every single showing. Only 13 seats
+        // are genuinely sold.
+        //
+        // Before this fix the summary read "Occupati 41/240 - 17%"; it now
+        // reads "Occupati 13/212 - 6%", which is the real state of the
+        // room. Those are the numbers this test pins.
+        expect(seatMap.totalSeatCount, 212);
+        expect(seatMap.availableSeatCount, 199);
+        expect(seatMap.occupiedSeatCount, 13);
+        expect((seatMap.occupancyRatio * 100).round(), 6);
       },
     );
   });

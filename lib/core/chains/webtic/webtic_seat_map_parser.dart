@@ -114,6 +114,11 @@ SeatMap parseWebticSeatMap(WebticSeatMapPayload payload) {
         // status == occupied, but stays an accessibility seat for
         // occupancy-count purposes.
         isAccessibility: _accessibilityRelatedSeatTypes.contains(seatType),
+        // `tipologia` describes the seat in the room layout, not its state
+        // for this showing, so RISERVATO here is permanent - same reasoning
+        // as UCI's own `SeatType` (both read the same Webtic backend). See
+        // [Seat.isPermanentlyReserved].
+        isPermanentlyReserved: seatType == 'RISERVATO',
       );
     }
     // Same bug UCI's own Webtic proxy already had (see

@@ -45,6 +45,7 @@ class Seat {
     required this.status,
     required this.areaCategoryCode,
     this.isAccessibility = false,
+    this.isPermanentlyReserved = false,
   });
 
   factory Seat.fromJson(Map<String, dynamic> json) {
@@ -79,6 +80,33 @@ class Seat {
   /// counts need this separate flag to exclude accessibility seats
   /// consistently, not just the ones that happen to still be free.
   final bool isAccessibility;
+
+  /// Whether this seat is reserved as a **fixed property of the room** -
+  /// permanently withheld from sale for every showing (season-ticket
+  /// holders, staff, press), rather than reserved for this one screening.
+  ///
+  /// Same shape and purpose as [isAccessibility]: a fixed fact about the
+  /// seat, kept separate from [status] so the counters can exclude it
+  /// while the UI still labels it accurately as "Riservato".
+  ///
+  /// This distinction is unavoidable because `SeatStatus.reserved` means
+  /// two genuinely different things depending on the chain, and only the
+  /// parser knows which:
+  ///  - On The Space it's a *per-showing* state (codes 4/8 on that day's
+  ///    seat response), so it correctly counts as occupied - those seats
+  ///    are unavailable tonight but were sellable in principle.
+  ///  - On UCI and Webtic it comes from `SeatType` in the **room layout**
+  ///    response, not the occupancy one (see PROJECT_NOTES.md: "`SeatType`
+  ///    è una proprietà fissa del posto, NON lo stato di occupazione per
+  ///    quello spettacolo"). Counting those as occupied made a real
+  ///    242-seat UCI room with 28 such seats report "Occupati 28/240 ·
+  ///    12%" with zero tickets sold - permanently 12 points busier than
+  ///    reality, on every single showing.
+  ///
+  /// So the exclusion belongs here, set by the parsers that know, and NOT
+  /// as a blanket `status != reserved` rule in the counters below - that
+  /// would silently stop counting The Space's genuinely-taken seats.
+  final bool isPermanentlyReserved;
 }
 
 class SeatRow {
@@ -223,13 +251,21 @@ class SeatMap {
   /// this they'd always count as "occupied" (`totalSeatCount -
   /// availableSeatCount`), making a room using them look far busier than it
   /// really is even when genuinely empty.
+  /// [Seat.isPermanentlyReserved] seats are excluded for exactly the same
+  /// reason as [SeatStatus.special] ones: never on sale for any showing,
+  /// so counting them as "occupied" overstates how full the room is.
   int get totalSeatCount => rows.fold(
     0,
     (sum, row) =>
         sum +
         row.seats
             .whereType<Seat>()
-            .where((s) => !s.isAccessibility && s.status != SeatStatus.special)
+            .where(
+              (s) =>
+                  !s.isAccessibility &&
+                  !s.isPermanentlyReserved &&
+                  s.status != SeatStatus.special,
+            )
             .length,
   );
 
@@ -244,7 +280,10 @@ class SeatMap {
         row.seats
             .whereType<Seat>()
             .where(
-              (s) => !s.isAccessibility && s.status == SeatStatus.available,
+              (s) =>
+                  !s.isAccessibility &&
+                  !s.isPermanentlyReserved &&
+                  s.status == SeatStatus.available,
             )
             .length,
   );

@@ -109,6 +109,12 @@ SeatMap parseUciSeatMap(UciSeatMapPayload payload) {
         // taken still reports status == occupied (see _statusFor), but is
         // still an accessibility seat for occupancy-count purposes.
         isAccessibility: seatType == 'DISABILE',
+        // `SeatType` comes from the Screen (room layout) response, not the
+        // Occupancy one, so RISERVATO here means "withheld from sale in
+        // every showing" - not "taken for this one". See
+        // [Seat.isPermanentlyReserved] for why that distinction can't live
+        // in the shared counters.
+        isPermanentlyReserved: seatType == 'RISERVATO',
       );
     }
     return SeatRow(

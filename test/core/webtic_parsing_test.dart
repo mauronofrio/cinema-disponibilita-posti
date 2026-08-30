@@ -126,6 +126,27 @@ void main() {
       expect(seat.status, SeatStatus.occupied);
     });
 
+    test(
+      'this is the actual regression case: RISERVATO comes from the room '
+      'layout (tipologia), not from this showing - so it is withheld in '
+      'every showing and must not count as occupied. This real 62-seat '
+      'Notorious room has 5 such seats and nothing else sold, yet used to '
+      'report "Occupati 5/62 - 8%" on a completely empty screening',
+      () {
+        final seatMap = parseWebticSeatMap(payload);
+        final permanentlyReserved = seatMap.rows
+            .expand((r) => r.seats)
+            .whereType<Seat>()
+            .where((s) => s.isPermanentlyReserved)
+            .toList();
+        expect(permanentlyReserved, hasLength(5));
+
+        expect(seatMap.totalSeatCount, 57);
+        expect(seatMap.availableSeatCount, 57);
+        expect(seatMap.occupiedSeatCount, 0);
+      },
+    );
+
     test('a STANDARD seat absent from Occupancy is available', () {
       final seatMap = parseWebticSeatMap(payload);
       final seat = seatMap.rows
