@@ -56,9 +56,17 @@ class FilmInfoStore {
   Future<FilmInfo?> read(String title) async {
     final prefs = await SharedPreferences.getInstance();
     final all = await _readAll(prefs);
-    final entry = all[title] as Map<String, dynamic>?;
+    final entry = all[title];
     if (entry == null) return null;
-    return FilmInfo.fromJson(entry);
+    // Per-entry guard, on top of _readAll's whole-blob one: a single
+    // malformed entry must read as a plain cache miss, so the caller
+    // re-fetches from TMDb and write() overwrites it - throwing here left
+    // that one film stuck on "no description" forever.
+    try {
+      return FilmInfo.fromJson(entry as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> write(String title, FilmInfo info) async {
@@ -75,12 +83,13 @@ class FilmInfoStore {
     final all = await _readAll(prefs);
     final sizeBefore = all.length;
     all.removeWhere((_, value) {
-      final fetchedAtRaw = (value as Map<String, dynamic>)['fetchedAt'];
-      // A corrupted/unparseable fetchedAt means we can't vouch for this
-      // entry's freshness at all - treat it as expired (remove it) rather
-      // than keep serving data we can no longer validate. It'll simply be
-      // re-fetched from TMDb next time it's needed.
+      // A corrupted entry - unparseable fetchedAt, or not even a map - means
+      // we can't vouch for its freshness at all: treat it as expired
+      // (remove it) rather than keep serving data we can no longer
+      // validate. The cast lives inside the try too, or a non-map entry
+      // would throw out of the whole purge and disable cleanup for good.
       try {
+        final fetchedAtRaw = (value as Map<String, dynamic>)['fetchedAt'];
         return DateTime.parse(fetchedAtRaw as String).isBefore(cutoff);
       } catch (_) {
         return true;
