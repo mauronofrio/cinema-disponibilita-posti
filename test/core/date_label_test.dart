@@ -3,6 +3,30 @@ import 'package:thespace_companion/core/date/day_label.dart';
 
 void main() {
   group('resolveDayLabel', () {
+    // Only reproduces on a machine whose local zone observes DST (the dev
+    // machine and every Italian phone: Europe/Rome). 28 March 2027 is the
+    // spring-forward Sunday, so local midnight to local midnight is 23h and
+    // `difference().inDays` truncates it to 0.
+    test('this is the actual regression case: on the spring-forward DST '
+        'day, tomorrow must read as tomorrow - not as a second "today" '
+        'chip next to the real one', () {
+      final now = DateTime(2027, 3, 28, 10);
+      expect(
+        resolveDayLabel(DateTime(2027, 3, 29), now),
+        DayLabelKind.tomorrow,
+      );
+    });
+
+    test('on the fall-back DST day (25h long), the day after tomorrow must '
+        'not be mislabelled either', () {
+      final now = DateTime(2027, 10, 31, 10);
+      expect(
+        resolveDayLabel(DateTime(2027, 11, 1), now),
+        DayLabelKind.tomorrow,
+      );
+      expect(resolveDayLabel(DateTime(2027, 11, 2), now), DayLabelKind.other);
+    });
+
     test('same calendar day is today, regardless of time of day', () {
       final now = DateTime(2026, 7, 6, 23, 59, 59);
       final showing = DateTime(2026, 7, 6, 0, 0, 1);
@@ -71,20 +95,17 @@ void main() {
       );
     });
 
-    test(
-      'this is the regression case: a previously-picked day that rolled '
-      'into the past (no longer in the fresh available list, e.g. the app '
-      'sat in the background overnight) falls back to the new first '
-      'available day instead of staying pinned to the stale one',
-      () {
-        final staleYesterday = DateTime(2026, 7, 6);
-        final freshAvailable = [DateTime(2026, 7, 7), DateTime(2026, 7, 8)];
-        expect(
-          pickSelectedDay(staleYesterday, freshAvailable),
-          DateTime(2026, 7, 7),
-        );
-      },
-    );
+    test('this is the regression case: a previously-picked day that rolled '
+        'into the past (no longer in the fresh available list, e.g. the app '
+        'sat in the background overnight) falls back to the new first '
+        'available day instead of staying pinned to the stale one', () {
+      final staleYesterday = DateTime(2026, 7, 6);
+      final freshAvailable = [DateTime(2026, 7, 7), DateTime(2026, 7, 8)];
+      expect(
+        pickSelectedDay(staleYesterday, freshAvailable),
+        DateTime(2026, 7, 7),
+      );
+    });
 
     test('matches by calendar day, ignoring time-of-day components', () {
       final available = [DateTime(2026, 7, 6, 9, 30)];

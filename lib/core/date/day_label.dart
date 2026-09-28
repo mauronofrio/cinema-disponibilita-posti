@@ -12,8 +12,16 @@ enum DayLabelKind { today, tomorrow, other }
 /// every call recomputes from scratch, so a stale cache can produce at worst
 /// stale *sessions*, never a stale *label*.
 DayLabelKind resolveDayLabel(DateTime showingDate, DateTime now) {
-  final today = DateTime(now.year, now.month, now.day);
-  final target = DateTime(showingDate.year, showingDate.month, showingDate.day);
+  // Calendar days compared in UTC, not as local midnights: on a DST switch
+  // day two local midnights are 23h or 25h apart, and `inDays` truncates
+  // 23h to 0 - so on the spring-forward Sunday tomorrow read as a second
+  // "today". UTC has no DST, so every day is exactly 24h.
+  final today = DateTime.utc(now.year, now.month, now.day);
+  final target = DateTime.utc(
+    showingDate.year,
+    showingDate.month,
+    showingDate.day,
+  );
   final diff = target.difference(today).inDays;
   if (diff == 0) return DayLabelKind.today;
   if (diff == 1) return DayLabelKind.tomorrow;
