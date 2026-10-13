@@ -17,6 +17,8 @@ class OccupancySummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final stats = seatMap.occupancyStats;
     final total = stats.total;
+    // Nothing to count (e.g. a Posto Unico-only map): "0/0 · 0%" is noise.
+    if (total == 0) return const SizedBox.shrink();
     final occupied = stats.occupied;
     final percent = (stats.ratio * 100).round();
 
