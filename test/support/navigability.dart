@@ -21,7 +21,8 @@ class NavigabilityResult {
 
 /// Whether [cinema] works end to end in the app, judged by the app's own
 /// [ChainApi] on live data: programme within 7 days, a future session whose
-/// seat map has seats (or an unnumbered sector), and a booking link. A
+/// seat map has at least one real (non-gap) seat or an unnumbered sector,
+/// and a non-empty booking link. A
 /// cinema with nothing scheduled right now can't be judged either way.
 ///
 /// A failed request is retried once after [retryDelay] (via [pause], injectable
@@ -91,7 +92,8 @@ Future<NavigabilityResult> checkNavigability(
       if (attempt > 0) await pause(retryDelay);
       try {
         final map = await api.getSeatMap(cinema, candidate);
-        if (map.rows.isEmpty && map.unnumberedSectors.isEmpty) {
+        final hasSeat = map.rows.any((r) => r.seats.any((s) => s != null));
+        if (!hasSeat && map.unnumberedSectors.isEmpty) {
           return r(Navigability.programmeOnly, 'mappa posti vuota');
         }
         session = candidate;
@@ -104,7 +106,7 @@ Future<NavigabilityResult> checkNavigability(
   if (session == null) {
     return r(Navigability.programmeOnly, 'mappa posti: $seatError');
   }
-  if (session.bookingPath == null) {
+  if (session.bookingPath?.isEmpty ?? true) {
     return r(Navigability.programmeOnly, 'manca il link di acquisto');
   }
   return r(Navigability.navigable, 'ok');

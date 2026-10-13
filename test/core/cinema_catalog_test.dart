@@ -54,7 +54,7 @@ void main() {
     expect(twoTickets.any((c) => c.cinemaId == '1633'), isFalse);
   });
 
-  test('every 18tickets venue has a host and a unique cinemaId', () {
+  test('every 18tickets venue has a non-empty host, and no two share one', () {
     final e18 = cinemas.where((c) => c.chain == CinemaChain.eighteenTickets);
     expect(e18.every((c) => (c.host ?? '').isNotEmpty), isTrue);
     final hosts = e18.map((c) => c.host).toList();

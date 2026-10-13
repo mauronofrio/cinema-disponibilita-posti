@@ -223,4 +223,22 @@ void main() {
     final api = _Api(sessions: [_session(_now.add(const Duration(hours: 2)))], seatMap: map);
     expect((await _check(api)).verdict, Navigability.navigable);
   });
+
+  test('rows that are all gaps (no real seat) are an empty map: programme only', () async {
+    final map = SeatMap(
+      screenLabel: '', totalRows: 2, totalColumns: 3,
+      rows: [
+        for (var i = 0; i < 2; i++)
+          SeatRow(rowLabel: 'R$i', rowIndex: i, seats: const [null, null, null]),
+      ],
+      areaCategories: const [],
+    );
+    final api = _Api(sessions: [_session(_now.add(const Duration(hours: 2)))], seatMap: map);
+    expect((await _check(api)).verdict, Navigability.programmeOnly);
+  });
+
+  test('an empty booking link counts as no booking link: programme only', () async {
+    final r = await _check(_Api(sessions: [_session(_now.add(const Duration(hours: 2)), booking: '')]));
+    expect(r.verdict, Navigability.programmeOnly);
+  });
 }

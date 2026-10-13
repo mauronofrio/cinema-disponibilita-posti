@@ -58,6 +58,12 @@ flutter test --run-skipped --tags live test/live --dart-define=VERIFY_CHAIN=eigh
 
 Altri `--dart-define` opzionali: `VERIFY_FILE` (default `assets/cinemas.json`), `VERIFY_IDS` (elenco di `cinemaId` separati da virgola), `VERIFY_DELAY_MS` (pausa tra un cinema e l'altro, default 4000), `VERIFY_REPORT`. Il rapporto finisce in `build/navigability_report.json`.
 
+### Rilascio
+
+- Fare il push di `master` (con l'`assets/cinemas.json` definitivo) **prima** di pubblicare l'APK o di provare una build release su un dispositivo: l'app scarica l'elenco dei cinema proprio da quel file.
+- Non rinominare mai il branch `master` e non spostare `assets/cinemas.json`: le app già installate leggono quell'URL esatto e non possono essere aggiornate.
+- Per nascondere un cinema, aggiungere `"minAppVersion"` alla sua voce invece di cancellarla: una voce cancellata dall'elenco remoto torna comunque visibile nelle app che la includono già.
+
 ## Disclaimer
 
 App non ufficiale, senza alcun legame con The Space Cinema, Vue International, UCI Cinemas o con nessuno dei cinema indipendenti elencati sopra. Non gestisce account, pagamenti, biglietti o prenotazioni: mostra soltanto programmazione e disponibilità posti, dati già pubblicamente visibili sui siti ufficiali.
