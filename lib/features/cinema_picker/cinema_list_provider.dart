@@ -1,8 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../core/catalog/cinema_catalog_parser.dart';
 import '../../core/models/cinema.dart';
 import '../../core/storage/favorite_cinema_store.dart';
 
@@ -11,8 +11,14 @@ import '../../core/storage/favorite_cinema_store.dart';
 /// instead of being fetched from the network on every launch.
 final cinemaListProvider = FutureProvider<List<Cinema>>((ref) async {
   final raw = await rootBundle.loadString('assets/cinemas.json');
-  final list = json.decode(raw) as List<dynamic>;
-  return list.map((e) => Cinema.fromJson(e as Map<String, dynamic>)).toList();
+  final version = await ref.watch(appVersionProvider.future);
+  return parseCinemaCatalog(raw, appVersion: version);
+});
+
+/// The installed app's version ("1.0.8"), used to hide catalog entries that
+/// need a newer one. Overridden in tests.
+final appVersionProvider = FutureProvider<String>((ref) async {
+  return (await PackageInfo.fromPlatform()).version;
 });
 
 final favoriteCinemaStoreProvider = Provider<FavoriteCinemaStore>(

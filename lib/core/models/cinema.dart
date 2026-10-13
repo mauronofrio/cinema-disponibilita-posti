@@ -38,6 +38,21 @@ enum CinemaChain {
     'twoTickets' => CinemaChain.twoTickets,
     _ => CinemaChain.theSpace,
   };
+
+  /// Like [fromJson], but an *unknown* value yields null instead of falling
+  /// back to The Space - a catalog downloaded from GitHub may name a chain
+  /// added in a later app version, and routing it to The Space's backend
+  /// would just produce errors. Missing/null still means The Space: the
+  /// oldest bundled entries carry no `chain` at all.
+  static CinemaChain? tryFromJson(String? value) => switch (value) {
+    null => CinemaChain.theSpace,
+    'theSpace' => CinemaChain.theSpace,
+    'uci' => CinemaChain.uci,
+    'eighteenTickets' => CinemaChain.eighteenTickets,
+    'webtic' => CinemaChain.webtic,
+    'twoTickets' => CinemaChain.twoTickets,
+    _ => null,
+  };
 }
 
 /// [CinemaChain.webtic] only: which of this platform's several different
@@ -109,6 +124,19 @@ enum WebticCatalogSource {
     'madisonProgrammingPage' => WebticCatalogSource.madisonProgrammingPage,
     _ => WebticCatalogSource.fullSchedule,
   };
+
+  /// Same idea as [CinemaChain.tryFromJson]: absent means the default
+  /// [fullSchedule], an unknown value means "a newer app version's source"
+  /// and yields null so the entry is hidden.
+  static WebticCatalogSource? tryFromJson(String? value) => switch (value) {
+    null => WebticCatalogSource.fullSchedule,
+    'fullSchedule' => WebticCatalogSource.fullSchedule,
+    'programmingPage' => WebticCatalogSource.programmingPage,
+    'filmSchedulePages' => WebticCatalogSource.filmSchedulePages,
+    'fullSchedulePortal' => WebticCatalogSource.fullSchedulePortal,
+    'madisonProgrammingPage' => WebticCatalogSource.madisonProgrammingPage,
+    _ => null,
+  };
 }
 
 class Cinema {
@@ -125,25 +153,43 @@ class Cinema {
     this.hasSeatMap = true,
     this.scheduleFromFilmPages = false,
     this.webticCatalogSource = WebticCatalogSource.fullSchedule,
+    this.minAppVersion,
   });
 
-  factory Cinema.fromJson(Map<String, dynamic> json) {
-    return Cinema(
-      cinemaId: json['cinemaId'] as String,
-      name: json['name'] as String,
-      slug: json['slug'] as String,
-      address: json['address'] as String,
-      lat: (json['lat'] as num).toDouble(),
-      lng: (json['lng'] as num).toDouble(),
-      chain: CinemaChain.fromJson(json['chain'] as String?),
-      webticLocalId: json['webticLocalId'] as int?,
-      host: json['host'] as String?,
-      hasSeatMap: json['hasSeatMap'] as bool? ?? true,
-      scheduleFromFilmPages: json['scheduleFromFilmPages'] as bool? ?? false,
-      webticCatalogSource: WebticCatalogSource.fromJson(
+  factory Cinema.fromJson(Map<String, dynamic> json) =>
+      tryFromJson(json) ??
+      (throw FormatException('Invalid cinema entry: ${json['cinemaId']}'));
+
+  /// [fromJson] for untrusted input (the catalog downloaded from GitHub):
+  /// null instead of a throw for a malformed entry, and null for any value
+  /// this app version doesn't understand (see [CinemaChain.tryFromJson]).
+  static Cinema? tryFromJson(Map<String, dynamic> json) {
+    try {
+      // Inside the try: a non-string `chain` (e.g. a number) is malformed
+      // input too, and must drop the entry rather than throw.
+      final chain = CinemaChain.tryFromJson(json['chain'] as String?);
+      final source = WebticCatalogSource.tryFromJson(
         json['webticCatalogSource'] as String?,
-      ),
-    );
+      );
+      if (chain == null || source == null) return null;
+      return Cinema(
+        cinemaId: json['cinemaId'] as String,
+        name: json['name'] as String,
+        slug: json['slug'] as String,
+        address: json['address'] as String,
+        lat: (json['lat'] as num).toDouble(),
+        lng: (json['lng'] as num).toDouble(),
+        chain: chain,
+        webticLocalId: json['webticLocalId'] as int?,
+        host: json['host'] as String?,
+        hasSeatMap: json['hasSeatMap'] as bool? ?? true,
+        scheduleFromFilmPages: json['scheduleFromFilmPages'] as bool? ?? false,
+        webticCatalogSource: source,
+        minAppVersion: json['minAppVersion'] as String?,
+      );
+    } on TypeError {
+      return null;
+    }
   }
 
   final String cinemaId;
@@ -210,6 +256,11 @@ class Cinema {
   /// [CinemaChain.webtic] only - see [WebticCatalogSource] for what each
   /// value means and how `WebticChainApi` branches on it.
   final WebticCatalogSource webticCatalogSource;
+
+  /// The oldest app version that can show this cinema (e.g. "1.0.9" for a
+  /// venue that needed code shipped in 1.0.9). Null for "every version".
+  /// See `parseCinemaCatalog`.
+  final String? minAppVersion;
 
   /// [name] alone for UCI Cinemas and every 18tickets/Webtic venue (all
   /// already self-identifying, e.g. "UCI Cinemas Seven Gioia del Colle",
