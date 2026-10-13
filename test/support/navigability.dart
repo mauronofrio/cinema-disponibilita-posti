@@ -23,20 +23,35 @@ class NavigabilityResult {
 /// [ChainApi] on live data: programme within 7 days, a future session whose
 /// seat map has seats (or an unnumbered sector), and a booking link. A
 /// cinema with nothing scheduled right now can't be judged either way.
+///
+/// A failed request is retried once after [retryDelay] (via [pause], injectable
+/// so tests don't sleep): a transient error or an HTTP 429 must not decide the
+/// verdict. A failing seat map is also tried on the second future session.
 Future<NavigabilityResult> checkNavigability(
   ChainApi api,
   Cinema cinema,
-  DateTime now,
-) async {
+  DateTime now, {
+  Future<void> Function(Duration) pause = _sleep,
+  Duration retryDelay = const Duration(seconds: 10),
+}) async {
+  Future<T> retried<T>(Future<T> Function() call) async {
+    try {
+      return await call();
+    } catch (_) {
+      await pause(retryDelay);
+      return call();
+    }
+  }
+
   NavigabilityResult r(Navigability v, String why) =>
       NavigabilityResult(cinema, v, why);
   final today = DateTime(now.year, now.month, now.day);
-  final horizon = today.add(const Duration(days: 7));
+  final horizon = DateTime(now.year, now.month, now.day + 7);
 
   final List<DateTime> days;
   try {
     days = [
-      for (final d in await api.getShowingDates(cinema))
+      for (final d in await retried(() => api.getShowingDates(cinema)))
         if (d.hasShowings && !d.date.isBefore(today) && d.date.isBefore(horizon))
           DateTime(d.date.year, d.date.month, d.date.day),
     ];
@@ -50,7 +65,7 @@ Future<NavigabilityResult> checkNavigability(
   final future = <Session>[];
   try {
     for (final day in days) {
-      for (final film in await api.getFilmsForDay(cinema, day)) {
+      for (final film in await retried(() => api.getFilmsForDay(cinema, day))) {
         future.addAll(film.sessionsOn(day).where((s) => s.startTime.isAfter(now)));
       }
       if (future.isNotEmpty) break;
@@ -66,17 +81,33 @@ Future<NavigabilityResult> checkNavigability(
   if (!cinema.hasSeatMap) {
     return r(Navigability.programmeOnly, 'cinema senza mappa posti per scelta');
   }
-  final session = future.first;
-  try {
-    final map = await api.getSeatMap(cinema, session);
-    if (map.rows.isEmpty && map.unnumberedSectors.isEmpty) {
-      return r(Navigability.programmeOnly, 'mappa posti vuota');
+  Session? session;
+  String? seatError;
+  final candidates = future.take(2).toList();
+  for (var i = 0; i < candidates.length && session == null; i++) {
+    final candidate = candidates[i];
+    // Retry the first session once; the second one gets a single attempt.
+    for (var attempt = 0; attempt < (i == 0 ? 2 : 1); attempt++) {
+      if (attempt > 0) await pause(retryDelay);
+      try {
+        final map = await api.getSeatMap(cinema, candidate);
+        if (map.rows.isEmpty && map.unnumberedSectors.isEmpty) {
+          return r(Navigability.programmeOnly, 'mappa posti vuota');
+        }
+        session = candidate;
+        break;
+      } catch (e) {
+        seatError = '$e';
+      }
     }
-  } catch (e) {
-    return r(Navigability.programmeOnly, 'mappa posti: $e');
+  }
+  if (session == null) {
+    return r(Navigability.programmeOnly, 'mappa posti: $seatError');
   }
   if (session.bookingPath == null) {
     return r(Navigability.programmeOnly, 'manca il link di acquisto');
   }
   return r(Navigability.navigable, 'ok');
 }
+
+Future<void> _sleep(Duration d) => Future<void>.delayed(d);

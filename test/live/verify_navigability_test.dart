@@ -26,6 +26,9 @@ void main() {
       final ids = _ids.split(',').map((s) => s.trim()).toSet();
       cinemas = cinemas.where((c) => ids.contains(c.cinemaId)).toList();
     }
+    if (cinemas.isEmpty) {
+      fail('No cinema matched VERIFY_CHAIN=$_chain VERIFY_IDS=$_ids in $_file');
+    }
     final container = ProviderContainer();
     addTearDown(container.dispose);
     final results = <NavigabilityResult>[];
@@ -40,11 +43,14 @@ void main() {
         Navigability.notNavigable => 'KO  ',
         Navigability.notVerifiableNow => 'WAIT',
       }} ${c.chain.name}:${c.cinemaId} ${c.name} - ${r.reason}');
-      await Future<void>.delayed(const Duration(milliseconds: _delayMs));
+      // Rewritten after every cinema so an interrupted run keeps its results.
+      File(_report)
+        ..createSync(recursive: true)
+        ..writeAsStringSync(const JsonEncoder.withIndent('  ')
+            .convert([for (final r in results) r.toJson()]));
+      if (c != cinemas.last) {
+        await Future<void>.delayed(const Duration(milliseconds: _delayMs));
+      }
     }
-    File(_report)
-      ..createSync(recursive: true)
-      ..writeAsStringSync(const JsonEncoder.withIndent('  ')
-          .convert([for (final r in results) r.toJson()]));
   }, timeout: const Timeout(Duration(hours: 2)));
 }
