@@ -41,6 +41,39 @@ EXCLUDED_VENUES = {
 }
 
 
+# Curated display names (venue id -> "<Venue name> - <City>", title case), the
+# same style as the other chains. 2Tickets' own names are often ALL CAPS or
+# bare ("Grillo", "King"); applied to new and refreshed entries alike.
+NAME_OVERRIDES = {
+    "113": "Multisala Grillo - Mazara del Vallo",
+    "114": "Cinema Eden - Mazara del Vallo",
+    "116": "Multisala Centrale - Volterra",
+    "416": "Cinema Teatro Ariston - Gaeta",
+    "609": "Cine Teatro Norba - Conversano",
+    "611": "Cinema Margherita - Acireale",
+    "629": "Farnese ArtHouse Cinema - Roma",
+    "848": "Multisala Vignola - Polignano a Mare",
+    "957": "Multisala King - Catania",
+    "1021": "Cinema delle Provincie - Roma",
+    "1121": "Cinema Ariston - Trieste",
+    "1174": "Cinema Teatro Orfeo - Taranto",
+    "1569": "Multisala Badia Grande - Sciacca",
+    "1714": "Cineteatro San Timoteo - Casal Palocco",
+    "1965": "Cinema Moderno - Mascalucia",
+    "1998": "Arena Adua - Catania",
+    "2207": "Teatro Busnelli - Dueville",
+    "2215": "Cinema Due Torri - Potenza",
+    "2503": "Cinema Tartaro - Galatina",
+    "5767": "Teatro Bismantova - Castelnovo ne' Monti",
+    "5804": "Cinema Teatro Multisala Moderno - Anzio",
+    "7430": "Cineteatro Don Bosco - Potenza",
+}
+
+
+def display_name(vid, scraped):
+    return NAME_OVERRIDES.get(vid, scraped)
+
+
 def get(url, ua=UA_SITE):
     req = urllib.request.Request(url, headers={"User-Agent": ua})
     with urllib.request.urlopen(req, timeout=30) as r:
@@ -154,7 +187,7 @@ def main():
         address = pretty_address(v["address"])
         if vid in existing:
             # Name only: the address and coordinates may have been fixed by hand.
-            existing[vid]["name"] = v["name"]
+            existing[vid]["name"] = display_name(vid, v["name"])
             updated.append(vid)
             continue
         if not city_of(address)[0]:
@@ -163,7 +196,7 @@ def main():
         if coords is None:
             skipped.append((vid, f"NOT GEOCODED, add by hand: {v['name']} - {address}"))
             continue
-        entry = {"cinemaId": vid, "name": v["name"], "slug": vid, "address": address,
+        entry = {"cinemaId": vid, "name": display_name(vid, v["name"]), "slug": vid, "address": address,
                  "lat": coords[0], "lng": coords[1], "chain": "twoTickets"}
         catalog.append(entry)
         existing[vid] = entry

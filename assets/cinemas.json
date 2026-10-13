@@ -2313,7 +2313,7 @@
   },
   {
     "cinemaId": "113",
-    "name": "Grillo",
+    "name": "Multisala Grillo - Mazara del Vallo",
     "slug": "113",
     "address": "Via S. Giuseppe, 23 91026 Mazara Del Vallo (TP)",
     "lat": 37.6510747,
@@ -2322,7 +2322,7 @@
   },
   {
     "cinemaId": "114",
-    "name": "Eden",
+    "name": "Cinema Eden - Mazara del Vallo",
     "slug": "114",
     "address": "Via Castiglione, 18 91026 Mazara Del Vallo (TP)",
     "lat": 37.6502493,
@@ -2331,7 +2331,7 @@
   },
   {
     "cinemaId": "116",
-    "name": "Multisala Centrale",
+    "name": "Multisala Centrale - Volterra",
     "slug": "116",
     "address": "VIA MATTEOTTI 62 56048 Volterra (PI)",
     "lat": 43.4018555,
@@ -2340,7 +2340,7 @@
   },
   {
     "cinemaId": "416",
-    "name": "CINEMA TEATRO ARISTON",
+    "name": "Cinema Teatro Ariston - Gaeta",
     "slug": "416",
     "address": "PIAZZA DELLA LIBERTA 19 Gaeta (LT)",
     "lat": 41.2151293,
@@ -2349,7 +2349,7 @@
   },
   {
     "cinemaId": "609",
-    "name": "Cine Teatro Norba",
+    "name": "Cine Teatro Norba - Conversano",
     "slug": "609",
     "address": "Piazza della Repubblica, 29 Conversano (BA)",
     "lat": 40.9660074,
@@ -2358,7 +2358,7 @@
   },
   {
     "cinemaId": "611",
-    "name": "CINEMA MARGHERITA",
+    "name": "Cinema Margherita - Acireale",
     "slug": "611",
     "address": "VIA CAVOUR 26 Acireale (CT)",
     "lat": 37.6130588,
@@ -2367,7 +2367,7 @@
   },
   {
     "cinemaId": "629",
-    "name": "Farnese ArtHouse Cinema",
+    "name": "Farnese ArtHouse Cinema - Roma",
     "slug": "629",
     "address": "PIAZZA CAMPO DEI FIORI 56 Roma (RM)",
     "lat": 41.8955774,
@@ -2376,7 +2376,7 @@
   },
   {
     "cinemaId": "848",
-    "name": "Multisala Vignola Circuito d Autore",
+    "name": "Multisala Vignola - Polignano a Mare",
     "slug": "848",
     "address": "Viale Rimembranza, 13 Polignano A Mare (BA)",
     "lat": 40.9922455,
@@ -2385,7 +2385,7 @@
   },
   {
     "cinemaId": "957",
-    "name": "King",
+    "name": "Multisala King - Catania",
     "slug": "957",
     "address": "Via De Curtis, 14 Catania (CT)",
     "lat": 37.5465166,
@@ -2394,7 +2394,7 @@
   },
   {
     "cinemaId": "1021",
-    "name": "CINEMA DELLE PROVINCIE",
+    "name": "Cinema delle Provincie - Roma",
     "slug": "1021",
     "address": "VIALE DELLE PROVINCIE 41 Roma (RM)",
     "lat": 41.9109327,
@@ -2403,7 +2403,7 @@
   },
   {
     "cinemaId": "1121",
-    "name": "Cinema Ariston",
+    "name": "Cinema Ariston - Trieste",
     "slug": "1121",
     "address": "Viale Romolo Gessi, 14 34100 Trieste (TS)",
     "lat": 45.6414513,
@@ -2412,7 +2412,7 @@
   },
   {
     "cinemaId": "1174",
-    "name": "Cinema Teatro Orfeo",
+    "name": "Cinema Teatro Orfeo - Taranto",
     "slug": "1174",
     "address": "Via Pitagora 80 00000 Taranto (TA)",
     "lat": 40.4734661,
@@ -2421,7 +2421,7 @@
   },
   {
     "cinemaId": "1569",
-    "name": "MULTISALA BADIA GRANDE",
+    "name": "Multisala Badia Grande - Sciacca",
     "slug": "1569",
     "address": "COMPLESSO Monumentale Sciacca (AG)",
     "lat": 37.5103756,
@@ -2430,7 +2430,7 @@
   },
   {
     "cinemaId": "1714",
-    "name": "CINETEATRO SAN TIMOTEO",
+    "name": "Cineteatro San Timoteo - Casal Palocco",
     "slug": "1714",
     "address": "VIA APELLE 1 Casal Palocco (RM)",
     "lat": 41.7542616,
@@ -2439,7 +2439,7 @@
   },
   {
     "cinemaId": "1965",
-    "name": "CINEMA MODERNO",
+    "name": "Cinema Moderno - Mascalucia",
     "slug": "1965",
     "address": "VIA LIPANI 36/38 Mascalucia (CT)",
     "lat": 37.5724747,
@@ -2448,7 +2448,7 @@
   },
   {
     "cinemaId": "1998",
-    "name": "ARENA ADUA",
+    "name": "Arena Adua - Catania",
     "slug": "1998",
     "address": "Largo Amendola Snc Catania (CT)",
     "lat": 37.5157793,
@@ -2457,7 +2457,7 @@
   },
   {
     "cinemaId": "2207",
-    "name": "Teatro Busnelli",
+    "name": "Teatro Busnelli - Dueville",
     "slug": "2207",
     "address": "Dueville (VI)",
     "lat": 45.6326686,
@@ -2466,7 +2466,7 @@
   },
   {
     "cinemaId": "2215",
-    "name": "Cinema Due Torri",
+    "name": "Cinema Due Torri - Potenza",
     "slug": "2215",
     "address": "Potenza (PZ)",
     "lat": 40.6398452,
@@ -2475,7 +2475,7 @@
   },
   {
     "cinemaId": "2503",
-    "name": "CINEMA TARTARO",
+    "name": "Cinema Tartaro - Galatina",
     "slug": "2503",
     "address": "GALATINA (LE)",
     "lat": 40.1764788,
@@ -2484,7 +2484,7 @@
   },
   {
     "cinemaId": "5767",
-    "name": "Teatro Bismantova",
+    "name": "Teatro Bismantova - Castelnovo ne' Monti",
     "slug": "5767",
     "address": "Via Roma, 75 Castelnovo Ne' Monti (RE)",
     "lat": 44.4343334,
@@ -2493,7 +2493,7 @@
   },
   {
     "cinemaId": "5804",
-    "name": "Cinema Teatro Multisala Moderno",
+    "name": "Cinema Teatro Multisala Moderno - Anzio",
     "slug": "5804",
     "address": "Piazza della Pace, 9 Anzio (RM)",
     "lat": 41.4469984,
@@ -2502,7 +2502,7 @@
   },
   {
     "cinemaId": "7430",
-    "name": "Cineteatro Don Bosco",
+    "name": "Cineteatro Don Bosco - Potenza",
     "slug": "7430",
     "address": "PIAZZA DON BOSCO,11 85100 Potenza (PZ)",
     "lat": 40.647521,
