@@ -12,5 +12,10 @@ void main() {
     test('unknown entities are left untouched', () {
       expect(decodeHtmlEntities('&bogus;'), '&bogus;');
     });
+
+    test('out-of-range code points are left untouched, never throw', () {
+      expect(decodeHtmlEntities('&#99999999;'), '&#99999999;');
+      expect(decodeHtmlEntities('&#xFFFFFFFF;'), '&#xFFFFFFFF;');
+    });
   });
 }
