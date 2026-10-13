@@ -103,36 +103,33 @@ const _cinema = Cinema(cinemaId: 'c', name: 'C', slug: 'c', address: 'a',
 
 void main() {
   test('dates, a future session, seats and a booking link: navigable', () async {
-    final r = await checkNavigability(
-      _Api(sessions: [_session(_now.add(const Duration(hours: 2)))]), _cinema, _now);
+    final r = await _check(_Api(sessions: [_session(_now.add(const Duration(hours: 2)))]));
     expect(r.verdict, Navigability.navigable);
   });
 
   test('the programme fails to load: not navigable', () async {
-    final r = await checkNavigability(_Api(datesError: Exception('boom')), _cinema, _now);
+    final r = await _check(_Api(datesError: Exception('boom')));
     expect(r.verdict, Navigability.notNavigable);
   });
 
   test('Review Focus 4: dates but no future session (end of the day, '
       'season over) is "not verifiable now" - never navigable, never broken', () async {
-    final r = await checkNavigability(
-      _Api(sessions: [_session(_now.subtract(const Duration(hours: 3)))]), _cinema, _now);
+    final r = await _check(_Api(sessions: [_session(_now.subtract(const Duration(hours: 3)))]));
     expect(r.verdict, Navigability.notVerifiableNow);
-    final none = await checkNavigability(_Api(dates: const []), _cinema, _now);
+    final none = await _check(_Api(dates: const []));
     expect(none.verdict, Navigability.notVerifiableNow);
   });
 
   test('seat map fails or is empty: programme only', () async {
     final s = [_session(_now.add(const Duration(hours: 2)))];
-    expect((await checkNavigability(_Api(sessions: s, seatError: Exception('x')), _cinema, _now)).verdict,
+    expect((await _check(_Api(sessions: s, seatError: Exception('x')))).verdict,
         Navigability.programmeOnly);
-    expect((await checkNavigability(_Api(sessions: s, seatMap: _seats(0)), _cinema, _now)).verdict,
+    expect((await _check(_Api(sessions: s, seatMap: _seats(0)))).verdict,
         Navigability.programmeOnly);
   });
 
   test('no booking link: programme only', () async {
-    final r = await checkNavigability(
-      _Api(sessions: [_session(_now.add(const Duration(hours: 2)), booking: null)]), _cinema, _now);
+    final r = await _check(_Api(sessions: [_session(_now.add(const Duration(hours: 2)), booking: null)]));
     expect(r.verdict, Navigability.programmeOnly);
   });
 
