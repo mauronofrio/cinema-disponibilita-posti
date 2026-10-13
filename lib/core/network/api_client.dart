@@ -82,16 +82,50 @@ class TheSpaceApiClient {
   final Dio _dio;
   bool _warmedUp = false;
 
-  /// Runs once before the first real request. Wrapped in the same
-  /// friendly-error handling as every other call - a DNS/connectivity
-  /// failure here used to bypass `_throwFriendly` entirely (this call sat
-  /// outside any try/catch) and surface as a raw `DioException` stack dump
-  /// instead of a message a user could actually read.
+  /// Runs before the first real request, and again whenever the API says
+  /// the cookies it handed out have lapsed (see [_withFreshCookies]).
+  /// Wrapped in the same friendly-error handling as every other call - a
+  /// DNS/connectivity failure here used to bypass `_throwFriendly` entirely
+  /// (this call sat outside any try/catch) and surface as a raw
+  /// `DioException` stack dump instead of a message a user could read.
   Future<void> _ensureWarmedUp() async {
     if (_warmedUp) return;
     try {
       await _dio.get<void>('/');
       _warmedUp = true;
+    } on DioException catch (e) {
+      _throwFriendly(e);
+    }
+  }
+
+  /// Runs [request] with warmed-up cookies, re-warming and retrying exactly
+  /// once if the API answers 401.
+  ///
+  /// The homepage visit hands out a `microservicesToken` cookie that the
+  /// API requires and that expires after 12h - and API responses never
+  /// renew it, only another homepage visit does (all confirmed live, 13 Oct
+  /// 2026). With the warm-up done once per process, an app left in the
+  /// background for days got 401 on every single request, Retry and
+  /// pull-to-refresh included, until it was force-closed.
+  ///
+  /// Reacting to the 401 rather than re-warming on a timer: the server's
+  /// rules proved only partly predictable when probed (several cookies with
+  /// different lifetimes, plus what looked like a per-IP grace window), and
+  /// the 401 is the one signal that is unambiguous. It costs one extra
+  /// request only when the cookies have actually lapsed.
+  Future<Response<T>> _withFreshCookies<T>(
+    Future<Response<T>> Function() request,
+  ) async {
+    await _ensureWarmedUp();
+    try {
+      return await request();
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 401) _throwFriendly(e);
+    }
+    _warmedUp = false;
+    await _ensureWarmedUp();
+    try {
+      return await request();
     } on DioException catch (e) {
       _throwFriendly(e);
     }
@@ -139,16 +173,13 @@ class TheSpaceApiClient {
     String path, {
     Map<String, dynamic>? query,
   }) async {
-    await _ensureWarmedUp();
-    try {
-      final response = await _dio.get<Map<String, dynamic>>(
+    final response = await _withFreshCookies(
+      () => _dio.get<Map<String, dynamic>>(
         '/api/microservice$path',
         queryParameters: query,
-      );
-      return response.data!;
-    } on DioException catch (e) {
-      _throwFriendly(e);
-    }
+      ),
+    );
+    return response.data!;
   }
 
   Future<List<ShowingDate>> getShowingDates(String cinemaId) async {
@@ -174,16 +205,13 @@ class TheSpaceApiClient {
   /// single `compute()` call. The response can be several hundred KB and
   /// doing that work on the UI isolate is a real source of jank.
   Future<String> getSeatMapJson(String cinemaId, String sessionId) async {
-    await _ensureWarmedUp();
-    try {
-      final response = await _dio.get<String>(
+    final response = await _withFreshCookies(
+      () => _dio.get<String>(
         '/api/microservice/booking/Session/$cinemaId/$sessionId/seats',
         options: Options(responseType: ResponseType.plain),
-      );
-      return response.data!;
-    } on DioException catch (e) {
-      _throwFriendly(e);
-    }
+      ),
+    );
+    return response.data!;
   }
 }
 
