@@ -53,4 +53,11 @@ void main() {
   test('Cinema Esperia Padova stays only on 18tickets', () {
     expect(twoTickets.any((c) => c.cinemaId == '1633'), isFalse);
   });
+
+  test('every 18tickets venue has a host and a unique cinemaId', () {
+    final e18 = cinemas.where((c) => c.chain == CinemaChain.eighteenTickets);
+    expect(e18.every((c) => (c.host ?? '').isNotEmpty), isTrue);
+    final hosts = e18.map((c) => c.host).toList();
+    expect(hosts.toSet().length, hosts.length);
+  });
 }
