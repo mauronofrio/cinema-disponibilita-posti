@@ -1,18 +1,22 @@
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../core/catalog/cinema_catalog_parser.dart';
+import '../../core/catalog/cinema_catalog_repository.dart';
 import '../../core/models/cinema.dart';
 import '../../core/storage/favorite_cinema_store.dart';
 
-/// The bundled, static list of The Space locations (see tools/scrape_cinemas.py).
-/// This is reference data that rarely changes, so it ships as an asset
-/// instead of being fetched from the network on every launch.
+/// Every cinema this app version can show: cached-or-bundled immediately,
+/// then - at most once a day - refreshed from GitHub in the background
+/// (see CinemaCatalogRepository). When a refresh brings a new valid list
+/// the provider rebuilds itself, so the picker updates without a restart.
 final cinemaListProvider = FutureProvider<List<Cinema>>((ref) async {
-  final raw = await rootBundle.loadString('assets/cinemas.json');
+  final repo = ref.watch(cinemaCatalogRepositoryProvider);
   final version = await ref.watch(appVersionProvider.future);
-  return parseCinemaCatalog(raw, appVersion: version);
+  final cinemas = await repo.load(appVersion: version);
+  repo.refreshIfStale(appVersion: version).then((changed) {
+    if (changed) ref.invalidateSelf();
+  }).ignore();
+  return cinemas;
 });
 
 /// The installed app's version ("1.0.8"), used to hide catalog entries that
