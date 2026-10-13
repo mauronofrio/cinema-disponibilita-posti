@@ -346,6 +346,12 @@ class SeatMap {
         if (seat.status == SeatStatus.available) available++;
       }
     }
+    for (final s in unnumberedSectors) {
+      final capacity = s.capacity;
+      if (capacity == null) continue;
+      total += capacity;
+      available += s.freeSeats;
+    }
     final occupied = total - available;
     return OccupancyStats(
       total: total,

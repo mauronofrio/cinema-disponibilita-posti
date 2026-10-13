@@ -507,5 +507,29 @@ void main() {
       expect(map.totalSeatCount, 0);
       expect(map.availableSeatCount, 0);
     });
+
+    test('occupancyStats agrees with the getters, known and unknown capacity',
+        () {
+      for (final capacity in <int?>[60, null]) {
+        final map = SeatMap(
+          screenLabel: '',
+          totalRows: 0,
+          totalColumns: 0,
+          rows: const [],
+          areaCategories: const [],
+          unnumberedSectors: [
+            UnnumberedSector(
+              name: 'Posto Unico',
+              freeSeats: 45,
+              capacity: capacity,
+            ),
+          ],
+        );
+        final stats = map.occupancyStats;
+        expect(stats.total, map.totalSeatCount);
+        expect(stats.occupied, map.occupiedSeatCount);
+        expect(stats.ratio, map.occupancyRatio);
+      }
+    });
   });
 }

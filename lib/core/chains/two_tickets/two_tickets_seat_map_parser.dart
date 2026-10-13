@@ -163,7 +163,7 @@ SeatMap buildTwoTicketsSeatMap(TwoTicketsSeatMapPayload payload) {
         UnnumberedSector(
           name: s.name,
           freeSeats: s.freeSeats,
-          capacity: singleSector ? s.capacity : null,
+          capacity: singleSector && s.capacity > 0 ? s.capacity : null,
         ),
     ],
   );

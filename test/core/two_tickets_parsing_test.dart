@@ -204,5 +204,30 @@ void main() {
       expect(map.unnumberedSectors.single.capacity, isNull);
       expect(map.unnumberedSectors.single.freeSeats, 30);
     });
+    test('a single Posto Unico room: capacity trusted, nothing occupied', () {
+      final sectors = parseTwoTicketsSectors(fx('settori_unnumbered.json'));
+      final map = buildTwoTicketsSeatMap(
+        TwoTicketsSeatMapPayload(sectors: sectors, seatsJsonBySectorId: {}),
+      );
+      expect(map.unnumberedSectors.single.capacity, 60);
+      expect(map.totalSeatCount, 60);
+      expect(map.availableSeatCount, 60);
+      expect(map.occupiedSeatCount, 0);
+    });
+
+    test('a single unnumbered sector reporting capacity 0 has unknown '
+        'capacity, never a negative occupied count', () {
+      const s = TwoTicketsSector(
+        id: 9, name: 'Posto Unico', hall: 'S', isNumbered: false,
+        freeSeats: 40, capacity: 0,
+      );
+      final map = buildTwoTicketsSeatMap(
+        const TwoTicketsSeatMapPayload(sectors: [s], seatsJsonBySectorId: {}),
+      );
+      expect(map.unnumberedSectors.single.capacity, isNull);
+      expect(map.totalSeatCount, 0);
+      expect(map.occupiedSeatCount, 0);
+    });
+
   });
 }
