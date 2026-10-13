@@ -175,6 +175,23 @@ class AreaCategory {
   final bool isSoldOut;
 }
 
+/// A sector sold without seat numbers ("Posto Unico") - there is no grid
+/// to draw, only how many places are left. [capacity] is null when the
+/// source can't say: 2Tickets repeats the *whole room's* capacity on every
+/// sector of a multi-sector room, so only a single-sector room's figure can
+/// be trusted.
+class UnnumberedSector {
+  const UnnumberedSector({
+    required this.name,
+    required this.freeSeats,
+    required this.capacity,
+  });
+
+  final String name;
+  final int freeSeats;
+  final int? capacity;
+}
+
 class SeatMap {
   // Not `const`: `_categoriesByCode` below is a mutable memoization field
   // for `categoryFor`, and a const constructor requires every field final.
@@ -184,6 +201,7 @@ class SeatMap {
     required this.totalColumns,
     required this.rows,
     required this.areaCategories,
+    this.unnumberedSectors = const [],
   });
 
   /// Decodes and parses the raw `{"result": {...}}` API response body in one
@@ -224,6 +242,10 @@ class SeatMap {
   final List<SeatRow> rows;
   final List<AreaCategory> areaCategories;
 
+  /// Sectors with no seat grid - see [UnnumberedSector]. Empty for every
+  /// chain except 2Tickets.
+  final List<UnnumberedSector> unnumberedSectors;
+
   /// Lazily built and cached on first lookup: `areaCategories` is small
   /// today but `categoryFor` is called once per rendered seat cell (hundreds
   /// per room), so an O(n) scan per call is worth avoiding with an O(1) map
@@ -254,39 +276,48 @@ class SeatMap {
   /// [Seat.isPermanentlyReserved] seats are excluded for exactly the same
   /// reason as [SeatStatus.special] ones: never on sale for any showing,
   /// so counting them as "occupied" overstates how full the room is.
-  int get totalSeatCount => rows.fold(
-    0,
-    (sum, row) =>
-        sum +
-        row.seats
-            .whereType<Seat>()
-            .where(
-              (s) =>
-                  !s.isAccessibility &&
-                  !s.isPermanentlyReserved &&
-                  s.status != SeatStatus.special,
-            )
-            .length,
-  );
+  /// Plus [unnumberedSectors] whose capacity is known.
+  int get totalSeatCount =>
+      rows.fold(
+        0,
+        (sum, row) =>
+            sum +
+            row.seats
+                .whereType<Seat>()
+                .where(
+                  (s) =>
+                      !s.isAccessibility &&
+                      !s.isPermanentlyReserved &&
+                      s.status != SeatStatus.special,
+                )
+                .length,
+      ) +
+      unnumberedSectors.fold(0, (sum, s) => sum + (s.capacity ?? 0));
 
   /// Matches the reference implementation's own notion of "free": exactly
   /// `status == available`, everything else (occupied, reserved, sold-out
   /// areas, ...) counts against it. Accessibility and [SeatStatus.special]
   /// seats are excluded here too, same reasoning as [totalSeatCount].
-  int get availableSeatCount => rows.fold(
-    0,
-    (sum, row) =>
-        sum +
-        row.seats
-            .whereType<Seat>()
-            .where(
-              (s) =>
-                  !s.isAccessibility &&
-                  !s.isPermanentlyReserved &&
-                  s.status == SeatStatus.available,
-            )
-            .length,
-  );
+  /// Plus [unnumberedSectors] whose capacity is known.
+  int get availableSeatCount =>
+      rows.fold(
+        0,
+        (sum, row) =>
+            sum +
+            row.seats
+                .whereType<Seat>()
+                .where(
+                  (s) =>
+                      !s.isAccessibility &&
+                      !s.isPermanentlyReserved &&
+                      s.status == SeatStatus.available,
+                )
+                .length,
+      ) +
+      unnumberedSectors.fold(
+        0,
+        (sum, s) => sum + (s.capacity == null ? 0 : s.freeSeats),
+      );
 
   int get occupiedSeatCount => totalSeatCount - availableSeatCount;
 

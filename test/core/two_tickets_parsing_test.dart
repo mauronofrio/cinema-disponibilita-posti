@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:thespace_companion/core/chains/two_tickets/two_tickets_checkout_parser.dart';
+import 'package:thespace_companion/core/chains/two_tickets/two_tickets_seat_map_parser.dart';
 import 'package:thespace_companion/core/chains/two_tickets/two_tickets_venue_parser.dart';
+import 'package:thespace_companion/core/models/seat_map.dart';
 
 void main() {
   group('parseTwoTicketsVenuePage', () {
@@ -109,6 +111,98 @@ void main() {
       // them. This test documents the intent next to the parser.
       final p = parseTwoTicketsCheckoutPage(push(5));
       expect(p.serverEse, 's');
+    });
+  });
+
+  group('2Tickets seat map', () {
+    String fx(String name) =>
+        File('test/fixtures/twotickets_$name').readAsStringSync();
+
+    test('sectors: single numbered room', () {
+      final s = parseTwoTicketsSectors(fx('settori_single.json')).single;
+      expect(s.id, 3577);
+      expect(s.name, 'Platea');
+      expect(s.isNumbered, isTrue);
+      expect(s.freeSeats, 70);
+    });
+
+    test('sectors: Orfeo Taranto has 7 numbered sectors', () {
+      final sectors = parseTwoTicketsSectors(fx('settori_multi.json'));
+      expect(sectors, hasLength(7));
+      expect(sectors.every((s) => s.isNumbered), isTrue);
+      expect(sectors.first.name, 'PLATEA');
+    });
+
+    test('sectors: Posto Unico is unnumbered', () {
+      final s = parseTwoTicketsSectors(fx('settori_unnumbered.json')).single;
+      expect(s.isNumbered, isFalse);
+      expect(s.freeSeats, 60);
+      expect(s.capacity, 60);
+    });
+
+    test('this is the actual feature: a real sold-out-ish room - 22 sold '
+        'seats (stato 201, isVenduto) read as occupied, 516 free, gaps '
+        'are aisles', () {
+      const sector = TwoTicketsSector(
+        id: 4467, name: 'PLATEA', hall: 'MAGNUM NUM',
+        isNumbered: true, freeSeats: 516, capacity: 538,
+      );
+      final map = buildTwoTicketsSeatMap(TwoTicketsSeatMapPayload(
+        sectors: [sector],
+        seatsJsonBySectorId: {4467: fx('posti_sold.json')},
+      ));
+      expect(map.totalSeatCount, 538);
+      expect(map.availableSeatCount, 516);
+      expect(map.occupiedSeatCount, 22);
+      expect(map.rows, hasLength(23));
+      expect(map.totalColumns, 30);
+      // Row 0 is nearest the screen; its two blocks are spelled AA/A.
+      expect(map.rows.first.rowLabel, 'A');
+      final gg3 = map.rows[7].seats.whereType<Seat>()
+          .firstWhere((s) => s.name == 'GG3');
+      expect(gg3.status, SeatStatus.occupied);
+    });
+
+    test('an empty room: every seat available', () {
+      const sector = TwoTicketsSector(
+        id: 3577, name: 'Platea', hall: 'NORBA 3',
+        isNumbered: true, freeSeats: 70, capacity: 70,
+      );
+      final map = buildTwoTicketsSeatMap(TwoTicketsSeatMapPayload(
+        sectors: [sector],
+        seatsJsonBySectorId: {3577: fx('posti_empty.json')},
+      ));
+      expect(map.totalSeatCount, 70);
+      expect(map.availableSeatCount, 70);
+      expect(map.screenLabel, 'NORBA 3');
+    });
+
+    test('several numbered sectors stack, separated by one blank row, each '
+        'its own legend category; an unnumbered sector alongside is kept', () {
+      const a = TwoTicketsSector(
+        id: 1, name: 'PLATEA', hall: 'S', isNumbered: true,
+        freeSeats: 70, capacity: 773,
+      );
+      const b = TwoTicketsSector(
+        id: 2, name: 'GALLERIA', hall: 'S', isNumbered: true,
+        freeSeats: 70, capacity: 773,
+      );
+      const c = TwoTicketsSector(
+        id: 3, name: 'LOGGIONE', hall: 'S', isNumbered: false,
+        freeSeats: 30, capacity: 773,
+      );
+      final empty = fx('posti_empty.json');
+      final map = buildTwoTicketsSeatMap(TwoTicketsSeatMapPayload(
+        sectors: [a, b, c],
+        seatsJsonBySectorId: {1: empty, 2: empty},
+      ));
+      expect(map.rows, hasLength(8 + 1 + 8));
+      expect(map.rows[8].seats.whereType<Seat>(), isEmpty);
+      expect(map.areaCategories.map((x) => x.name), ['PLATEA', 'GALLERIA']);
+      // Review Focus 4: in a multi-sector room `capienza` is room-wide, so
+      // the unnumbered sector's capacity is unknown, not 773.
+      expect(map.unnumberedSectors.single.capacity, isNull);
+      expect(map.unnumberedSectors.single.freeSeats, 30);
     });
   });
 }

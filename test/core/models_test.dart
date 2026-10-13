@@ -475,4 +475,37 @@ void main() {
       },
     );
   });
+
+  group('SeatMap.unnumberedSectors', () {
+    test('free seats and known capacity count towards the totals', () {
+      final map = SeatMap(
+        screenLabel: '',
+        totalRows: 0,
+        totalColumns: 0,
+        rows: const [],
+        areaCategories: const [],
+        unnumberedSectors: const [
+          UnnumberedSector(name: 'Posto Unico', freeSeats: 45, capacity: 60),
+        ],
+      );
+      expect(map.totalSeatCount, 60);
+      expect(map.availableSeatCount, 45);
+      expect(map.occupiedSeatCount, 15);
+    });
+
+    test('unknown capacity stays out of the totals entirely', () {
+      final map = SeatMap(
+        screenLabel: '',
+        totalRows: 0,
+        totalColumns: 0,
+        rows: const [],
+        areaCategories: const [],
+        unnumberedSectors: const [
+          UnnumberedSector(name: 'Loggione', freeSeats: 30, capacity: null),
+        ],
+      );
+      expect(map.totalSeatCount, 0);
+      expect(map.availableSeatCount, 0);
+    });
+  });
 }
