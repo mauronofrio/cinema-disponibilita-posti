@@ -16,6 +16,10 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 
 ## Cinema supportati
 
+<!-- cinema-counts:start -->
+**248 cinema supportati** · The Space 35 · UCI 33 · 18tickets 102 · Webtic 56 · 2Tickets 22
+<!-- cinema-counts:end -->
+
 | Catena | Copertura |
 |---|---|
 | The Space Cinema | 35 sale in tutta Italia |
