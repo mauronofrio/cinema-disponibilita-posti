@@ -33,6 +33,13 @@ UA_SITE = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 UA_GEO = ("CinemaDisponibilitaPosti-catalog/1.0 "
           "(github.com/mauronofrio/cinema-disponibilita-posti)")
 
+# Venues deliberately left out of the 2Tickets catalog (id -> reason). They
+# are skipped with a printed note so regeneration never re-adds them.
+EXCLUDED_VENUES = {
+    "1633": "Cinema Esperia Padova - already in the catalog via 18tickets "
+            "(cinema-esperia-padova)",
+}
+
 
 def get(url, ua=UA_SITE):
     req = urllib.request.Request(url, headers={"User-Agent": ua})
@@ -82,19 +89,46 @@ def pretty_address(raw):
     return f"{m.group(1)} {m.group(2).title()} ({m.group(3)})"
 
 
-def geocode(address):
-    q = urllib.parse.urlencode({"q": f"{address}, Italia", "format": "json", "limit": 1})
+def city_of(address):
+    """Returns (street part, city) of "STREET CITY (PROV)"; street may be ''."""
+    m = re.search(r"([A-Za-zÀ-ù' ]+?)\s*\((\w{2})\)\s*$", address)
+    if not m:
+        return address, ""
+    return address[:m.start()].strip(), m.group(1).strip()
+
+
+def search(query, address):
+    """First Nominatim hit whose town matches the venue's address, else None.
+
+    Nominatim happily returns a same-named street in another town (Via
+    Pitagora in Martina Franca for a Taranto venue), so a hit is accepted
+    only if its city/town/village/municipality appears in the address.
+    """
+    q = urllib.parse.urlencode({"q": f"{query}, Italia", "format": "json",
+                                "limit": 5, "addressdetails": 1})
     hits = json.loads(get(f"https://nominatim.openstreetmap.org/search?{q}", UA_GEO))
-    if not hits:
+    wanted = address.casefold()
+    for h in hits:
+        a = h.get("address", {})
+        place = a.get("city") or a.get("town") or a.get("village") or a.get("municipality")
+        if place and place.casefold() in wanted:
+            return float(h["lat"]), float(h["lon"])
+    if hits:
+        print(f"  ! rejected hits in the wrong town for: {query}")
+    return None
+
+
+def geocode(address):
+    coords = search(address, address)
+    if coords is None:
         # Retry with just "CITY (PROV)" - better a town-centre pin than none.
-        city = re.search(r"([A-Za-zÀ-ù' ]+)\s*\((\w{2})\)\s*$", address)
-        if city:
-            q = urllib.parse.urlencode({"q": f"{city.group(1)}, {city.group(2)}, Italia",
-                                        "format": "json", "limit": 1})
-            hits = json.loads(get(f"https://nominatim.openstreetmap.org/search?{q}", UA_GEO))
-            if hits:
+        _, city = city_of(address)
+        prov = re.search(r"\((\w{2})\)\s*$", address)
+        if city and prov:
+            coords = search(f"{city}, {prov.group(1)}", address)
+            if coords:
                 print(f"  ! only town-level coordinates for: {address}")
-    return (float(hits[0]["lat"]), float(hits[0]["lon"])) if hits else None
+    return coords
 
 
 def main():
@@ -106,6 +140,10 @@ def main():
 
     added, updated, skipped = [], [], []
     for vid in sorted(ids, key=int):
+        if vid in EXCLUDED_VENUES:
+            print(f"  = {vid} excluded: {EXCLUDED_VENUES[vid]}")
+            skipped.append((vid, f"excluded: {EXCLUDED_VENUES[vid]}"))
+            continue
         v = venue(vid)
         if v is None:
             skipped.append((vid, "no header"))
@@ -115,9 +153,12 @@ def main():
             continue
         address = pretty_address(v["address"])
         if vid in existing:
-            existing[vid]["name"], existing[vid]["address"] = v["name"], address
+            # Name only: the address and coordinates may have been fixed by hand.
+            existing[vid]["name"] = v["name"]
             updated.append(vid)
             continue
+        if not city_of(address)[0]:
+            print(f"  ! no street in address (town-centre pin, review): {vid} {address}")
         coords = geocode(address)
         if coords is None:
             skipped.append((vid, f"NOT GEOCODED, add by hand: {v['name']} - {address}"))
@@ -137,7 +178,7 @@ def main():
             if abs(o["lat"] - e["lat"]) < 0.003 and abs(o["lng"] - e["lng"]) < 0.004:
                 print(f"  ? {e['name']} is next to {o['name']} ({o['chain']}) - same cinema?")
 
-    with open(CATALOG, "w", encoding="utf-8") as f:
+    with open(CATALOG, "w", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(catalog, ensure_ascii=False, indent=2) + "\n")
     print(f"added {len(added)}, updated {len(updated)}, skipped {len(skipped)}")
     for vid, why in skipped:

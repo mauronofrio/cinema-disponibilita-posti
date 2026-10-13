@@ -28,4 +28,29 @@ void main() {
     final keys = cinemas.map((c) => '${c.chain.name}:${c.cinemaId}').toList();
     expect(keys.toSet().length, keys.length);
   });
+
+  test('every 2Tickets venue uses its id as slug', () {
+    for (final c in twoTickets) {
+      expect(c.slug, c.cinemaId, reason: c.name);
+    }
+  });
+
+  test('venues once mis-geocoded sit in their own city', () {
+    // Nominatim once returned same-named streets in other towns (Martina
+    // Franca, Venosa, Lavello): pin the fixed venues near their cities.
+    const near = {
+      '1174': (40.47, 17.24), // Taranto
+      '7430': (40.64, 15.80), // Potenza
+      '2215': (40.64, 15.80), // Potenza
+    };
+    near.forEach((id, p) {
+      final c = twoTickets.firstWhere((c) => c.cinemaId == id);
+      expect(c.lat, closeTo(p.$1, 0.1), reason: c.name);
+      expect(c.lng, closeTo(p.$2, 0.1), reason: c.name);
+    });
+  });
+
+  test('Cinema Esperia Padova stays only on 18tickets', () {
+    expect(twoTickets.any((c) => c.cinemaId == '1633'), isFalse);
+  });
 }

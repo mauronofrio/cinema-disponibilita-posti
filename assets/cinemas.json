@@ -2415,8 +2415,8 @@
     "name": "Cinema Teatro Orfeo",
     "slug": "1174",
     "address": "Via Pitagora 80 00000 Taranto (TA)",
-    "lat": 40.7061805,
-    "lng": 17.3432205,
+    "lat": 40.4734661,
+    "lng": 17.2410203,
     "chain": "twoTickets"
   },
   {
@@ -2426,15 +2426,6 @@
     "address": "COMPLESSO Monumentale Sciacca (AG)",
     "lat": 37.5103756,
     "lng": 13.0847289,
-    "chain": "twoTickets"
-  },
-  {
-    "cinemaId": "1633",
-    "name": "CINEMA ESPERIA",
-    "slug": "1633",
-    "address": "Via Chiesanuova 90 35136 Padova (PD)",
-    "lat": 45.4146634,
-    "lng": 11.836266,
     "chain": "twoTickets"
   },
   {
@@ -2478,8 +2469,8 @@
     "name": "Cinema Due Torri",
     "slug": "2215",
     "address": "Potenza (PZ)",
-    "lat": 41.0479089,
-    "lng": 15.7794978,
+    "lat": 40.6398452,
+    "lng": 15.8050846,
     "chain": "twoTickets"
   },
   {
@@ -2514,8 +2505,8 @@
     "name": "Cineteatro Don Bosco",
     "slug": "7430",
     "address": "PIAZZA DON BOSCO,11 85100 Potenza (PZ)",
-    "lat": 40.9664091,
-    "lng": 15.8251304,
+    "lat": 40.647521,
+    "lng": 15.796186,
     "chain": "twoTickets"
   }
 ]
