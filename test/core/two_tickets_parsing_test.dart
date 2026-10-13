@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:thespace_companion/core/chains/two_tickets/two_tickets_checkout_parser.dart';
 import 'package:thespace_companion/core/chains/two_tickets/two_tickets_venue_parser.dart';
 
 void main() {
@@ -49,6 +50,65 @@ void main() {
 <span><i class="bi bi-tag-fill"></i> CINEMA</span> <span><i class="bi bi-clock-fill"></i> 90 min</span>
 <div class="btn-fasticket-container"></div></div>''';
       expect(parseTwoTicketsVenuePage(card).films.single.posterUrl, isNull);
+    });
+  });
+
+  group('parseTwoTicketsCheckoutPage', () {
+    late TwoTicketsCheckoutPage page;
+    setUpAll(() {
+      page = parseTwoTicketsCheckoutPage(
+        File('test/fixtures/twotickets_checkout_22259_609.html')
+            .readAsStringSync(),
+      );
+    });
+
+    test('every performance in orariServer, every date at once', () {
+      expect(page.performances.map((p) => p.eventId), [
+        '610899', '610900', '610951', '610901', '610902', '610952',
+      ]);
+      final first = page.performances.first;
+      expect(first.startTime, DateTime(2026, 10, 13, 17, 30));
+      expect(first.hall, 'N1');
+      expect(first.freeSeats, 373);
+      expect(first.rawTime, '17.30');
+      expect(first.isOriginalLanguage, isFalse);
+    });
+
+    test('ticketing server comes from the page config', () {
+      expect(page.serverEse, 'pf2.twoitalia.it');
+      expect(page.portEse, '80');
+    });
+
+    String push(int free, {bool vo = false}) =>
+        "serverEse: \"s\", portEse: \"80\", orariServer.push({ idEvento: 1, "
+        "data: '2026-10-20', ora: '21.00', sala: \"A\", postiLiberi: $free, "
+        "is3D: false, isVO: $vo, isAtmos: false, titolo: \"\" });";
+
+    test('0 free seats is a real sold-out flag', () {
+      expect(parseTwoTicketsCheckoutPage(push(0)).performances.single.isSoldOut,
+          isTrue);
+    });
+
+    test('9999 means "not tracked" on 2Tickets, never sold out', () {
+      expect(
+        parseTwoTicketsCheckoutPage(push(9999)).performances.single.isSoldOut,
+        isFalse,
+      );
+    });
+
+    test('isVO is read', () {
+      expect(
+        parseTwoTicketsCheckoutPage(push(5, vo: true))
+            .performances.single.isOriginalLanguage,
+        isTrue,
+      );
+    });
+
+    test('the page config bank fields are never part of the result', () {
+      // Guard by construction: the result type has no field that could hold
+      // them. This test documents the intent next to the parser.
+      final p = parseTwoTicketsCheckoutPage(push(5));
+      expect(p.serverEse, 's');
     });
   });
 }

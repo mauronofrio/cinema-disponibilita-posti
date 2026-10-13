@@ -33,6 +33,8 @@ class Session {
     required this.bookingPath,
     this.webticScreenId,
     this.eighteenTicketsFilmId,
+    this.twoTicketsServerEse,
+    this.twoTicketsPortEse,
   });
 
   factory Session.fromJson(Map<String, dynamic> json) {
@@ -65,12 +67,15 @@ class Session {
   final DateTime endTime;
   final String screenName;
 
-  /// **Only ever true on The Space.** The other three chains hardcode this
-  /// to `false`, and that is deliberate, not an oversight - please don't
-  /// "fix" it without reading this first.
+  /// **Only ever true on The Space and 2Tickets.** The other three chains
+  /// (UCI, Webtic, 18tickets) hardcode this to `false`, and that is
+  /// deliberate, not an oversight - please don't "fix" it without reading
+  /// this first.
   ///
   /// The Space publishes a real sold-out flag in the same cheap response
-  /// that lists the showtimes, so it costs nothing there. UCI, Webtic and
+  /// that lists the showtimes, so it costs nothing there. 2Tickets publishes
+  /// a per-showtime free-seat count (`postiLiberi`) in the same page as the
+  /// showtimes, so a real flag costs nothing there either. UCI, Webtic and
   /// the 18tickets platform publish no such field anywhere in their
   /// programme responses: the only way to know a showtime is full is to
   /// fetch its seat map and find every seat taken - one extra request per
@@ -108,6 +113,13 @@ class Session {
   /// from there rather than known upfront (see
   /// EighteenTicketsChainApi.getSeatMap).
   final String? eighteenTicketsFilmId;
+
+  /// 2Tickets only: the ticketing back-office host/port the site's own seat
+  /// map calls pass along (`serverEse`/`portEse`, read off the film's
+  /// checkout page - e.g. "pf2.twoitalia.it"/"80"). Needed by
+  /// `TwoTicketsChainApi.getSeatMap`; null for every other chain.
+  final String? twoTicketsServerEse;
+  final String? twoTicketsPortEse;
 
   /// A session is the same session iff same [sessionId] - it's already a
   /// unique identifier for one specific showtime, so this is entity
