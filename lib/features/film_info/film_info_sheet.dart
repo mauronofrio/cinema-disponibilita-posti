@@ -5,6 +5,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/util/open_external_url.dart';
 import 'film_info_provider.dart';
+import '../poster_viewer/poster_viewer.dart';
 
 /// Just enough to show the header immediately (poster/title/runtime are
 /// already known to the caller, no fetch needed for those) while
@@ -56,25 +57,10 @@ class FilmInfoSheet extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: args.posterImageSrc == null
-                      ? Container(
-                          width: 120,
-                          height: 180,
-                          color: AppColors.surfaceElevated,
-                        )
-                      : Image.network(
-                          args.posterImageSrc!,
-                          width: 120,
-                          height: 180,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => Container(
-                            width: 120,
-                            height: 180,
-                            color: AppColors.surfaceElevated,
-                          ),
-                        ),
+                child: PosterThumbnail(
+                  url: args.posterImageSrc,
+                  width: 120,
+                  height: 180,
                 ),
               ),
               const SizedBox(height: 16),

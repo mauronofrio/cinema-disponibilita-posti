@@ -10,6 +10,7 @@ import '../../../core/models/film.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../film_info/film_info_sheet.dart';
 import '../../seat_map/seat_map_provider.dart';
+import '../../poster_viewer/poster_viewer.dart';
 
 class FilmCard extends ConsumerWidget {
   const FilmCard({
@@ -85,25 +86,10 @@ class FilmCard extends ConsumerWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: film.posterImageSrc == null
-                      ? Container(
-                          width: 64,
-                          height: 96,
-                          color: AppColors.surfaceElevated,
-                        )
-                      : Image.network(
-                          film.posterImageSrc!,
-                          width: 64,
-                          height: 96,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => Container(
-                            width: 64,
-                            height: 96,
-                            color: AppColors.surfaceElevated,
-                          ),
-                        ),
+                PosterThumbnail(
+                  url: film.posterImageSrc,
+                  width: 64,
+                  height: 96,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -125,7 +111,9 @@ class FilmCard extends ConsumerWidget {
                           ),
                           IconButton(
                             icon: const Icon(Icons.info_outline, size: 20),
-                            tooltip: AppLocalizations.of(context).filmInfoTooltip,
+                            tooltip: AppLocalizations.of(
+                              context,
+                            ).filmInfoTooltip,
                             padding: EdgeInsets.zero,
                             // IconButton's Material 3 default style keeps a
                             // full 48x48 tap target around the 20px icon -
@@ -156,10 +144,9 @@ class FilmCard extends ConsumerWidget {
                       if (film.runningTime != null) ...[
                         Text(
                           '${film.runningTime} min',
-                          style: AppTheme.body(context).copyWith(
-                            color: AppColors.textMuted,
-                            fontSize: 12,
-                          ),
+                          style: AppTheme.body(
+                            context,
+                          ).copyWith(color: AppColors.textMuted, fontSize: 12),
                         ),
                       ],
                       if (split != null && split.beside.isNotEmpty) ...[
@@ -266,8 +253,7 @@ class _SessionsByLanguage extends StatelessWidget {
     // isn't the default (see isNotableLanguage) - otherwise a lone
     // original-language showing with no dubbed alternative that day would
     // look exactly like an ordinary Italian one.
-    final showLabels =
-        groups.length > 1 || groups.keys.any(isNotableLanguage);
+    final showLabels = groups.length > 1 || groups.keys.any(isNotableLanguage);
 
     if (!showLabels) {
       return _ChipsWrap(
@@ -394,19 +380,16 @@ class _SessionTimeChip extends StatelessWidget {
                     : DateFormat.Hm().format(session.startTime),
                 style: AppTheme.mono(context).copyWith(
                   fontSize: 13,
-                  color: disabled
-                      ? AppColors.textMuted
-                      : AppColors.textPrimary,
+                  color: disabled ? AppColors.textMuted : AppColors.textPrimary,
                   decoration: soldOut ? TextDecoration.lineThrough : null,
                 ),
               ),
               if (specials.isNotEmpty)
                 Text(
                   specials.join(' · '),
-                  style: AppTheme.body(context).copyWith(
-                    fontSize: 10,
-                    color: AppColors.textMuted,
-                  ),
+                  style: AppTheme.body(
+                    context,
+                  ).copyWith(fontSize: 10, color: AppColors.textMuted),
                 ),
             ],
           ),

@@ -73,6 +73,11 @@ class AppLocalizations {
     'openMapsTitle': {'en': 'Open Maps?', 'it': 'Aprire Maps?'},
     'cancel': {'en': 'Cancel', 'it': 'Annulla'},
     'retry': {'en': 'Retry', 'it': 'Riprova'},
+    'close': {'en': 'Close', 'it': 'Chiudi'},
+    'posterLoadError': {
+      'en': "Couldn't load the poster",
+      'it': 'Impossibile caricare la locandina',
+    },
     'open': {'en': 'Open', 'it': 'Apri'},
     'settingsTitle': {'en': 'Settings', 'it': 'Impostazioni'},
     'yourCinemas': {'en': 'Your cinemas', 'it': 'I tuoi cinema'},
@@ -126,7 +131,10 @@ class AppLocalizations {
     },
     'updateLater': {'en': 'Later', 'it': 'Più tardi'},
     'updateDownload': {'en': 'Download', 'it': 'Scarica'},
-    'sourceCode': {'en': 'Source code on GitHub', 'it': 'Codice sorgente su GitHub'},
+    'sourceCode': {
+      'en': 'Source code on GitHub',
+      'it': 'Codice sorgente su GitHub',
+    },
     'filmInfoTooltip': {
       'en': 'Description and trailer',
       'it': 'Descrizione e trailer',
@@ -168,6 +176,8 @@ class AppLocalizations {
   String get openMapsTitle => _t('openMapsTitle');
   String get cancel => _t('cancel');
   String get retry => _t('retry');
+  String get close => _t('close');
+  String get posterLoadError => _t('posterLoadError');
   String get open => _t('open');
 
   /// "Get directions to the {cinemaName} cinema?" - kept as a method rather
@@ -195,6 +205,7 @@ class AppLocalizations {
         ? 'Vuoi rimuovere $cinemaName dai tuoi cinema?'
         : 'Remove $cinemaName from your cinemas?';
   }
+
   String get active => _t('active');
   String get language => _t('language');
   String get languageAuto => _t('languageAuto');
