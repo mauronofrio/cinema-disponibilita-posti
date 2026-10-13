@@ -68,6 +68,7 @@ TwoTicketsVenuePage parseTwoTicketsVenuePage(String html) {
           .trim();
 
   final films = <TwoTicketsVenueFilm>[];
+  final seen = <String>{};
   for (final card in _card.allMatches(html)) {
     final body = card.group(1)!;
     final link = _checkoutLink.firstMatch(body);
@@ -76,6 +77,7 @@ TwoTicketsVenuePage parseTwoTicketsVenuePage(String html) {
     if (!tag.contains('CINEMA')) continue;
     final title = _title.firstMatch(body);
     if (title == null) continue;
+    if (!seen.add(link.group(1)!)) continue;
     final poster = _poster.firstMatch(body)?.group(1);
     films.add(
       TwoTicketsVenueFilm(

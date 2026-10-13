@@ -107,10 +107,43 @@ void main() {
     });
 
     test('the page config bank fields are never part of the result', () {
-      // Guard by construction: the result type has no field that could hold
-      // them. This test documents the intent next to the parser.
-      final p = parseTwoTicketsCheckoutPage(push(5));
-      expect(p.serverEse, 's');
+      // Synthetic page carrying the gateway credentials 2Tickets leaks in
+      // its JS config (fake values): the parse must be identical to the
+      // same page without them.
+      const bank = 'userBanca: "x", pwdBanca: "y", tipoBanca: 1, ';
+      final clean = parseTwoTicketsCheckoutPage(push(5));
+      final withBank = parseTwoTicketsCheckoutPage(
+        push(5).replaceFirst('serverEse:', '${bank}serverEse:'),
+      );
+      expect(withBank.serverEse, clean.serverEse);
+      expect(withBank.portEse, clean.portEse);
+      expect(withBank.performances, hasLength(1));
+      final a = withBank.performances.single;
+      final b = clean.performances.single;
+      expect(a.eventId, b.eventId);
+      expect(a.startTime, b.startTime);
+      expect(a.hall, b.hall);
+      expect(a.freeSeats, b.freeSeats);
+      expect(a.rawTime, b.rawTime);
+      expect(a.isOriginalLanguage, b.isOriginalLanguage);
+      expect(withBank.serverEse, 's');
+      expect(withBank.portEse, '80');
+    });
+  });
+
+  group('2Tickets venue parser dedupe', () {
+    test('the same film id listed twice yields one film', () {
+      String card(String id) =>
+          '<div class="titolo-card" onclick="x()">'
+          '<a href="/biglietto/Acquisto/Checkout/$id/609?settore=C">go</a>'
+          '<i class="bi bi-tag-fill"></i> CINEMA<'
+          '/span><h3 class="titolo-title">T$id</h3> 100 min '
+          '<div class="btn-fasticket-container">';
+      final page = parseTwoTicketsVenuePage(
+        '<div class="cinema-header"><h1>V</h1><p>a</p></div>'
+        '${card('1')}${card('1')}${card('2')}',
+      );
+      expect(page.films.map((f) => f.filmId), ['1', '2']);
     });
   });
 
