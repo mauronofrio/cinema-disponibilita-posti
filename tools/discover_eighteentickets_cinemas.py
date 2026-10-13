@@ -60,6 +60,28 @@ def get(url, ua=UA, delay=3.0):
     return 429, url, ""
 
 
+failures = []
+
+
+def fail(what, status):
+    """Records a transient failure: the run is then incomplete, not wrong."""
+    failures.append(what)
+    log(f"INCOMPLETE: {what} failed ({status})")
+
+
+def transient(code):
+    # Network error (str), 429 after retries, or 5xx; a plain 404 is an answer.
+    return not isinstance(code, int) or code == 429 or code >= 500
+
+
+def parse_json(body, what):
+    try:
+        return json.loads(body)
+    except ValueError:
+        fail(what, "not JSON")
+        return None
+
+
 def circuit_labels():
     labels, after = set(), None
     while True:
@@ -67,10 +89,18 @@ def circuit_labels():
                "&include_subdomains=true&expand=dns_names")
         if after:
             url += f"&after={after}"
-        _, _, body = get(url, ua=UA_GEO, delay=2.0)
-        rows = json.loads(body or "[]")
-        if not rows:
+        code, _, body = get(url, ua=UA_GEO, delay=2.0)
+        if code != 200:
+            fail(f"Cert Spotter page (after={after})", code)
             break
+        rows = parse_json(body, f"Cert Spotter page (after={after})")
+        if rows is None:
+            break
+        if not isinstance(rows, list):
+            fail("Cert Spotter page (unexpected JSON)", code)
+            break
+        if not rows:
+            break  # genuinely the last page
         for row in rows:
             for name in row.get("dns_names", []):
                 m = re.match(r"^(?:\*\.|api\.)?([a-z0-9-]+)\.18tickets\.it$", name.lower())
@@ -83,7 +113,9 @@ def circuit_labels():
 def venue_hosts(label):
     hosts = set()
     for path in ("/", "/select_cinema?mandatory=true"):
-        _, _, body = get(f"https://{label}.18tickets.it{path}")
+        code, _, body = get(f"https://{label}.18tickets.it{path}")
+        if transient(code):
+            fail(f"circuit page {label}{path}", code)
         hosts |= set(re.findall(r"https?://([a-z0-9-]+\." + re.escape(label) + r"\.18tickets\.it)", body))
         if hosts:
             break
@@ -96,6 +128,9 @@ def venue_info(host):
     # marketing site (the host is not a venue).
     redirected_to_www = ("18tickets.it/" in final
                          and final.rstrip("/").endswith("www.18tickets.it"))
+    if transient(code):
+        fail(f"homepage {host}", code)
+        return None
     if code != 200 or redirected_to_www:
         return None
     title = re.search(r"<title>(.*?)</title>", body, re.S)
@@ -107,21 +142,27 @@ def venue_info(host):
 
 
 def city_of(address):
+    # "Via Milazzo 9, 20121 Milano MI" / "Piazza Garibaldi, 70043 Monopoli" -> city
+    m = re.search(r"(?<!\d)\d{5}\s+([^\d,]+?)(?:\s+[A-Z]{2})?\s*$", address.strip())
+    if m:
+        return m.group(1).strip()
     # "Via Baione, snc, 70043, Monopoli, BA" -> "Monopoli"
     parts = [p.strip() for p in address.split(",") if p.strip()]
     for p in reversed(parts):
         if not re.fullmatch(r"\d{5}|[A-Z]{2}|snc", p) and not re.search(r"\d", p):
             return p
-    # Space-separated "Via Milazzo 9, 20121 Milano MI" -> "Milano"
-    m = re.search(r"\b\d{5}\s+([^\d,]+?)(?:\s+[A-Z]{2})?\s*$", address.strip())
-    return m.group(1).strip() if m else ""
+    return ""
 
 
 def geocode(address):
     city = city_of(address).casefold()
     q = urllib.parse.urlencode({"q": address, "format": "json", "limit": 5, "addressdetails": 1})
-    _, _, body = get(f"https://nominatim.openstreetmap.org/search?{q}", ua=UA_GEO, delay=1.1)
-    for hit in json.loads(body or "[]"):
+    code, _, body = get(f"https://nominatim.openstreetmap.org/search?{q}", ua=UA_GEO, delay=1.1)
+    if code != 200:
+        fail(f"geocoding {address!r}", code)
+        return None
+    hits = parse_json(body, f"geocoding {address!r}")
+    for hit in hits if isinstance(hits, list) else []:
         a = hit.get("address", {})
         names = {str(a.get(k, "")).casefold() for k in ("city", "town", "village", "municipality")}
         if city and city in names:
@@ -136,45 +177,68 @@ def cinema_id_of(host):
     return f"{sub}-{circuit}" if circuit else sub
 
 
+def save(candidates):
+    header = [f"INCOMPLETE run: {len(failures)} failures - rerun"] if failures else []
+    with open(OUT, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(candidates, f, ensure_ascii=False, indent=2)
+    with open(REPORT, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(header + report) + "\n")
+
+
+def process_host(host, catalog, points, known_ids, candidates):
+    before = len(failures)
+    info = venue_info(host)
+    if info is None:
+        if len(failures) == before:
+            log(f"skip {host}: no name/address on homepage (not a venue page)")
+        return
+    coords = geocode(info["address"])
+    if coords is None:
+        if len(failures) == before:
+            log(f"NOT GEOCODED {host}: {info['name']} - {info['address']}")
+        return
+    # Same building already in the catalog or among this run's candidates
+    # (any chain, e.g. a custom-domain 18tickets site) -> duplicate.
+    near = [c for c in points
+            if abs(c["lat"] - coords[0]) < 0.0015 and abs(c["lng"] - coords[1]) < 0.002]
+    if near:
+        log(f"POSSIBLE DUPLICATE {host} ({info['name']}) ~ "
+            + ", ".join(f"{c['name']} [{c.get('chain')}:{c['cinemaId']}]" for c in near))
+        return
+    cid = cinema_id_of(host)
+    while cid in known_ids:
+        cid += "-2"
+    known_ids.add(cid)
+    cand = {"cinemaId": cid, "name": f"{info['name']} - {city_of(info['address'])}",
+            "slug": cid, "address": info["address"], "lat": coords[0],
+            "lng": coords[1], "chain": "eighteenTickets", "host": host}
+    candidates.append(cand)
+    points.append(cand)
+    log(f"candidate {cid}: {info['name']} - {info['address']}")
+
+
 def main():
     os.makedirs("build", exist_ok=True)
     catalog = json.load(open(CATALOG, encoding="utf-8"))
     known_hosts = {c.get("host") for c in catalog if c.get("chain") == "eighteenTickets"}
     known_ids = {c["cinemaId"] for c in catalog}
+    points = list(catalog)
     candidates = []
-    for label in circuit_labels():
-        for host in venue_hosts(label):
-            if host in known_hosts:
-                continue
-            info = venue_info(host)
-            if info is None:
-                log(f"skip {host}: no name/address on homepage (not a venue page)")
-                continue
-            coords = geocode(info["address"])
-            if coords is None:
-                log(f"NOT GEOCODED {host}: {info['name']} - {info['address']}")
-                continue
-            # Review Focus 5: same building already in the catalog (any chain,
-            # e.g. a custom-domain 18tickets site) -> duplicate, not a candidate.
-            near = [c for c in catalog
-                    if abs(c["lat"] - coords[0]) < 0.0015 and abs(c["lng"] - coords[1]) < 0.002]
-            if near:
-                log(f"POSSIBLE DUPLICATE {host} ({info['name']}) ~ "
-                    + ", ".join(f"{c['name']} [{c.get('chain')}:{c['cinemaId']}]" for c in near))
-                continue
-            cid = cinema_id_of(host)
-            while cid in known_ids:
-                cid += "-2"
-            known_ids.add(cid)
-            candidates.append({"cinemaId": cid, "name": f"{info['name']} - {city_of(info['address'])}",
-                               "slug": cid, "address": info["address"], "lat": coords[0],
-                               "lng": coords[1], "chain": "eighteenTickets", "host": host})
-            log(f"candidate {cid}: {info['name']} - {info['address']}")
-    with open(OUT, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(candidates, f, ensure_ascii=False, indent=2)
-    with open(REPORT, "w", encoding="utf-8", newline="\n") as f:
-        f.write("\n".join(report) + "\n")
+    try:
+        for label in circuit_labels():
+            for host in venue_hosts(label):
+                if host in known_hosts:
+                    continue
+                try:
+                    process_host(host, catalog, points, known_ids, candidates)
+                except Exception as e:  # one bad host must not lose the run
+                    fail(f"processing {host}", f"{type(e).__name__}: {e}")
+                save(candidates)
+    finally:
+        save(candidates)
     print(f"{len(candidates)} candidates -> {OUT}")
+    if failures:
+        print(f"INCOMPLETE run: {len(failures)} failures - rerun")
 
 
 if __name__ == "__main__":
