@@ -2310,5 +2310,212 @@
     "chain": "webtic",
     "host": "aureliaanticamultisala.it",
     "webticLocalId": 5388
+  },
+  {
+    "cinemaId": "113",
+    "name": "Grillo",
+    "slug": "113",
+    "address": "Via S. Giuseppe, 23 91026 Mazara Del Vallo (TP)",
+    "lat": 37.6510747,
+    "lng": 12.5909625,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "114",
+    "name": "Eden",
+    "slug": "114",
+    "address": "Via Castiglione, 18 91026 Mazara Del Vallo (TP)",
+    "lat": 37.6502493,
+    "lng": 12.5922494,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "116",
+    "name": "Multisala Centrale",
+    "slug": "116",
+    "address": "VIA MATTEOTTI 62 56048 Volterra (PI)",
+    "lat": 43.4018555,
+    "lng": 10.8606787,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "416",
+    "name": "CINEMA TEATRO ARISTON",
+    "slug": "416",
+    "address": "PIAZZA DELLA LIBERTA 19 Gaeta (LT)",
+    "lat": 41.2151293,
+    "lng": 13.5700004,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "609",
+    "name": "Cine Teatro Norba",
+    "slug": "609",
+    "address": "Piazza della Repubblica, 29 Conversano (BA)",
+    "lat": 40.9660074,
+    "lng": 17.116294,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "611",
+    "name": "CINEMA MARGHERITA",
+    "slug": "611",
+    "address": "VIA CAVOUR 26 Acireale (CT)",
+    "lat": 37.6130588,
+    "lng": 15.164613,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "629",
+    "name": "Farnese ArtHouse Cinema",
+    "slug": "629",
+    "address": "PIAZZA CAMPO DEI FIORI 56 Roma (RM)",
+    "lat": 41.8955774,
+    "lng": 12.4721586,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "848",
+    "name": "Multisala Vignola Circuito d Autore",
+    "slug": "848",
+    "address": "Viale Rimembranza, 13 Polignano A Mare (BA)",
+    "lat": 40.9922455,
+    "lng": 17.2194433,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "957",
+    "name": "King",
+    "slug": "957",
+    "address": "Via De Curtis, 14 Catania (CT)",
+    "lat": 37.5465166,
+    "lng": 15.0612796,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "1021",
+    "name": "CINEMA DELLE PROVINCIE",
+    "slug": "1021",
+    "address": "VIALE DELLE PROVINCIE 41 Roma (RM)",
+    "lat": 41.9109327,
+    "lng": 12.5214204,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "1121",
+    "name": "Cinema Ariston",
+    "slug": "1121",
+    "address": "Viale Romolo Gessi, 14 34100 Trieste (TS)",
+    "lat": 45.6414513,
+    "lng": 13.7554529,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "1174",
+    "name": "Cinema Teatro Orfeo",
+    "slug": "1174",
+    "address": "Via Pitagora 80 00000 Taranto (TA)",
+    "lat": 40.7061805,
+    "lng": 17.3432205,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "1569",
+    "name": "MULTISALA BADIA GRANDE",
+    "slug": "1569",
+    "address": "COMPLESSO Monumentale Sciacca (AG)",
+    "lat": 37.5103756,
+    "lng": 13.0847289,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "1633",
+    "name": "CINEMA ESPERIA",
+    "slug": "1633",
+    "address": "Via Chiesanuova 90 35136 Padova (PD)",
+    "lat": 45.4146634,
+    "lng": 11.836266,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "1714",
+    "name": "CINETEATRO SAN TIMOTEO",
+    "slug": "1714",
+    "address": "VIA APELLE 1 Casal Palocco (RM)",
+    "lat": 41.7542616,
+    "lng": 12.3537965,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "1965",
+    "name": "CINEMA MODERNO",
+    "slug": "1965",
+    "address": "VIA LIPANI 36/38 Mascalucia (CT)",
+    "lat": 37.5724747,
+    "lng": 15.0516381,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "1998",
+    "name": "ARENA ADUA",
+    "slug": "1998",
+    "address": "Largo Amendola Snc Catania (CT)",
+    "lat": 37.5157793,
+    "lng": 15.0803561,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "2207",
+    "name": "Teatro Busnelli",
+    "slug": "2207",
+    "address": "Dueville (VI)",
+    "lat": 45.6326686,
+    "lng": 11.5540169,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "2215",
+    "name": "Cinema Due Torri",
+    "slug": "2215",
+    "address": "Potenza (PZ)",
+    "lat": 41.0479089,
+    "lng": 15.7794978,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "2503",
+    "name": "CINEMA TARTARO",
+    "slug": "2503",
+    "address": "GALATINA (LE)",
+    "lat": 40.1764788,
+    "lng": 18.1667674,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "5767",
+    "name": "Teatro Bismantova",
+    "slug": "5767",
+    "address": "Via Roma, 75 Castelnovo Ne' Monti (RE)",
+    "lat": 44.4343334,
+    "lng": 10.4013324,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "5804",
+    "name": "Cinema Teatro Multisala Moderno",
+    "slug": "5804",
+    "address": "Piazza della Pace, 9 Anzio (RM)",
+    "lat": 41.4469984,
+    "lng": 12.6272259,
+    "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "7430",
+    "name": "Cineteatro Don Bosco",
+    "slug": "7430",
+    "address": "PIAZZA DON BOSCO,11 85100 Potenza (PZ)",
+    "lat": 40.9664091,
+    "lng": 15.8251304,
+    "chain": "twoTickets"
   }
 ]
