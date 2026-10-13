@@ -22,12 +22,20 @@ enum CinemaChain {
   /// session-gated backends with no endpoint crackable from the outside)
   /// aren't supported - only add a cinema here once its own chain's actual
   /// catalog source has been confirmed live.
-  webtic;
+  webtic,
+
+  /// Small independent venues (mostly Southern Italy: Cine Teatro Norba -
+  /// Conversano, Cityplex Vignola - Polignano a Mare, Orfeo - Taranto, ...)
+  /// that sell through the shared 2Tickets.it platform. [Cinema.cinemaId]
+  /// is the platform's own venue id (`idLocale`, e.g. "609"). See
+  /// PROJECT_NOTES.md and `TwoTicketsChainApi`.
+  twoTickets;
 
   static CinemaChain fromJson(String? value) => switch (value) {
     'uci' => CinemaChain.uci,
     'eighteenTickets' => CinemaChain.eighteenTickets,
     'webtic' => CinemaChain.webtic,
+    'twoTickets' => CinemaChain.twoTickets,
     _ => CinemaChain.theSpace,
   };
 }
@@ -214,6 +222,7 @@ class Cinema {
     CinemaChain.uci => name,
     CinemaChain.eighteenTickets => name,
     CinemaChain.webtic => name,
+    CinemaChain.twoTickets => name,
   };
 
   /// A cinema is the same cinema iff same id within the same chain (ids are

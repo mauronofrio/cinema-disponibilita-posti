@@ -4,6 +4,7 @@ import '../models/cinema.dart';
 import 'chain_api.dart';
 import 'eighteen_tickets_chain_api.dart';
 import 'the_space_chain_api.dart';
+import 'two_tickets_chain_api.dart';
 import 'uci_chain_api.dart';
 import 'webtic_chain_api.dart';
 
@@ -21,5 +22,7 @@ final chainApiProvider = Provider.family<ChainApi, CinemaChain>((ref, chain) {
       return ref.watch(eighteenTicketsChainApiProvider);
     case CinemaChain.webtic:
       return ref.watch(webticChainApiProvider);
+    case CinemaChain.twoTickets:
+      return ref.watch(twoTicketsChainApiProvider);
   }
 });
