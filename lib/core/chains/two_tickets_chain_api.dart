@@ -66,15 +66,36 @@ class TwoTicketsChainApi implements ChainApi {
       parseTwoTicketsVenuePage,
       await _client.getVenuePage(cinema.cinemaId),
     );
+    // One broken checkout page must not sink the whole cinema: that film is
+    // simply dropped (like a film with no performances). But if every page
+    // failed there is nothing to show - rethrow so the user gets the error
+    // state with retry and nothing is cached.
+    Object? firstError;
+    StackTrace? firstStack;
+    var failures = 0;
     final pages = await _pooled(venue.films, (TwoTicketsVenueFilm film) async {
-      final html = await _client.getCheckoutPage(film.filmId, cinema.cinemaId);
-      return compute(parseTwoTicketsCheckoutPage, html);
+      try {
+        final html = await _client.getCheckoutPage(
+          film.filmId,
+          cinema.cinemaId,
+        );
+        return await compute(parseTwoTicketsCheckoutPage, html);
+      } catch (e, st) {
+        failures++;
+        firstError ??= e;
+        firstStack ??= st;
+        return null;
+      }
     });
+    if (venue.films.isNotEmpty && failures == venue.films.length) {
+      Error.throwWithStackTrace(firstError!, firstStack!);
+    }
 
     final films = <Film>[];
     for (var i = 0; i < venue.films.length; i++) {
       final film = venue.films[i];
       final page = pages[i];
+      if (page == null) continue;
       final byDay = <DateTime, List<Session>>{};
       for (final p in page.performances) {
         final day = DateTime(
@@ -174,7 +195,7 @@ class TwoTicketsChainApi implements ChainApi {
     return runChainParsing(() async {
       final ese = session.twoTicketsServerEse;
       final port = session.twoTicketsPortEse;
-      if (ese == null || port == null) {
+      if (ese == null || ese.isEmpty || port == null || port.isEmpty) {
         throw ApiException(AppLocalizations.current.seatsLoadError);
       }
       final t = session.startTime;

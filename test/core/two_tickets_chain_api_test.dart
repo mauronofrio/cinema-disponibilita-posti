@@ -5,6 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:thespace_companion/core/chains/two_tickets_chain_api.dart';
 import 'package:thespace_companion/core/date/clock.dart';
 import 'package:thespace_companion/core/models/cinema.dart';
+import 'package:thespace_companion/core/models/film.dart';
+import 'package:thespace_companion/core/network/api_client.dart'
+    show ApiException;
 import 'package:thespace_companion/core/network/two_tickets_api_client.dart';
 
 class _FixedClock extends Clock {
@@ -15,11 +18,15 @@ class _FixedClock extends Clock {
 
 /// Serves the captured fixtures instead of the network and counts calls.
 class _FakeClient extends TwoTicketsApiClient {
-  _FakeClient({this.venueHtml}) : super(Dio());
+  _FakeClient({this.venueHtml, this.failFilmIds = const {}}) : super(Dio());
 
   final String? venueHtml;
+
+  /// Film ids whose checkout page request fails.
+  final Set<String> failFilmIds;
   int venueCalls = 0;
   int checkoutCalls = 0;
+  int sectorCalls = 0;
 
   String fx(String n) => File('test/fixtures/twotickets_$n').readAsStringSync();
 
@@ -32,6 +39,7 @@ class _FakeClient extends TwoTicketsApiClient {
   @override
   Future<String> getCheckoutPage(String filmId, String venueId) async {
     checkoutCalls++;
+    if (failFilmIds.contains(filmId)) throw Exception('boom $filmId');
     return fx('checkout_22259_609.html');
   }
 
@@ -41,7 +49,10 @@ class _FakeClient extends TwoTicketsApiClient {
     required String time,
     required String serverEse,
     required String portEse,
-  }) async => fx('settori_single.json');
+  }) async {
+    sectorCalls++;
+    return fx('settori_single.json');
+  }
 
   @override
   Future<String> getSeats({
@@ -129,5 +140,60 @@ void main() {
     final map = await api.getSeatMap(_norba, session);
     expect(map.availableSeatCount, 70);
     expect(map.rows, hasLength(8));
+  });
+
+  test('getSeatMap: an empty ticketing server (config absent on the page) is '
+      '"missing" - fails before any request', () async {
+    final client = _FakeClient();
+    final api = TwoTicketsChainApi(client, const _FixedClock());
+    final films = await api.getFilmsForDay(_norba, DateTime(2026, 10, 13));
+    final s = films.first.showingGroups.first.sessions.first;
+    final broken = Session(
+      sessionId: s.sessionId,
+      startTime: s.startTime,
+      endTime: s.endTime,
+      screenName: s.screenName,
+      isSoldOut: false,
+      formattedPrice: null,
+      isPriceVisible: false,
+      attributes: const [],
+      bookingPath: null,
+      twoTicketsServerEse: '',
+      twoTicketsPortEse: '80',
+    );
+    await expectLater(
+      api.getSeatMap(_norba, broken),
+      throwsA(isA<ApiException>()),
+    );
+    expect(client.sectorCalls, 0);
+  });
+
+  test('one failed checkout page drops only that film', () async {
+    final client = _FakeClient(failFilmIds: {'22259'});
+    final api = TwoTicketsChainApi(client, const _FixedClock());
+    final films = await api.getFilmsForDay(_norba, DateTime(2026, 10, 13));
+    expect(films, hasLength(5));
+    expect(films.any((f) => f.filmId == '22259'), isFalse);
+  });
+
+  test('every checkout page failing fails the programme, uncached', () async {
+    final all = RegExp(r'Checkout/(\d+)/609\?settore=C')
+        .allMatches(
+          File('test/fixtures/twotickets_venue_609.html').readAsStringSync(),
+        )
+        .map((m) => m.group(1)!)
+        .toSet();
+    final client = _FakeClient(failFilmIds: all);
+    final api = TwoTicketsChainApi(client, const _FixedClock());
+    await expectLater(
+      api.getFilmsForDay(_norba, DateTime(2026, 10, 13)),
+      throwsA(anything),
+    );
+    final before = client.venueCalls;
+    await expectLater(
+      api.getFilmsForDay(_norba, DateTime(2026, 10, 13)),
+      throwsA(anything),
+    );
+    expect(client.venueCalls, before + 1, reason: 'refetched, not cached');
   });
 }
