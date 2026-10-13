@@ -12,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('no 2Tickets fixture carries real payment credentials', () {
     final leak = RegExp(
-      r'''(userBanca|pwdBanca)"?\s*:\s*["']?(?!REDACTED|CONFIG\.)[A-Za-z0-9_]''',
+      r'''(userBanca|pwdBanca)"?\s*:\s*["']?(?!REDACTED|CONFIG\.|null\b)[^\s"',}]''',
     );
     final offenders = Directory('test/fixtures')
         .listSync()
