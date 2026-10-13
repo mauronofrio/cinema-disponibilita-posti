@@ -20,6 +20,8 @@
 /// written doubled (`\\`) accordingly.
 library;
 
+import '../../util/html_entities.dart';
+
 const _q = "\\\\?['\"]";
 
 /// Matches a closing tag's `/`, which - like quotes (see [_q]) - shows up
@@ -37,16 +39,6 @@ String _close(String tagName) => "<\\\\?/$tagName>";
 /// behaviour "for free", instead of every single one needing its own
 /// `(?:\s|\\n)` alternation.
 String _normalizeEscapedNewlines(String html) => html.replaceAll('\\n', '\n');
-
-String _decodeHtmlEntities(String input) {
-  return input
-      .replaceAll('&amp;', '&')
-      .replaceAll('&#39;', "'")
-      .replaceAll('&apos;', "'")
-      .replaceAll('&quot;', '"')
-      .replaceAll('&lt;', '<')
-      .replaceAll('&gt;', '>');
-}
 
 /// One film as listed for a given day - metadata only, no showtimes (those
 /// are the sibling `sessions` list in [EighteenTicketsDayProgramming]).
@@ -151,13 +143,13 @@ EighteenTicketsDayProgramming parseEighteenTicketsFilmsForDay(
       films.add(
         EighteenTicketsFilmSummary(
           filmId: filmId,
-          title: _decodeHtmlEntities(linkMatch.group(2)!.trim()),
+          title: decodeHtmlEntities(linkMatch.group(2)!.trim()),
           posterUrl: posterMatch?.group(1),
         ),
       );
       final labelMatch = _smallLabelRe.firstMatch(block);
       if (labelMatch != null) {
-        labelsByFilmId[filmId] = _decodeHtmlEntities(
+        labelsByFilmId[filmId] = decodeHtmlEntities(
           labelMatch.group(1)!.trim(),
         );
       }

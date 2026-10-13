@@ -8,6 +8,7 @@ import '../localization/app_localizations.dart';
 import '../models/film.dart';
 import '../models/showing_date.dart';
 import '../models/seat_map.dart';
+import '../util/html_entities.dart';
 
 /// A failure the API itself reported (HTTP error status, but with a JSON
 /// body carrying a human-readable `errorMessage` - the backend does this
@@ -21,51 +22,6 @@ class ApiException implements Exception {
 
   @override
   String toString() => message;
-}
-
-const _htmlNamedEntities = {
-  'amp': '&',
-  'lt': '<',
-  'gt': '>',
-  'quot': '"',
-  'apos': "'",
-  'nbsp': ' ',
-  'rsquo': '’',
-  'lsquo': '‘',
-  'rdquo': '”',
-  'ldquo': '“',
-  'hellip': '…',
-  'agrave': 'à',
-  'egrave': 'è',
-  'igrave': 'ì',
-  'ograve': 'ò',
-  'ugrave': 'ù',
-  'aacute': 'á',
-  'eacute': 'é',
-  'iacute': 'í',
-  'oacute': 'ó',
-  'uacute': 'ú',
-};
-
-/// Decodes the small set of HTML entities the API's error messages actually
-/// use (Italian accented vowels, punctuation) - not a general HTML decoder,
-/// just enough for text meant for a web page to read cleanly in a plain
-/// Flutter `Text` widget.
-String _decodeHtmlEntities(String input) {
-  return input.replaceAllMapped(RegExp(r'&(#x?[0-9a-fA-F]+|[a-zA-Z]+);'), (
-    match,
-  ) {
-    final entity = match.group(1)!;
-    if (entity.startsWith('#x') || entity.startsWith('#X')) {
-      final code = int.tryParse(entity.substring(2), radix: 16);
-      return code == null ? match.group(0)! : String.fromCharCode(code);
-    }
-    if (entity.startsWith('#')) {
-      final code = int.tryParse(entity.substring(1));
-      return code == null ? match.group(0)! : String.fromCharCode(code);
-    }
-    return _htmlNamedEntities[entity] ?? match.group(0)!;
-  });
 }
 
 /// Typed client for the public `thespacecinema.it` showings/booking API.
@@ -161,7 +117,7 @@ class TheSpaceApiClient {
       // Strip the API's HTML markup (<p>, <strong>, etc.) and decode its
       // entities (it sends "c'&egrave; stato" literally) - it's meant for
       // the official website, not a plain-text mobile UI.
-      final plain = _decodeHtmlEntities(
+      final plain = decodeHtmlEntities(
         raw.replaceAll(RegExp('<[^>]*>'), ' '),
       ).replaceAll(RegExp(r'\s+'), ' ').trim();
       if (plain.isNotEmpty) throw ApiException(plain);

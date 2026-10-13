@@ -1,0 +1,29 @@
+{
+ "esito": "OK",
+ "messaggio": null,
+ "settori": [
+  {
+   "idSettore": 3577,
+   "descrizione": "Platea",
+   "modVend": "2",
+   "totPosti": 0,
+   "totPostiLiberi": 70,
+   "righe": 8,
+   "colonne": 10,
+   "schermo": "-1",
+   "maxPren": 0,
+   "imgMappa": "-",
+   "sala": "NORBA 3",
+   "titolo": "L'ESTRANEA",
+   "dataEvento": "14/10/2026",
+   "oraEvento": "21.30",
+   "idSala": 0,
+   "capienza": 70,
+   "hasNumerazione": true,
+   "isPostoUnico": false
+  }
+ ],
+ "nomeEsercizio": "CINEMA TEATRO NORBA",
+ "cittaEsercizio": "CONVERSANO",
+ "idExtEse": 609
+}
