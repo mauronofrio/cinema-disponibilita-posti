@@ -1,0 +1,10 @@
+{
+  "cinemaId": "metropolis-multicine",
+  "name": "Metropolis Multicine - Mola di Bari",
+  "slug": "metropolis-multicine",
+  "address": "via Francesco Baracca s/n/c, 70042, Mola di Bari, BA",
+  "lat": 41.0617984,
+  "lng": 17.0816616,
+  "chain": "eighteenTickets",
+  "host": "metropolis.multicine.18tickets.it"
+}

@@ -2508,5 +2508,425 @@
     "lat": 40.647521,
     "lng": 15.796186,
     "chain": "twoTickets"
+  },
+  {
+    "cinemaId": "brindisi-andromeda",
+    "name": "Andromeda - Brindisi",
+    "slug": "brindisi-andromeda",
+    "address": "Via Bozzano 1, 72100, Brindisi, BR",
+    "lat": 40.6268104,
+    "lng": 17.9428786,
+    "chain": "eighteenTickets",
+    "host": "brindisi.andromeda.18tickets.it"
+  },
+  {
+    "cinemaId": "roma-andromeda",
+    "name": "Andromeda - Roma",
+    "slug": "roma-andromeda",
+    "address": "Via Mattia Battistini, 191, 00167, Roma, RM",
+    "lat": 41.9090555,
+    "lng": 12.4178429,
+    "chain": "eighteenTickets",
+    "host": "roma.andromeda.18tickets.it"
+  },
+  {
+    "cinemaId": "zumpano-andromeda",
+    "name": "Andromeda River - Zumpano",
+    "slug": "zumpano-andromeda",
+    "address": "Via Beato Francesco Marino 47, 87040, Zumpano, CS",
+    "lat": 39.3277408,
+    "lng": 16.2597083,
+    "chain": "eighteenTickets",
+    "host": "zumpano.andromeda.18tickets.it"
+  },
+  {
+    "cinemaId": "alhambra-barberini",
+    "name": "Multisala Alhambra - Roma",
+    "slug": "alhambra-barberini",
+    "address": "Via Pier delle Vigne 4, 00165 Roma RM",
+    "lat": 41.9004038,
+    "lng": 12.427464,
+    "chain": "eighteenTickets",
+    "host": "alhambra.barberini.18tickets.it"
+  },
+  {
+    "cinemaId": "fedele-calusco",
+    "name": "Cineteatro S. Fedele - Calusco d'Adda",
+    "slug": "fedele-calusco",
+    "address": "Via Verdi, 24033, Calusco d'Adda, BG",
+    "lat": 45.6883631,
+    "lng": 9.472112,
+    "chain": "eighteenTickets",
+    "host": "fedele.calusco.18tickets.it"
+  },
+  {
+    "cinemaId": "sanpietro-ccgenova",
+    "name": "Cinema San Pietro - Genova",
+    "slug": "sanpietro-ccgenova",
+    "address": "Piazza Santa Paola Frassinetti, 10, 16166, Genova, GE",
+    "lat": 44.3875682,
+    "lng": 9.0151917,
+    "chain": "eighteenTickets",
+    "host": "sanpietro.ccgenova.18tickets.it"
+  },
+  {
+    "cinemaId": "flora-ccroma",
+    "name": "Cinema Flora - Firenze",
+    "slug": "flora-ccroma",
+    "address": "Piazza Dalmazia 2, 50141 Firenze FI",
+    "lat": 43.7953514,
+    "lng": 11.2398776,
+    "chain": "eighteenTickets",
+    "host": "flora.ccroma.18tickets.it"
+  },
+  {
+    "cinemaId": "lux-cdr",
+    "name": "Multisala Lux - Roma",
+    "slug": "lux-cdr",
+    "address": "Via Massaciuccoli 31, 00199, Roma, RM",
+    "lat": 41.9264215,
+    "lng": 12.5147436,
+    "chain": "eighteenTickets",
+    "host": "lux.cdr.18tickets.it"
+  },
+  {
+    "cinemaId": "odeon-cdr",
+    "name": "Odeon Multiscreen - Roma",
+    "slug": "odeon-cdr",
+    "address": "Piazza Stefano Jacini, 22, 00121, Roma, RM",
+    "lat": 41.9495282,
+    "lng": 12.4656229,
+    "chain": "eighteenTickets",
+    "host": "odeon.cdr.18tickets.it"
+  },
+  {
+    "cinemaId": "tibur-cdr",
+    "name": "Cinema Tibur - Roma",
+    "slug": "tibur-cdr",
+    "address": "Via degli Etruschi, 36, 00185, Roma, RM",
+    "lat": 41.8973224,
+    "lng": 12.515008,
+    "chain": "eighteenTickets",
+    "host": "tibur.cdr.18tickets.it"
+  },
+  {
+    "cinemaId": "praiaamare-cinemaloren",
+    "name": "Cinema Loren - Praia a Mare",
+    "slug": "praiaamare-cinemaloren",
+    "address": "Via Aieta, 21, 87028, Praia a Mare, CS",
+    "lat": 39.8992166,
+    "lng": 15.7810475,
+    "chain": "eighteenTickets",
+    "host": "praiaamare.cinemaloren.18tickets.it"
+  },
+  {
+    "cinemaId": "metropolis-cinetecadimilano",
+    "name": "Area Metropolis 2.0 - Paderno Dugnano",
+    "slug": "metropolis-cinetecadimilano",
+    "address": "Via Oslavia, 8, 20037, Paderno Dugnano, MI",
+    "lat": 45.5686424,
+    "lng": 9.1599798,
+    "chain": "eighteenTickets",
+    "host": "metropolis.cinetecadimilano.18tickets.it"
+  },
+  {
+    "cinemaId": "teatro-comunalecatanzaro",
+    "name": "Cinema Teatro Comunale - Catanzaro",
+    "slug": "teatro-comunalecatanzaro",
+    "address": "Corso Giuseppe Mazzini, 84, 88100, Catanzaro, CZ",
+    "lat": 38.9087336,
+    "lng": 16.5897463,
+    "chain": "eighteenTickets",
+    "host": "teatro.comunalecatanzaro.18tickets.it"
+  },
+  {
+    "cinemaId": "citrigno-cosenzacinema",
+    "name": "Cinema Citrigno - Cosenza",
+    "slug": "citrigno-cosenzacinema",
+    "address": "Via Adige 13, 87100, Cosenza, CS",
+    "lat": 39.2962102,
+    "lng": 16.2524869,
+    "chain": "eighteenTickets",
+    "host": "citrigno.cosenzacinema.18tickets.it"
+  },
+  {
+    "cinemaId": "cinemac-doff",
+    "name": "Cinema C - Concordia Sagittaria",
+    "slug": "cinemac-doff",
+    "address": "Via I Maggio, 46, 30023, Concordia Sagittaria, VE",
+    "lat": 45.7551753,
+    "lng": 12.8444421,
+    "chain": "eighteenTickets",
+    "host": "cinemac.doff.18tickets.it"
+  },
+  {
+    "cinemaId": "royal-efc",
+    "name": "Multisala Cinema Royal - Civitavecchia",
+    "slug": "royal-efc",
+    "address": "Piazza Regina Margherita, 7, 00053, Civitavecchia, RM",
+    "lat": 42.0932778,
+    "lng": 11.7940467,
+    "chain": "eighteenTickets",
+    "host": "royal.efc.18tickets.it"
+  },
+  {
+    "cinemaId": "politeama-fondazionefraschini",
+    "name": "Cinema Politeama - Pavia",
+    "slug": "politeama-fondazionefraschini",
+    "address": "Corso Cavour 20, 27100 Pavia PV",
+    "lat": 45.1860397,
+    "lng": 9.1518691,
+    "chain": "eighteenTickets",
+    "host": "politeama.fondazionefraschini.18tickets.it"
+  },
+  {
+    "cinemaId": "monfalcone-kinemax",
+    "name": "Kinemax - Monfalcone",
+    "slug": "monfalcone-kinemax",
+    "address": "Via Grado 54, 34074, Monfalcone, GO",
+    "lat": 45.7971664,
+    "lng": 13.5238563,
+    "chain": "eighteenTickets",
+    "host": "monfalcone.kinemax.18tickets.it"
+  },
+  {
+    "cinemaId": "schermo-lab80",
+    "name": "Lo Schermo Bianco - Bergamo",
+    "slug": "schermo-lab80",
+    "address": "Via Daste e Spalenga, 13, 24125, Bergamo, BG",
+    "lat": 45.6939606,
+    "lng": 9.7041753,
+    "chain": "eighteenTickets",
+    "host": "schermo.lab80.18tickets.it"
+  },
+  {
+    "cinemaId": "ciak-modernomaglie",
+    "name": "Cinema Ciak - Maglie",
+    "slug": "ciak-modernomaglie",
+    "address": "Via Concetta Annesi 87, 73024 Maglie LE",
+    "lat": 40.122592,
+    "lng": 18.30035,
+    "chain": "eighteenTickets",
+    "host": "ciak.modernomaglie.18tickets.it"
+  },
+  {
+    "cinemaId": "multicinemamangiatordi-multicinemamangiatordi",
+    "name": "Multicinema Mangiatordi - Altamura",
+    "slug": "multicinemamangiatordi-multicinemamangiatordi",
+    "address": "Via Eugenio Montale, 70022 Altamura BA",
+    "lat": 40.8263105,
+    "lng": 16.5668353,
+    "chain": "eighteenTickets",
+    "host": "multicinemamangiatordi.multicinemamangiatordi.18tickets.it"
+  },
+  {
+    "cinemaId": "astoria-nuovospezia",
+    "name": "Cinema Astoria - Lerici",
+    "slug": "astoria-nuovospezia",
+    "address": "Via Nino Gerini, 40, 19032, Lerici, SP",
+    "lat": 44.0761014,
+    "lng": 9.9117889,
+    "chain": "eighteenTickets",
+    "host": "astoria.nuovospezia.18tickets.it"
+  },
+  {
+    "cinemaId": "garibaldi-nuovospezia",
+    "name": "Cinema Garibaldi - Carrara",
+    "slug": "garibaldi-nuovospezia",
+    "address": "Via Verdi, 15C, 54033, Carrara, MS",
+    "lat": 44.0769283,
+    "lng": 10.1009256,
+    "chain": "eighteenTickets",
+    "host": "garibaldi.nuovospezia.18tickets.it"
+  },
+  {
+    "cinemaId": "ilnuovo-nuovospezia",
+    "name": "Cinema Il Nuovo - La Spezia",
+    "slug": "ilnuovo-nuovospezia",
+    "address": "Via Cristoforo Colombo, 99, 19121, La Spezia, SP",
+    "lat": 44.1040801,
+    "lng": 9.8178062,
+    "chain": "eighteenTickets",
+    "host": "ilnuovo.nuovospezia.18tickets.it"
+  },
+  {
+    "cinemaId": "multisala-paolillo",
+    "name": "Multisala Paolillo - Barletta",
+    "slug": "multisala-paolillo",
+    "address": "Corso Garibaldi 25-27, 76121, Barletta, BT",
+    "lat": 41.3179087,
+    "lng": 16.279677,
+    "chain": "eighteenTickets",
+    "host": "multisala.paolillo.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-pixelsc",
+    "name": "Pixel Cinema - Santeramo in Colle",
+    "slug": "cinema-pixelsc",
+    "address": "Via Stazione, 49, 70029, Santeramo in Colle, BA",
+    "lat": 40.7988577,
+    "lng": 16.7600259,
+    "chain": "eighteenTickets",
+    "host": "cinema.pixelsc.18tickets.it"
+  },
+  {
+    "cinemaId": "reposi",
+    "name": "Multisala Diana - Savona",
+    "slug": "reposi",
+    "address": "Via Brignoni, 1 R., 17100, Savona, SV",
+    "lat": 44.3107358,
+    "lng": 8.4787927,
+    "chain": "eighteenTickets",
+    "host": "reposi.18tickets.it"
+  },
+  {
+    "cinemaId": "rivellini-romanodilombardia",
+    "name": "Sala Mons. Rivellini - Romano di Lombardia",
+    "slug": "rivellini-romanodilombardia",
+    "address": "Via XXV Aprile, 1, 24058, Romano di Lombardia, BG",
+    "lat": 45.5183595,
+    "lng": 9.7497811,
+    "chain": "eighteenTickets",
+    "host": "rivellini.romanodilombardia.18tickets.it"
+  },
+  {
+    "cinemaId": "splendor-sandaniele",
+    "name": "Cinema Splendor - San Daniele del Friuli",
+    "slug": "splendor-sandaniele",
+    "address": "Via Ippolito Nievo 8, 33038 San Daniele del Friuli UD",
+    "lat": 46.1588202,
+    "lng": 13.0111469,
+    "chain": "eighteenTickets",
+    "host": "splendor.sandaniele.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-spacecity",
+    "name": "Space City - Carpi",
+    "slug": "cinema-spacecity",
+    "address": "Via dell'industria, 41012, Carpi, MO",
+    "lat": 44.7688721,
+    "lng": 10.8502963,
+    "chain": "eighteenTickets",
+    "host": "cinema.spacecity.18tickets.it"
+  },
+  {
+    "cinemaId": "spazio-spazioalfieri",
+    "name": "Spazio Alfieri - Firenze",
+    "slug": "spazio-spazioalfieri",
+    "address": "Via dell'Ulivo 8, 50122 Firenze FI",
+    "lat": 43.7709014,
+    "lng": 11.2634972,
+    "chain": "eighteenTickets",
+    "host": "spazio.spazioalfieri.18tickets.it"
+  },
+  {
+    "cinemaId": "politeama-suzzara",
+    "name": "Cinema Teatro Politeama - Suzzara",
+    "slug": "politeama-suzzara",
+    "address": "Via Mazzini 7/a, 46029 Suzzara MN",
+    "lat": 44.9920976,
+    "lng": 10.7435708,
+    "chain": "eighteenTickets",
+    "host": "politeama.suzzara.18tickets.it"
+  },
+  {
+    "cinemaId": "cineteatroeden-arenare",
+    "name": "Cine Teatro Eden Multisala - Termini Imerese",
+    "slug": "cineteatroeden-arenare",
+    "address": "Largo Eden 1, 90018 Termini Imerese PA",
+    "lat": 37.98735,
+    "lng": 13.698005,
+    "chain": "eighteenTickets",
+    "host": "cineteatroeden.arenare.18tickets.it"
+  },
+  {
+    "cinemaId": "ovada-ccgenova",
+    "name": "Cinema Splendor - Ovada",
+    "slug": "ovada-ccgenova",
+    "address": "Via Gian Domenico Buffa, 15076 Ovada AL",
+    "lat": 44.638282,
+    "lng": 8.64614,
+    "chain": "eighteenTickets",
+    "host": "ovada.ccgenova.18tickets.it"
+  },
+  {
+    "cinemaId": "golden-cinemagolden",
+    "name": "Cinema Golden - Marsala",
+    "slug": "golden-cinemagolden",
+    "address": "Via San Giovanni Bosco 24, 91025 Marsala TP",
+    "lat": 37.794486,
+    "lng": 12.440079,
+    "chain": "eighteenTickets",
+    "host": "golden.cinemagolden.18tickets.it"
+  },
+  {
+    "cinemaId": "olbia-cinemateatroolbia",
+    "name": "Cine Teatro Olbia - Olbia",
+    "slug": "olbia-cinemateatroolbia",
+    "address": "Via delle Terme 2, 07026 Olbia SS",
+    "lat": 40.9238669,
+    "lng": 9.5034145,
+    "chain": "eighteenTickets",
+    "host": "olbia.cinemateatroolbia.18tickets.it"
+  },
+  {
+    "cinemaId": "cinematirreno",
+    "name": "Nuovo Cinema Tirreno - Capalbio",
+    "slug": "cinematirreno",
+    "address": "Piazza della Repubblica 9, 58011 Capalbio GR",
+    "lat": 42.425427,
+    "lng": 11.418313,
+    "chain": "eighteenTickets",
+    "host": "cinematirreno.18tickets.it"
+  },
+  {
+    "cinemaId": "al-cineplexmoderno",
+    "name": "Cineplex Moderno - Alessandria",
+    "slug": "al-cineplexmoderno",
+    "address": "Via Gambalera, Ang. Via Rana, 15047, Alessandria, AL",
+    "lat": 44.8863632,
+    "lng": 8.7064331,
+    "chain": "eighteenTickets",
+    "host": "al.cineplexmoderno.18tickets.it"
+  },
+  {
+    "cinemaId": "cinemateatroitalia-cosenzacinema",
+    "name": "Cinema Teatro Italia Aroldo Tieri - Cosenza",
+    "slug": "cinemateatroitalia-cosenzacinema",
+    "address": "Piazza Amendola, 87100, Cosenza, CS",
+    "lat": 39.290823,
+    "lng": 16.252465,
+    "chain": "eighteenTickets",
+    "host": "cinemateatroitalia.cosenzacinema.18tickets.it"
+  },
+  {
+    "cinemaId": "unical-cosenzacinema",
+    "name": "Cinema Unical - Rende",
+    "slug": "unical-cosenzacinema",
+    "address": "Via Pietro Bucci, snc, 87036, Rende, CS",
+    "lat": 39.3542834,
+    "lng": 16.2234691,
+    "chain": "eighteenTickets",
+    "host": "unical.cosenzacinema.18tickets.it"
+  },
+  {
+    "cinemaId": "cinecity-doff",
+    "name": "Cinecity - Lignano Sabbiadoro",
+    "slug": "cinecity-doff",
+    "address": "Via Arcobaleno 12, 33054 Lignano Sabbiadoro UD",
+    "lat": 45.6862674,
+    "lng": 13.1331793,
+    "chain": "eighteenTickets",
+    "host": "cinecity.doff.18tickets.it"
+  },
+  {
+    "cinemaId": "moderno-modernomaglie",
+    "name": "Cinema Moderno - Maglie",
+    "slug": "moderno-modernomaglie",
+    "address": "Via Vittorio Emanuele II 92, 73024 Maglie LE",
+    "lat": 40.12309,
+    "lng": 18.301528,
+    "chain": "eighteenTickets",
+    "host": "moderno.modernomaglie.18tickets.it"
   }
 ]
