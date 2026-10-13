@@ -17,6 +17,7 @@ import html
 import json
 import os
 import re
+import sys
 import time
 import urllib.parse
 import urllib.request
@@ -146,27 +147,66 @@ def city_of(address):
     m = re.search(r"(?<!\d)\d{5}\s+([^\d,]+?)(?:\s+[A-Z]{2})?\s*$", address.strip())
     if m:
         return m.group(1).strip()
-    # "Via Baione, snc, 70043, Monopoli, BA" -> "Monopoli"
     parts = [p.strip() for p in address.split(",") if p.strip()]
+    # "largo eden 1, 90018, Termini imerese, Palermo" -> "Termini imerese": the
+    # part right after a bare postcode is the town; what follows may be the
+    # province spelled out, which must not win.
+    for i, p in enumerate(parts[:-1]):
+        if re.fullmatch(r"\d{4,5}", p) and not re.search(r"\d", parts[i + 1]):
+            return re.sub(r"\s+[A-Z]{2}$", "", parts[i + 1]).strip()
+    # "Via Baione, snc, 70043, Monopoli, BA" -> "Monopoli"
     for p in reversed(parts):
         if not re.fullmatch(r"\d{5}|[A-Z]{2}|snc", p) and not re.search(r"\d", p):
             return p
     return ""
 
 
-def geocode(address):
-    city = city_of(address).casefold()
-    q = urllib.parse.urlencode({"q": address, "format": "json", "limit": 5, "addressdetails": 1})
+def _nominatim(query, city):
+    """First hit whose city/town/village/municipality is [city], or None.
+    Returns False (not None) on a request failure, so callers can tell
+    "nothing found" from "couldn't ask"."""
+    q = urllib.parse.urlencode({"q": query, "format": "json", "limit": 5, "addressdetails": 1})
     code, _, body = get(f"https://nominatim.openstreetmap.org/search?{q}", ua=UA_GEO, delay=1.1)
     if code != 200:
-        fail(f"geocoding {address!r}", code)
-        return None
-    hits = parse_json(body, f"geocoding {address!r}")
+        fail(f"geocoding {query!r}", code)
+        return False
+    hits = parse_json(body, f"geocoding {query!r}")
     for hit in hits if isinstance(hits, list) else []:
         a = hit.get("address", {})
         names = {str(a.get(k, "")).casefold() for k in ("city", "town", "village", "municipality")}
         if city and city in names:
             return float(hit["lat"]), float(hit["lon"])
+    return None
+
+
+def _street_of(address):
+    # Street part, without "snc" / "s/n/c" / "s.n.c." / "n°" noise that makes
+    # Nominatim return nothing: "Via Baione, snc, 70043, ..." -> "Via Baione".
+    street = address.split(",")[0]
+    street = re.sub(r"(?i)\b(s\.?\s*n\.?\s*c\.?|s/n/c)\b\.?", "", street)
+    street = re.sub(r"(?i)\bn\s*°\s*", "", street)
+    return re.sub(r"\s+", " ", street).strip(" ,")
+
+
+def geocode(address, name=""):
+    """(lat, lng, precision) or None. Tries, in order and always requiring the
+    hit to be in the venue's own town: the full address, the cleaned street +
+    town, the venue name + town (cinemas are usually mapped in OSM), and
+    finally the town centre - flagged "town", for manual review."""
+    city_raw = city_of(address)
+    city = city_raw.casefold()
+    if not city:
+        return None
+    attempts = [(address, "street"), (f"{_street_of(address)}, {city_raw}", "street")]
+    if name:
+        attempts.append((f"{name}, {city_raw}", "venue"))
+    attempts.append((f"{city_raw}, Italia", "town"))
+    for query, precision in attempts:
+        hit = _nominatim(query, city)
+        if hit is False:
+            return None  # request failed: already counted as INCOMPLETE
+        if hit:
+            return hit[0], hit[1], precision
     return None
 
 
@@ -192,7 +232,7 @@ def process_host(host, catalog, points, known_ids, candidates):
         if len(failures) == before:
             log(f"skip {host}: no name/address on homepage (not a venue page)")
         return
-    coords = geocode(info["address"])
+    coords = geocode(info["address"], info["name"])
     if coords is None:
         if len(failures) == before:
             log(f"NOT GEOCODED {host}: {info['name']} - {info['address']}")
@@ -214,7 +254,8 @@ def process_host(host, catalog, points, known_ids, candidates):
             "lng": coords[1], "chain": "eighteenTickets", "host": host}
     candidates.append(cand)
     points.append(cand)
-    log(f"candidate {cid}: {info['name']} - {info['address']}")
+    pin = "" if coords[2] == "street" else f" [pin: {coords[2]}-level, check on a map]"
+    log(f"candidate {cid}: {info['name']} - {info['address']}{pin}")
 
 
 def main():
@@ -224,10 +265,30 @@ def main():
     known_ids = {c["cinemaId"] for c in catalog}
     points = list(catalog)
     candidates = []
+    done_hosts = set()
+    if "--resume" in sys.argv[1:]:
+        # Pick up an interrupted run: keep its candidates and its report, and
+        # skip every host it already settled. Hosts that only appear in
+        # INCOMPLETE lines (transient failures) are retried.
+        if os.path.exists(OUT):
+            for cand in json.load(open(OUT, encoding="utf-8")):
+                candidates.append(cand)
+                points.append(cand)
+                known_ids.add(cand["cinemaId"])
+                done_hosts.add(cand["host"])
+        if os.path.exists(REPORT):
+            for line in open(REPORT, encoding="utf-8").read().splitlines():
+                # Transient failures and geocoding misses are retried (the
+                # geocoder may have improved since the interrupted run).
+                if line.startswith(("INCOMPLETE", "NOT GEOCODED")):
+                    continue
+                report.append(line)
+                done_hosts.update(re.findall(r"[a-z0-9-]+(?:\.[a-z0-9-]+)*\.18tickets\.it", line))
+        log(f"resume: {len(candidates)} candidates and {len(done_hosts)} hosts already settled")
     try:
         for label in circuit_labels():
             for host in venue_hosts(label):
-                if host in known_hosts:
+                if host in known_hosts or host in done_hosts:
                     continue
                 try:
                     process_host(host, catalog, points, known_ids, candidates)
