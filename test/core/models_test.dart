@@ -16,6 +16,10 @@ void main() {
       'lat': 0.0,
       'lng': 0.0,
       'chain': 'eighteenTickets',
+      // Required by eighteenTickets (host) and webtic (host, webticLocalId);
+      // see Cinema._hasRequiredFields.
+      'host': 'x.18tickets.it',
+      'webticLocalId': 1,
     };
 
     test('hasSeatMap defaults to true when absent from the JSON', () {

@@ -172,7 +172,11 @@ class Cinema {
         json['webticCatalogSource'] as String?,
       );
       if (chain == null || source == null) return null;
-      return Cinema(
+      final minAppVersion = json['minAppVersion'] as String?;
+      if (minAppVersion != null && !_versionPattern.hasMatch(minAppVersion)) {
+        return null; // can't tell which apps may show it: fail closed
+      }
+      final cinema = Cinema(
         cinemaId: json['cinemaId'] as String,
         name: json['name'] as String,
         slug: json['slug'] as String,
@@ -185,11 +189,38 @@ class Cinema {
         hasSeatMap: json['hasSeatMap'] as bool? ?? true,
         scheduleFromFilmPages: json['scheduleFromFilmPages'] as bool? ?? false,
         webticCatalogSource: source,
-        minAppVersion: json['minAppVersion'] as String?,
+        minAppVersion: minAppVersion,
       );
+      return cinema._hasRequiredFields ? cinema : null;
     } on TypeError {
       return null;
     }
+  }
+
+  /// What `minAppVersion` may look like: "1.0.9", "v1.0.9", "1.0.9+3",
+  /// "1.0.9-beta". Anything else hides the entry.
+  static final _versionPattern = RegExp(r'^v?\d+(\.\d+)*([+-].*)?$');
+
+  /// Whether this chain's [ChainApi] can call it without force-unwrapping a
+  /// missing field:
+  /// - [CinemaChain.eighteenTickets]: [host] (`cinema.host!` everywhere in
+  ///   `EighteenTicketsChainApi`).
+  /// - [CinemaChain.webtic]: [webticLocalId] always (`getSeatMap`, and every
+  ///   catalog source), plus [host] for every source except
+  ///   [WebticCatalogSource.fullSchedulePortal], which only calls the shared
+  ///   portal with [webticLocalId] (`WebticChainApi`).
+  /// - The Space, UCI (a missing [webticLocalId] is already handled with an
+  ///   error message) and 2Tickets: [cinemaId] alone.
+  bool get _hasRequiredFields {
+    final hasHost = (host ?? '').isNotEmpty;
+    return switch (chain) {
+      CinemaChain.eighteenTickets => hasHost,
+      CinemaChain.webtic =>
+        webticLocalId != null &&
+            (hasHost ||
+                webticCatalogSource == WebticCatalogSource.fullSchedulePortal),
+      CinemaChain.theSpace || CinemaChain.uci || CinemaChain.twoTickets => true,
+    };
   }
 
   final String cinemaId;
