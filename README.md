@@ -50,6 +50,14 @@ flutter run          # debug, su emulatore o device connesso
 flutter build apk --release --dart-define=TMDB_READ_ACCESS_TOKEN=...  # trama/trailer film (facoltativo, senza la app funziona lo stesso)
 ```
 
+Prima di pubblicare un nuovo cinema nell'elenco, si verifica che funzioni davvero con il codice dell'app, su dati reali (programmazione, mappa posti e link di acquisto). Il controllo fa richieste di rete, quindi non gira con `flutter test`:
+
+```bash
+flutter test --run-skipped --tags live test/live --dart-define=VERIFY_CHAIN=eighteenTickets
+```
+
+Altri `--dart-define` opzionali: `VERIFY_FILE` (default `assets/cinemas.json`), `VERIFY_IDS` (elenco di `cinemaId` separati da virgola), `VERIFY_DELAY_MS` (pausa tra un cinema e l'altro, default 4000), `VERIFY_REPORT`. Il rapporto finisce in `build/navigability_report.json`.
+
 ## Disclaimer
 
 App non ufficiale, senza alcun legame con The Space Cinema, Vue International, UCI Cinemas o con nessuno dei cinema indipendenti elencati sopra. Non gestisce account, pagamenti, biglietti o prenotazioni: mostra soltanto programmazione e disponibilità posti, dati già pubblicamente visibili sui siti ufficiali.

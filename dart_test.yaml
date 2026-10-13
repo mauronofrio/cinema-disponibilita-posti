@@ -1,0 +1,3 @@
+tags:
+  live:
+    skip: "Live network check. Run: flutter test --run-skipped --tags live test/live"
