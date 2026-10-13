@@ -127,5 +127,30 @@ void main() {
         expect(settled.error, isA<ApiException>());
       },
     );
+
+    test('a showing sold only as "Posto Unico" has no rows but is not an '
+        'error - the free count is the answer', () async {
+      final container = _containerReturning(
+        SeatMap(
+          screenLabel: '',
+          totalRows: 0,
+          totalColumns: 0,
+          rows: const [],
+          areaCategories: const [],
+          unnumberedSectors: const [
+            UnnumberedSector(name: 'Posto Unico', freeSeats: 60, capacity: 60),
+          ],
+        ),
+      );
+      final states = <AsyncValue<SeatMap>>[];
+      final sub = container.listen(
+        seatMapProvider((_cinema, _session)),
+        (_, next) => states.add(next),
+        fireImmediately: true,
+      );
+      addTearDown(sub.close);
+      await pumpEventQueue();
+      expect(states.last.hasValue, isTrue);
+    });
   });
 }

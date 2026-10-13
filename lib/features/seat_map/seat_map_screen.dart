@@ -16,6 +16,7 @@ import 'widgets/date_switcher.dart';
 import 'widgets/occupancy_summary.dart';
 import 'widgets/seat_grid.dart';
 import 'widgets/time_switcher.dart';
+import 'widgets/unnumbered_sectors.dart';
 
 /// Read-only seat map: no seat is tappable/selectable, there is no checkout.
 /// The entire point is "can I see, at a glance, what's free" - so loading
@@ -317,9 +318,17 @@ class _SeatMapScreenState extends ConsumerState<SeatMapScreen> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AreaLegend(seatMap: seatMap),
-                            const SizedBox(height: 12),
-                            SeatGrid(seatMap: seatMap),
+                            if (seatMap.unnumberedSectors.isNotEmpty) ...[
+                              UnnumberedSectors(
+                                sectors: seatMap.unnumberedSectors,
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                            if (seatMap.rows.isNotEmpty) ...[
+                              AreaLegend(seatMap: seatMap),
+                              const SizedBox(height: 12),
+                              SeatGrid(seatMap: seatMap),
+                            ],
                             const SizedBox(height: 32),
                             BuyTicketsButton(session: session),
                           ],

@@ -82,7 +82,10 @@ final seatMapProvider = FutureProvider.autoDispose.family<SeatMap, SeatMapKey>((
   // empty SeatMap. Guarded here rather than in each of the four parsers
   // because this is the single point every chain's seat map passes
   // through.
-  if (seatMap.rows.isEmpty) {
+  //
+  // A showing sold only without seat numbers (2Tickets' "Posto Unico")
+  // legitimately has no rows - its free count is the whole answer.
+  if (seatMap.rows.isEmpty && seatMap.unnumberedSectors.isEmpty) {
     throw ApiException(AppLocalizations.current.seatsLoadError);
   }
   return seatMap;

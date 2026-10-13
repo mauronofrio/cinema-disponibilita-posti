@@ -206,6 +206,12 @@ class AppLocalizations {
         : 'Remove $cinemaName from your cinemas?';
   }
 
+  String unnumberedSectorFree(int free, int? capacity) {
+    final it = locale.languageCode == 'it';
+    if (capacity == null) return it ? '$free liberi' : '$free free';
+    return it ? '$free liberi su $capacity' : '$free free of $capacity';
+  }
+
   String get active => _t('active');
   String get language => _t('language');
   String get languageAuto => _t('languageAuto');
