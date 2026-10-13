@@ -11,19 +11,29 @@ import '../../core/storage/favorite_cinema_store.dart';
 /// the provider rebuilds itself, so the picker updates without a restart.
 final cinemaListProvider = FutureProvider<List<Cinema>>((ref) async {
   final repo = ref.watch(cinemaCatalogRepositoryProvider);
-  final version = await ref.watch(appVersionProvider.future);
+  String version;
+  try {
+    version = await ref.watch(appVersionProvider.future);
+  } catch (_) {
+    // Without a version the bundled list must still load: as "0.0.0" only
+    // entries declaring a minAppVersion are hidden.
+    version = '0.0.0';
+  }
   final cinemas = await repo.load(appVersion: version);
   repo.refreshIfStale(appVersion: version).then((changed) {
-    if (changed) ref.invalidateSelf();
+    if (changed && ref.mounted) ref.invalidateSelf();
   }).ignore();
   return cinemas;
 });
 
 /// The installed app's version ("1.0.8"), used to hide catalog entries that
-/// need a newer one. Overridden in tests.
-final appVersionProvider = FutureProvider<String>((ref) async {
-  return (await PackageInfo.fromPlatform()).version;
-});
+/// need a newer one. Overridden in tests. Never retried: a failure must
+/// reach [cinemaListProvider] at once (it falls back to "0.0.0") instead of
+/// holding the cinema list back through Riverpod's retry backoff.
+final appVersionProvider = FutureProvider<String>(
+  (ref) async => (await PackageInfo.fromPlatform()).version,
+  retry: (_, _) => null,
+);
 
 final favoriteCinemaStoreProvider = Provider<FavoriteCinemaStore>(
   (ref) => FavoriteCinemaStore(),
@@ -56,7 +66,9 @@ final favoriteCinemasProvider = FutureProvider<List<Cinema>>((ref) async {
 });
 
 /// The currently active favorite cinema, resolved to its full [Cinema]
-/// record - what the home screen actually shows showtimes for.
+/// record - what the home screen actually shows showtimes for. If the saved
+/// active key no longer resolves (the cinema was hidden or removed by the
+/// remote list), the first favorite that still resolves takes its place.
 final activeCinemaProvider = FutureProvider<Cinema?>((ref) async {
   final id = await ref.watch(activeCinemaIdProvider.future);
   if (id == null) return null;
@@ -64,5 +76,6 @@ final activeCinemaProvider = FutureProvider<Cinema?>((ref) async {
   for (final cinema in cinemas) {
     if (FavoriteCinemaStore.keyFor(cinema) == id) return cinema;
   }
-  return null;
+  final favorites = await ref.watch(favoriteCinemasProvider.future);
+  return favorites.isEmpty ? null : favorites.first;
 });
