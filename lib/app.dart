@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/date/clock.dart';
 import 'core/storage/film_info_store.dart';
+import 'core/storage/schedule_cache_store.dart';
 import 'core/date/day_label.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_provider.dart';
@@ -41,6 +42,11 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
         .purgeOlderThan(
           ref.read(clockProvider).now().subtract(const Duration(days: 60)),
         )
+        .ignore();
+    // Saved programmes of past days can never be shown again.
+    ref
+        .read(scheduleCacheStoreProvider)
+        .purgeBefore(ref.read(clockProvider).now())
         .ignore();
   }
 

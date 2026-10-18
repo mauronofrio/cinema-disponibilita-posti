@@ -6,6 +6,7 @@ import '../../core/date/clock.dart';
 import '../../core/date/day_label.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/models/cinema.dart';
+import '../../core/storage/schedule_cache_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/film_perforation_divider.dart';
 import '../../core/theme/error_with_retry.dart';
@@ -67,6 +68,11 @@ class _ShowtimesHomeScreenState extends ConsumerState<ShowtimesHomeScreen> {
           // TTL never fires while the failed screen is on show.
           return RefreshIndicator(
             onRefresh: () async {
+              // An explicit refresh always asks the cinema again, whatever
+              // the saved copy's age (see films_provider.dart).
+              await ref
+                  .read(scheduleCacheStoreProvider)
+                  .forget(cinema, day: _selectedDay);
               ref.invalidate(showingDatesProvider(cinema));
               if (_selectedDay != null) {
                 ref.invalidate(filmsForDayProvider((cinema, _selectedDay!)));

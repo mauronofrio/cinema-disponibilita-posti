@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/chains/chain_registry.dart';
+import '../../core/date/clock.dart';
+import '../../core/date/schedule_freshness.dart';
 import '../../core/models/cinema.dart';
 import '../../core/models/film.dart';
+import '../../core/storage/schedule_cache_store.dart';
 import '../../core/util/provider_ttl.dart';
 
 /// Films playing at a cinema with sessions on one specific day. The Space
@@ -14,17 +17,29 @@ import '../../core/util/provider_ttl.dart';
 /// PROJECT_NOTES.md for why (an aggressive per-IP rate limit on that
 /// platform makes pre-fetching several days upfront unsafe).
 ///
-/// Short in-memory TTL, never persisted. Not force-invalidated on day
-/// rollover the way [showingDatesProvider] is: since this is keyed by the
-/// literal calendar day rather than an abstract "today", there's no
-/// mislabeling risk from a stale cache the way the original app bug worked -
-/// worst case a specific day's session list is up to 7 minutes stale after
-/// a rollover, which the TTL clears on its own shortly after.
+/// Saved on the device (ScheduleCacheStore) and served from there while
+/// [isProgrammeFresh] says so: a day downloaded after 11:00 of that day is
+/// never downloaded again automatically, one downloaded earlier only once
+/// 11:00 of that day has passed and someone opens it. Pull-to-refresh
+/// forgets the saved copy first (see showtimes_home_screen.dart).
 final filmsForDayProvider = FutureProvider.autoDispose
     .family<List<Film>, (Cinema, DateTime)>((ref, args) async {
       final (cinema, day) = args;
       keepAliveFor(ref, const Duration(minutes: 7));
-      return ref
+      final store = ref.read(scheduleCacheStoreProvider);
+      final clock = ref.read(clockProvider);
+      final cached = await store.readFilms(cinema, day);
+      if (cached != null &&
+          isProgrammeFresh(
+            day: day,
+            fetchedAt: cached.fetchedAt,
+            now: clock.now(),
+          )) {
+        return cached.data;
+      }
+      final films = await ref
           .read(chainApiProvider(cinema.chain))
           .getFilmsForDay(cinema, day);
+      await store.writeFilms(cinema, day, films, clock.now());
+      return films;
     });

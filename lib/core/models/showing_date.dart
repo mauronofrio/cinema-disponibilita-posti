@@ -17,4 +17,16 @@ class ShowingDate {
 
   final DateTime date;
   final bool hasShowings;
+
+  /// Round-trip format of the on-device programme cache (see
+  /// ScheduleCacheStore) - not any chain's API shape.
+  Map<String, dynamic> toCacheJson() => {
+    'date': date.toIso8601String(),
+    'hasShowings': hasShowings,
+  };
+
+  factory ShowingDate.fromCacheJson(Map<String, dynamic> json) => ShowingDate(
+    date: DateTime.parse(json['date'] as String),
+    hasShowings: json['hasShowings'] as bool,
+  );
 }

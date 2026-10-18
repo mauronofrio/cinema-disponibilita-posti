@@ -18,6 +18,14 @@ class SessionAttribute {
   final String name;
   final String attributeType;
   final String? color;
+
+  /// Round-trip format of the on-device programme cache (see
+  /// ScheduleCacheStore) - not any chain's API shape.
+  Map<String, dynamic> toCacheJson() => {
+    'name': name,
+    'attributeType': attributeType,
+    'color': color,
+  };
 }
 
 class Session {
@@ -132,6 +140,48 @@ class Session {
 
   @override
   int get hashCode => sessionId.hashCode;
+
+  /// Round-trip format of the on-device programme cache (see
+  /// ScheduleCacheStore). Unlike [Session.fromJson] (The Space's API shape,
+  /// relative booking URL) [bookingPath] is stored and read back as is.
+  Map<String, dynamic> toCacheJson() => {
+    'sessionId': sessionId,
+    'startTime': startTime.toIso8601String(),
+    'endTime': endTime.toIso8601String(),
+    'screenName': screenName,
+    'isSoldOut': isSoldOut,
+    'formattedPrice': formattedPrice,
+    'isPriceVisible': isPriceVisible,
+    'attributes': [for (final a in attributes) a.toCacheJson()],
+    'bookingPath': bookingPath,
+    'webticScreenId': webticScreenId,
+    'eighteenTicketsFilmId': eighteenTicketsFilmId,
+    'twoTicketsServerEse': twoTicketsServerEse,
+    'twoTicketsPortEse': twoTicketsPortEse,
+  };
+
+  factory Session.fromCacheJson(Map<String, dynamic> json) => Session(
+    sessionId: json['sessionId'] as String,
+    startTime: DateTime.parse(json['startTime'] as String),
+    endTime: DateTime.parse(json['endTime'] as String),
+    screenName: json['screenName'] as String,
+    isSoldOut: json['isSoldOut'] as bool,
+    formattedPrice: json['formattedPrice'] as String?,
+    isPriceVisible: json['isPriceVisible'] as bool,
+    attributes: [
+      for (final a in json['attributes'] as List<dynamic>)
+        SessionAttribute(
+          name: (a as Map<String, dynamic>)['name'] as String,
+          attributeType: a['attributeType'] as String,
+          color: a['color'] as String?,
+        ),
+    ],
+    bookingPath: json['bookingPath'] as String?,
+    webticScreenId: (json['webticScreenId'] as num?)?.toInt(),
+    eighteenTicketsFilmId: json['eighteenTicketsFilmId'] as String?,
+    twoTicketsServerEse: json['twoTicketsServerEse'] as String?,
+    twoTicketsPortEse: json['twoTicketsPortEse'] as String?,
+  );
 }
 
 /// Groups [sessions] by their `Language` session attribute (The Space uses
@@ -187,6 +237,20 @@ class ShowingGroup {
 
   final DateTime date;
   final List<Session> sessions;
+
+  Map<String, dynamic> toCacheJson() => {
+    'date': date.toIso8601String(),
+    'sessions': [for (final s in sessions) s.toCacheJson()],
+  };
+
+  factory ShowingGroup.fromCacheJson(Map<String, dynamic> json) =>
+      ShowingGroup(
+        date: DateTime.parse(json['date'] as String),
+        sessions: [
+          for (final s in json['sessions'] as List<dynamic>)
+            Session.fromCacheJson(s as Map<String, dynamic>),
+        ],
+      );
 }
 
 class Film {
@@ -215,6 +279,27 @@ class Film {
   final String? posterImageSrc;
   final int? runningTime;
   final List<ShowingGroup> showingGroups;
+
+  /// Round-trip format of the on-device programme cache (see
+  /// ScheduleCacheStore) - not any chain's API shape.
+  Map<String, dynamic> toCacheJson() => {
+    'filmId': filmId,
+    'title': title,
+    'posterImageSrc': posterImageSrc,
+    'runningTime': runningTime,
+    'showingGroups': [for (final g in showingGroups) g.toCacheJson()],
+  };
+
+  factory Film.fromCacheJson(Map<String, dynamic> json) => Film(
+    filmId: json['filmId'] as String,
+    title: json['title'] as String,
+    posterImageSrc: json['posterImageSrc'] as String?,
+    runningTime: (json['runningTime'] as num?)?.toInt(),
+    showingGroups: [
+      for (final g in json['showingGroups'] as List<dynamic>)
+        ShowingGroup.fromCacheJson(g as Map<String, dynamic>),
+    ],
+  );
 
   /// Sessions for this film on the given calendar day, or an empty list.
   List<Session> sessionsOn(DateTime day) {
