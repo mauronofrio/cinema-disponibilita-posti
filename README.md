@@ -12,8 +12,9 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 - Un tasto "i" su ogni film apre trama (nella lingua dell'app) e trailer YouTube, presi da TMDb solo quando lo tocchi - mai richiesti in anticipo, e mai una seconda volta per lo stesso film
 - Da lì puoi cambiare giorno o orario senza tornare indietro alla lista film
 - Un tasto ti manda alla pagina ufficiale se vuoi comprare davvero il biglietto
-- Ti avvisa in automatico quando è disponibile una versione più recente (l'app non passa da nessuno store)
+- Ti avvisa in automatico quando è disponibile una versione più recente (l'app non passa da nessuno store), con un tasto per leggere le novità prima di scaricarla
 - L'elenco dei cinema si aggiorna da solo (al massimo una volta al giorno, da questo repository): i nuovi cinema arrivano senza dover installare una nuova versione
+- La programmazione già vista resta salvata sul telefono: passando da un cinema all'altro o riaprendo l'app non viene richiesta di nuovo ai siti dei cinema. Si riscarica solo tirando giù per aggiornare, oppure una volta dopo le 11 del giorno in questione se era stata scaricata prima (molte sale piccole sistemano la programmazione del giorno in mattinata). Le mappe posti invece sono sempre dal vivo
 
 ## Cinema supportati
 
@@ -37,7 +38,7 @@ Ognuna di queste catene parla un'API diversa (alcune un JSON pulito, altre solo 
 
 Flutter, nessun backend proprio: l'app chiama direttamente le API/i siti pubblici delle catene supportate.
 
-- **Stato**: Riverpod (`flutter_riverpod`), cache in-memory con TTL brevi. Persistenza locale (`shared_preferences`) solo per il cinema preferito, per l'ultimo elenco cinema scaricato e per la cache di trama/trailer (per titolo film, non per cinema - un film richiesto una volta non lo richiede più nemmeno da un altro cinema, pulita ogni 60 giorni)
+- **Stato**: Riverpod (`flutter_riverpod`), cache in-memory con TTL brevi per le mappe posti. Persistenza locale (`shared_preferences`) solo per il cinema preferito, per l'ultimo elenco cinema scaricato, per la programmazione già vista (per cinema e giorno, regola delle 11 in `schedule_freshness.dart`, giorni passati cancellati all'avvio) e per la cache di trama/trailer (per titolo film, non per cinema - un film richiesto una volta non lo richiede più nemmeno da un altro cinema, pulita ogni 60 giorni)
 - **Rete**: `dio`, un client per catena, più un client TMDb indipendente dalle catene per trama/trailer
 - **Routing**: `go_router`
 - **Un'astrazione, cinque implementazioni**: ogni catena implementa la stessa `ChainApi` (`getShowingDates`/`getFilmsForDay`/`getSeatMap`); schermate e provider non sanno mai con quale catena stanno parlando. Aggiungere una nuova catena (o un nuovo cinema indipendente sulla stessa piattaforma) è una nuova classe più una riga nel registro, senza toccare l'interfaccia utente
@@ -64,6 +65,10 @@ Altri `--dart-define` opzionali: `VERIFY_FILE` (default `assets/cinemas.json`), 
 - Fare il push di `master` (con l'`assets/cinemas.json` definitivo) **prima** di pubblicare l'APK o di provare una build release su un dispositivo: l'app scarica l'elenco dei cinema proprio da quel file.
 - Non rinominare mai il branch `master` e non spostare `assets/cinemas.json`: le app già installate leggono quell'URL esatto e non possono essere aggiornate.
 - Per nascondere un cinema, aggiungere `"minAppVersion"` alla sua voce invece di cancellarla: una voce cancellata dall'elenco remoto torna comunque visibile nelle app che la includono già.
+
+## Sostieni il progetto
+
+L'app è gratuita e senza pubblicità. Se ti è utile, puoi offrirmi un caffè su [PayPal](https://www.paypal.me/MauronofrioTool) (c'è anche un tasto nelle impostazioni dell'app).
 
 ## Disclaimer
 
