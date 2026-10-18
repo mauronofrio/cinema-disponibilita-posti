@@ -103,7 +103,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: EdgeInsets.fromLTRB(
           16,
-          16,
+          4,
           16,
           16 + MediaQuery.paddingOf(context).bottom,
         ),

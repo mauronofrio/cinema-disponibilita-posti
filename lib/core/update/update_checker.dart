@@ -4,6 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+/// Every release with its notes - fallback for a release without its own
+/// page link.
+const releasesPageUrl =
+    'https://github.com/mauronofrio/cinema-disponibilita-posti/releases';
+
 /// The app is distributed as a bare APK from GitHub releases, not through a
 /// store - without this check a user who installed it once would simply
 /// never learn an update exists. The releases API is public and unauthenticated
@@ -17,6 +22,7 @@ class AvailableUpdate {
     required this.latestVersion,
     required this.currentVersion,
     required this.downloadUrl,
+    required this.notesUrl,
   });
 
   final String latestVersion;
@@ -27,6 +33,9 @@ class AvailableUpdate {
   /// browser and Android takes over the download/install from there (no
   /// REQUEST_INSTALL_PACKAGES permission needed, unlike an in-app installer).
   final String downloadUrl;
+
+  /// The release's own GitHub page, where its notes (the changelog) are.
+  final String notesUrl;
 }
 
 /// One release as the GitHub API describes it, trimmed to what the update
@@ -34,10 +43,15 @@ class AvailableUpdate {
 /// String -> object function, testable without any platform/package-info
 /// plumbing.
 class LatestRelease {
-  const LatestRelease({required this.version, required this.downloadUrl});
+  const LatestRelease({
+    required this.version,
+    required this.downloadUrl,
+    required this.notesUrl,
+  });
 
   final String version;
   final String downloadUrl;
+  final String notesUrl;
 }
 
 /// `null` for anything that doesn't look like a release (e.g. a 404 body
@@ -58,9 +72,11 @@ LatestRelease? parseLatestRelease(String responseBody) {
       break;
     }
   }
+  final page = decoded['html_url'] as String?;
   return LatestRelease(
     version: tag,
-    downloadUrl: apkUrl ?? (decoded['html_url'] as String? ?? ''),
+    downloadUrl: apkUrl ?? (page ?? ''),
+    notesUrl: page == null || page.isEmpty ? releasesPageUrl : page,
   );
 }
 
@@ -126,6 +142,7 @@ final updateCheckProvider = FutureProvider<AvailableUpdate?>((ref) async {
       ),
       currentVersion: packageInfo.version,
       downloadUrl: release.downloadUrl,
+      notesUrl: release.notesUrl,
     );
   } catch (_) {
     return null;

@@ -44,6 +44,15 @@ void main() {
       final release = parseLatestRelease(body)!;
       expect(release.version, 'V1.0.0');
       expect(release.downloadUrl, 'https://example.com/app.apk');
+      expect(
+        release.notesUrl,
+        'https://github.com/mauronofrio/cinema-disponibilita-posti/releases/tag/V1.0.0',
+      );
+    });
+
+    test('notes fall back to the releases list without a release page', () {
+      const body = '{"tag_name": "V1.0.9", "assets": []}';
+      expect(parseLatestRelease(body)!.notesUrl, releasesPageUrl);
     });
 
     test('falls back to the release page when no APK asset exists', () {
@@ -60,11 +69,14 @@ void main() {
       );
     });
 
-    test('returns null for a body without a tag (e.g. a 404 error payload)', () {
-      expect(
-        parseLatestRelease('{"message": "Not Found", "status": "404"}'),
-        isNull,
-      );
-    });
+    test(
+      'returns null for a body without a tag (e.g. a 404 error payload)',
+      () {
+        expect(
+          parseLatestRelease('{"message": "Not Found", "status": "404"}'),
+          isNull,
+        );
+      },
+    );
   });
 }

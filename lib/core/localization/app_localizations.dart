@@ -131,6 +131,7 @@ class AppLocalizations {
     },
     'updateLater': {'en': 'Later', 'it': 'Più tardi'},
     'updateDownload': {'en': 'Download', 'it': 'Scarica'},
+    'updateWhatsNew': {'en': "What's new", 'it': 'Novità'},
     'donate': {
       'en': 'Support the project with a donation',
       'it': 'Sostieni il progetto con una donazione',
@@ -232,6 +233,7 @@ class AppLocalizations {
   String get updateAvailableTitle => _t('updateAvailableTitle');
   String get updateLater => _t('updateLater');
   String get updateDownload => _t('updateDownload');
+  String get updateWhatsNew => _t('updateWhatsNew');
   String get donate => _t('donate');
   String get donateHint => _t('donateHint');
   String get sourceCode => _t('sourceCode');

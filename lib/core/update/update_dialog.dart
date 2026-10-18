@@ -8,9 +8,12 @@ import 'update_checker.dart';
 /// app.dart) and the persistent app-bar icon on the showtimes screen (see
 /// `showtimes_home_screen.dart`) - dismissing the automatic prompt shouldn't
 /// mean losing the only way back to it before the next app restart.
-Future<void> showUpdateDialog(BuildContext context, AvailableUpdate update) async {
+Future<void> showUpdateDialog(
+  BuildContext context,
+  AvailableUpdate update,
+) async {
   final t = AppLocalizations.of(context);
-  final download = await showDialog<bool>(
+  final url = await showDialog<String>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(t.updateAvailableTitle),
@@ -19,20 +22,22 @@ Future<void> showUpdateDialog(BuildContext context, AvailableUpdate update) asyn
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context, false),
+          onPressed: () => Navigator.pop(context),
           child: Text(t.updateLater),
         ),
+        // The release page on GitHub, where its notes list what changed.
+        TextButton(
+          onPressed: () => Navigator.pop(context, update.notesUrl),
+          child: Text(t.updateWhatsNew),
+        ),
         FilledButton(
-          onPressed: () => Navigator.pop(context, true),
+          onPressed: () => Navigator.pop(context, update.downloadUrl),
           child: Text(t.updateDownload),
         ),
       ],
     ),
   );
-  if (download == true) {
-    await launchUrl(
-      Uri.parse(update.downloadUrl),
-      mode: LaunchMode.externalApplication,
-    );
+  if (url != null) {
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 }
