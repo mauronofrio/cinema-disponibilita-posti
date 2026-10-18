@@ -168,6 +168,19 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 32),
+          Text(
+            t.donateHint,
+            style: AppTheme.body(
+              context,
+            ).copyWith(color: AppColors.textMuted, fontSize: 13),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => openExternalUrl(context, Uri.parse(_donateUrl)),
+            icon: const Icon(Icons.favorite_outline),
+            label: Text(t.donate),
+          ),
+          const SizedBox(height: 32),
           const Divider(),
           const SizedBox(height: 16),
           Text(
@@ -211,6 +224,8 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 }
+
+const _donateUrl = 'https://www.paypal.me/MauronofrioTool';
 
 /// GitHub's own "mark" logo (the octocat glyph, `viewBox="0 0 16 16"`),
 /// tinted at render time via [ColorFilter] rather than shipped as a

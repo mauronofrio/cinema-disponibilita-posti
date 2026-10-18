@@ -131,6 +131,16 @@ class AppLocalizations {
     },
     'updateLater': {'en': 'Later', 'it': 'Più tardi'},
     'updateDownload': {'en': 'Download', 'it': 'Scarica'},
+    'donate': {
+      'en': 'Support the project with a donation',
+      'it': 'Sostieni il progetto con una donazione',
+    },
+    'donateHint': {
+      'en':
+          'The app is free and ad-free: if you find it useful, you can buy me a coffee on PayPal.',
+      'it':
+          "L'app è gratuita e senza pubblicità: se ti è utile, puoi offrirmi un caffè su PayPal.",
+    },
     'sourceCode': {
       'en': 'Source code on GitHub',
       'it': 'Codice sorgente su GitHub',
@@ -222,6 +232,8 @@ class AppLocalizations {
   String get updateAvailableTitle => _t('updateAvailableTitle');
   String get updateLater => _t('updateLater');
   String get updateDownload => _t('updateDownload');
+  String get donate => _t('donate');
+  String get donateHint => _t('donateHint');
   String get sourceCode => _t('sourceCode');
   String get filmInfoTooltip => _t('filmInfoTooltip');
   String get filmInfoUnavailable => _t('filmInfoUnavailable');
