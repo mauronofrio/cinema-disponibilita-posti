@@ -17,6 +17,9 @@ Future<void> showUpdateDialog(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(t.updateAvailableTitle),
+      // Less room between the message and the buttons than the default.
+      contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 4),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       content: Text(
         t.updateAvailableMessage(update.latestVersion, update.currentVersion),
       ),
