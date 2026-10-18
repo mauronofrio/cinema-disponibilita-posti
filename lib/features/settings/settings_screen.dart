@@ -136,7 +136,7 @@ class SettingsScreen extends ConsumerWidget {
             onPressed: () => context.push('/picker'),
             child: Text(t.addCinema),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 16),
           Text(
             t.language,
             style: AppTheme.display(context).copyWith(fontSize: 20),
@@ -180,9 +180,9 @@ class SettingsScreen extends ConsumerWidget {
             icon: const Icon(Icons.favorite_outline),
             label: Text(t.donate),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 12),
           const Divider(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Text(
             t.disclaimer,
             style: AppTheme.body(
