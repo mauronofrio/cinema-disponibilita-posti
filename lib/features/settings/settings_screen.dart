@@ -73,6 +73,8 @@ class SettingsScreen extends ConsumerWidget {
     final isActive = FavoriteCinemaStore.keyFor(cinema) == activeId;
     return Card(
       child: ListTile(
+        // Bin closer to the card's right edge and to the cinema's text.
+        contentPadding: const EdgeInsetsDirectional.only(start: 16, end: 4),
         leading: Icon(
           isActive ? Icons.radio_button_checked : Icons.radio_button_off,
           color: isActive ? AppColors.marquee : AppColors.textMuted,
@@ -83,6 +85,7 @@ class SettingsScreen extends ConsumerWidget {
           style: const TextStyle(color: AppColors.textMuted),
         ),
         trailing: IconButton(
+          visualDensity: VisualDensity.compact,
           icon: const Icon(Icons.delete_outline),
           tooltip: t.removeCinema,
           onPressed: () => _confirmAndRemove(context, ref, cinema),
