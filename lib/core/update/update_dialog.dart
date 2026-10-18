@@ -20,19 +20,33 @@ Future<void> showUpdateDialog(
       content: Text(
         t.updateAvailableMessage(update.latestVersion, update.currentVersion),
       ),
+      // Three buttons don't fit on one row on a phone, and the dialog's
+      // default overflow stacks them in a column: two secondary ones on top,
+      // the download centred below instead.
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(t.updateLater),
-        ),
-        // The release page on GitHub, where its notes list what changed.
-        TextButton(
-          onPressed: () => Navigator.pop(context, update.notesUrl),
-          child: Text(t.updateWhatsNew),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, update.downloadUrl),
-          child: Text(t.updateDownload),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(t.updateLater),
+                ),
+                // The release page on GitHub, where its notes list what changed.
+                TextButton(
+                  onPressed: () => Navigator.pop(context, update.notesUrl),
+                  child: Text(t.updateWhatsNew),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, update.downloadUrl),
+              child: Text(t.updateDownload),
+            ),
+          ],
         ),
       ],
     ),
