@@ -34,6 +34,7 @@ Future<NavigabilityResult> checkNavigability(
   DateTime now, {
   Future<void> Function(Duration) pause = _sleep,
   Duration retryDelay = const Duration(seconds: 10),
+  int horizonDays = 7,
 }) async {
   Future<T> retried<T>(Future<T> Function() call) async {
     try {
@@ -47,7 +48,7 @@ Future<NavigabilityResult> checkNavigability(
   NavigabilityResult r(Navigability v, String why) =>
       NavigabilityResult(cinema, v, why);
   final today = DateTime(now.year, now.month, now.day);
-  final horizon = DateTime(now.year, now.month, now.day + 7);
+  final horizon = DateTime(now.year, now.month, now.day + horizonDays);
 
   final List<DateTime> days;
   try {
@@ -60,7 +61,7 @@ Future<NavigabilityResult> checkNavigability(
     return r(Navigability.notNavigable, 'programmazione: $e');
   }
   if (days.isEmpty) {
-    return r(Navigability.notVerifiableNow, 'nessuna programmazione nei prossimi 7 giorni');
+    return r(Navigability.notVerifiableNow, 'nessuna programmazione nei prossimi $horizonDays giorni');
   }
 
   final future = <Session>[];
@@ -75,7 +76,7 @@ Future<NavigabilityResult> checkNavigability(
     return r(Navigability.notNavigable, 'film: $e');
   }
   if (future.isEmpty) {
-    return r(Navigability.notVerifiableNow, 'nessuno spettacolo futuro nei prossimi 7 giorni');
+    return r(Navigability.notVerifiableNow, 'nessuno spettacolo futuro nei prossimi $horizonDays giorni');
   }
   future.sort((a, b) => a.startTime.compareTo(b.startTime));
 

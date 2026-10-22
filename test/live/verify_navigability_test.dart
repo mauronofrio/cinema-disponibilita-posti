@@ -14,6 +14,8 @@ import '../support/navigability.dart';
 const _file = String.fromEnvironment('VERIFY_FILE', defaultValue: 'assets/cinemas.json');
 const _chain = String.fromEnvironment('VERIFY_CHAIN');
 const _ids = String.fromEnvironment('VERIFY_IDS');
+// Weekly or seasonal venues: widen the window (e.g. 30) to reach a show.
+const _horizonDays = int.fromEnvironment('VERIFY_HORIZON_DAYS', defaultValue: 7);
 const _delayMs = int.fromEnvironment('VERIFY_DELAY_MS', defaultValue: 4000);
 const _report = String.fromEnvironment('VERIFY_REPORT', defaultValue: 'build/navigability_report.json');
 
@@ -34,7 +36,7 @@ void main() {
     final results = <NavigabilityResult>[];
     for (final c in cinemas) {
       final api = container.read(chainApiProvider(c.chain));
-      final r = await checkNavigability(api, c, DateTime.now());
+      final r = await checkNavigability(api, c, DateTime.now(), horizonDays: _horizonDays);
       results.add(r);
       // ignore: avoid_print
       print('${switch (r.verdict) {
