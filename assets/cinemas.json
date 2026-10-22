@@ -2948,5 +2948,455 @@
     "lng": 17.1675488,
     "chain": "eighteenTickets",
     "host": "cinemamilleluci.18tickets.it"
+  },
+  {
+    "cinemaId": "albino",
+    "name": "Nuovo CineTeatro Albino - Albino",
+    "slug": "albino",
+    "address": "Piazza S. Giuliano 9, 24021, Albino, BG",
+    "lat": 45.7593019,
+    "lng": 9.7938776,
+    "chain": "eighteenTickets",
+    "host": "albino.18tickets.it"
+  },
+  {
+    "cinemaId": "alme",
+    "name": "Sala S. Fermo - Almè",
+    "slug": "alme",
+    "address": "Via Marconi, 24011, Almè, BG",
+    "lat": 45.7392849,
+    "lng": 9.6171897,
+    "chain": "eighteenTickets",
+    "host": "alme.18tickets.it"
+  },
+  {
+    "cinemaId": "ardesio",
+    "name": "Cinema Oratorio di Ardesio - Ardesio",
+    "slug": "ardesio",
+    "address": "Via Locatelli, 3, 24020, Ardesio, BG",
+    "lat": 45.9364675,
+    "lng": 9.9302917,
+    "chain": "eighteenTickets",
+    "host": "ardesio.18tickets.it"
+  },
+  {
+    "cinemaId": "aristoncolleferro",
+    "name": "Multisale Ariston - Colleferro",
+    "slug": "aristoncolleferro",
+    "address": "Via degli atleti 5, 00034, Colleferro, RM",
+    "lat": 41.7236331,
+    "lng": 13.0134388,
+    "chain": "eighteenTickets",
+    "host": "aristoncolleferro.18tickets.it"
+  },
+  {
+    "cinemaId": "asola",
+    "name": "Cinema San Carlo - Asola",
+    "slug": "asola",
+    "address": "Via Libertà, 1, 46041, Asola, MN",
+    "lat": 45.2215478,
+    "lng": 10.4134672,
+    "chain": "eighteenTickets",
+    "host": "asola.18tickets.it"
+  },
+  {
+    "cinemaId": "auditorium-lab80",
+    "name": "CULT! Diffusione culturale - Bergamo",
+    "slug": "auditorium-lab80",
+    "address": "via Norberto Duzioni 2, 24121, Bergamo, BG",
+    "lat": 45.6973717,
+    "lng": 9.6688495,
+    "chain": "eighteenTickets",
+    "host": "auditorium.lab80.18tickets.it"
+  },
+  {
+    "cinemaId": "bolgare",
+    "name": "Cineteatro Don Bosco - Bolgare",
+    "slug": "bolgare",
+    "address": "Piazza Caduti di Nassirya, 24060, Bolgare, BG",
+    "lat": 45.6341324,
+    "lng": 9.8148414,
+    "chain": "eighteenTickets",
+    "host": "bolgare.18tickets.it"
+  },
+  {
+    "cinemaId": "branzi",
+    "name": "Cinema di Branzi - Branzi",
+    "slug": "branzi",
+    "address": "Via Follo 17, 24010, Branzi, BG",
+    "lat": 46.0031228,
+    "lng": 9.7597956,
+    "chain": "eighteenTickets",
+    "host": "branzi.18tickets.it"
+  },
+  {
+    "cinemaId": "calcinate",
+    "name": "Sala della Comunità - Calcinate",
+    "slug": "calcinate",
+    "address": "Piazza Chiesa 2, 24050, Calcinate, BG",
+    "lat": 45.6185481,
+    "lng": 9.7976687,
+    "chain": "eighteenTickets",
+    "host": "calcinate.18tickets.it"
+  },
+  {
+    "cinemaId": "calolziocorte",
+    "name": "Cinema Auditorium - Calolziocorte",
+    "slug": "calolziocorte",
+    "address": "Piazza Arcipresbiterale, 4, 23801, Calolziocorte, LC",
+    "lat": 45.8027484,
+    "lng": 9.4314091,
+    "chain": "eighteenTickets",
+    "host": "calolziocorte.18tickets.it"
+  },
+  {
+    "cinemaId": "caravaggio",
+    "name": "Caravaggio - Roma",
+    "slug": "caravaggio",
+    "address": "Via Paisiello 24/i, 00198, Roma, RM",
+    "lat": 41.9185131,
+    "lng": 12.4932217,
+    "chain": "eighteenTickets",
+    "host": "caravaggio.18tickets.it"
+  },
+  {
+    "cinemaId": "casazza",
+    "name": "Sala della comunità - Casazza",
+    "slug": "casazza",
+    "address": "Piazza San Lorenzo, 1, 24060, Casazza, BG",
+    "lat": 45.751231,
+    "lng": 9.9083973,
+    "chain": "eighteenTickets",
+    "host": "casazza.18tickets.it"
+  },
+  {
+    "cinemaId": "castiglioneds",
+    "name": "Supercinema - Castiglione delle Stiviere",
+    "slug": "castiglioneds",
+    "address": "Piazza Duomo, 3, 46043, Castiglione delle Stiviere, MN",
+    "lat": 45.3918683,
+    "lng": 10.4867177,
+    "chain": "eighteenTickets",
+    "host": "castiglioneds.18tickets.it"
+  },
+  {
+    "cinemaId": "centropecci",
+    "name": "Centro Pecci Cinema - Prato",
+    "slug": "centropecci",
+    "address": "Viale Della Repubblica 277, 59100, Prato, PO",
+    "lat": 43.8607976,
+    "lng": 11.1092075,
+    "chain": "eighteenTickets",
+    "host": "centropecci.18tickets.it"
+  },
+  {
+    "cinemaId": "chiuduno",
+    "name": "Cinema Teatro Nuovo - Chiuduno",
+    "slug": "chiuduno",
+    "address": "via Tenente Belotti, 40, 24060, Chiuduno, BG",
+    "lat": 45.6501561,
+    "lng": 9.8496995,
+    "chain": "eighteenTickets",
+    "host": "chiuduno.18tickets.it"
+  },
+  {
+    "cinemaId": "cinelario",
+    "name": "Cinelario - Menaggio",
+    "slug": "cinelario",
+    "address": "Via Lusardi, 22017, Menaggio, CO",
+    "lat": 46.0215227,
+    "lng": 9.2383779,
+    "chain": "eighteenTickets",
+    "host": "cinelario.18tickets.it"
+  },
+  {
+    "cinemaId": "cineluxlivigno",
+    "name": "Cinelux Livigno - Livigno",
+    "slug": "cineluxlivigno",
+    "address": "Via Dala Gesa, 335/B, 23041, Livigno, SO",
+    "lat": 46.5427389,
+    "lng": 10.138652,
+    "chain": "eighteenTickets",
+    "host": "cineluxlivigno.18tickets.it"
+  },
+  {
+    "cinemaId": "cinemacaronno",
+    "name": "Cinema di Caronno - Caronno Pertusella",
+    "slug": "cinemacaronno",
+    "address": "Via Adua 119, 21042, Caronno Pertusella, VA",
+    "lat": 45.5975685,
+    "lng": 9.042155,
+    "chain": "eighteenTickets",
+    "host": "cinemacaronno.18tickets.it"
+  },
+  {
+    "cinemaId": "cinemapoliteama",
+    "name": "Cinema Politeama - Seveso",
+    "slug": "cinemapoliteama",
+    "address": "Via G. Galimberti 16, 20822, Seveso, MB",
+    "lat": 45.6460933,
+    "lng": 9.1367324,
+    "chain": "eighteenTickets",
+    "host": "cinemapoliteama.18tickets.it"
+  },
+  {
+    "cinemaId": "cinemastellamaris",
+    "name": "Cinema Stella Maris - Alba",
+    "slug": "cinemastellamaris",
+    "address": "Corso Langhe 106, 12051, Alba, CN",
+    "lat": 44.6861043,
+    "lng": 8.0337066,
+    "chain": "eighteenTickets",
+    "host": "cinemastellamaris.18tickets.it"
+  },
+  {
+    "cinemaId": "cinemaximall",
+    "name": "CineMaximall - Pontecagnano Faiano",
+    "slug": "cinemaximall",
+    "address": "Via Pacinotti, c/o Centro Comm.le Maximall, 84098, Pontecagnano Faiano, SA",
+    "lat": 40.6358088,
+    "lng": 14.9078021,
+    "chain": "eighteenTickets",
+    "host": "cinemaximall.18tickets.it"
+  },
+  {
+    "cinemaId": "cineteatrocles",
+    "name": "Cinema Teatro Cles - Cles",
+    "slug": "cineteatrocles",
+    "address": "Via Marconi 26, 38023, Cles, TN",
+    "lat": 46.3666332,
+    "lng": 11.0356488,
+    "chain": "eighteenTickets",
+    "host": "cineteatrocles.18tickets.it"
+  },
+  {
+    "cinemaId": "cineteatroforame",
+    "name": "Cinema Teatro Sociale Dario Fo e Franca Rame - Luino",
+    "slug": "cineteatroforame",
+    "address": "Corso XXV Aprile 1945, 3, 21016, Luino, VA",
+    "lat": 45.998123,
+    "lng": 8.7389394,
+    "chain": "eighteenTickets",
+    "host": "cineteatroforame.18tickets.it"
+  },
+  {
+    "cinemaId": "cineteatrolottagono",
+    "name": "Cine Teatro Lottagono - Bergamo",
+    "slug": "cineteatrolottagono",
+    "address": "Piazzale S. Paolo 35, 24128, Bergamo, BG",
+    "lat": 45.6909823,
+    "lng": 9.6551561,
+    "chain": "eighteenTickets",
+    "host": "cineteatrolottagono.18tickets.it"
+  },
+  {
+    "cinemaId": "cittadelladegliartisti",
+    "name": "Cittadella Degli Artisti - Molfetta",
+    "slug": "cittadelladegliartisti",
+    "address": "Via Bisceglie 775, 70056, Molfetta, BA",
+    "lat": 41.1765853,
+    "lng": 16.5126934,
+    "chain": "eighteenTickets",
+    "host": "cittadelladegliartisti.18tickets.it"
+  },
+  {
+    "cinemaId": "clusone",
+    "name": "Cinema Garden - Clusone",
+    "slug": "clusone",
+    "address": "Via XXV Aprile 3, 24023, Clusone, BG",
+    "lat": 45.8881105,
+    "lng": 9.9476105,
+    "chain": "eighteenTickets",
+    "host": "clusone.18tickets.it"
+  },
+  {
+    "cinemaId": "coneglianocinergia",
+    "name": "Cinergia - Conegliano",
+    "slug": "coneglianocinergia",
+    "address": "Via Matteotti 6, 31015, Conegliano, TV",
+    "lat": 45.8859432,
+    "lng": 12.3053664,
+    "chain": "eighteenTickets",
+    "host": "coneglianocinergia.18tickets.it"
+  },
+  {
+    "cinemaId": "dbdessai",
+    "name": "DB d'Essai - Lecce",
+    "slug": "dbdessai",
+    "address": "Via dei Salesiani 4, 73100, Lecce, LE",
+    "lat": 40.363871,
+    "lng": 18.1820683,
+    "chain": "eighteenTickets",
+    "host": "dbdessai.18tickets.it"
+  },
+  {
+    "cinemaId": "dreamcinema",
+    "name": "Dream Cinema - Frosinone",
+    "slug": "dreamcinema",
+    "address": "Via Giovanni Jacobucci 1, 03100, Frosinone, FR",
+    "lat": 41.6222385,
+    "lng": 13.3383372,
+    "chain": "eighteenTickets",
+    "host": "dreamcinema.18tickets.it"
+  },
+  {
+    "cinemaId": "drivein",
+    "name": "Drive In - Pozzuoli",
+    "slug": "drivein",
+    "address": "Contrada La Schiana 21/A, 80078, Pozzuoli, NA",
+    "lat": 40.8481698,
+    "lng": 14.0751381,
+    "chain": "eighteenTickets",
+    "host": "drivein.18tickets.it"
+  },
+  {
+    "cinemaId": "elio",
+    "name": "Cinema Elio - Calimera",
+    "slug": "elio",
+    "address": "Via Montinari 32, 73021, Calimera, LE",
+    "lat": 40.253921,
+    "lng": 18.2768821,
+    "chain": "eighteenTickets",
+    "host": "elio.18tickets.it"
+  },
+  {
+    "cinemaId": "faragera",
+    "name": "Cinema Oratorio S.Luigi - Fara Gera d'Adda",
+    "slug": "faragera",
+    "address": "Via Dante, 10, 24045, Fara Gera d'Adda, BG",
+    "lat": 45.5553483,
+    "lng": 9.5334153,
+    "chain": "eighteenTickets",
+    "host": "faragera.18tickets.it"
+  },
+  {
+    "cinemaId": "filodrammatici",
+    "name": "Teatro Filodrammatici - Treviglio",
+    "slug": "filodrammatici",
+    "address": "Piazza Santuario 3, 24047, Treviglio, BG",
+    "lat": 45.5220134,
+    "lng": 9.5905723,
+    "chain": "eighteenTickets",
+    "host": "filodrammatici.18tickets.it"
+  },
+  {
+    "cinemaId": "flores",
+    "name": "Cinema Flores - Vanzago",
+    "slug": "flores",
+    "address": "Via Garibaldi 28, 20043, Vanzago, MI",
+    "lat": 45.5271954,
+    "lng": 8.9983579,
+    "chain": "eighteenTickets",
+    "host": "flores.18tickets.it"
+  },
+  {
+    "cinemaId": "gorle",
+    "name": "Cineteatro Sorriso - Gorle",
+    "slug": "gorle",
+    "address": "Piazza Giovanni XXIII, 1, 24020, Gorle, BG",
+    "lat": 45.7044357,
+    "lng": 9.7208968,
+    "chain": "eighteenTickets",
+    "host": "gorle.18tickets.it"
+  },
+  {
+    "cinemaId": "grandapulia",
+    "name": "CineVillage GrandApulia - Foggia",
+    "slug": "grandapulia",
+    "address": "Strada provinciale, SP76, 71100, Foggia, FG",
+    "lat": 41.415094,
+    "lng": 15.6503129,
+    "chain": "eighteenTickets",
+    "host": "grandapulia.18tickets.it"
+  },
+  {
+    "cinemaId": "grumello",
+    "name": "Cinema Aurora - Grumello del Monte",
+    "slug": "grumello",
+    "address": "Piazza Mons. Carminati, 2, 24064, Grumello del Monte, BG",
+    "lat": 45.6363164,
+    "lng": 9.8689354,
+    "chain": "eighteenTickets",
+    "host": "grumello.18tickets.it"
+  },
+  {
+    "cinemaId": "ibf",
+    "name": "Cinema Teatro dei Trulli - Alberobello",
+    "slug": "ibf",
+    "address": "Via Ungaretti 26A, 70011, Alberobello, BA",
+    "lat": 40.7896338,
+    "lng": 17.2308409,
+    "chain": "eighteenTickets",
+    "host": "ibf.18tickets.it"
+  },
+  {
+    "cinemaId": "lacittadelcinema",
+    "name": "Città del Cinema - Foggia",
+    "slug": "lacittadelcinema",
+    "address": "Piazzale Anna de Lauro Matera, 71122, Foggia, FG",
+    "lat": 41.4464954,
+    "lng": 15.5381518,
+    "chain": "eighteenTickets",
+    "host": "lacittadelcinema.18tickets.it"
+  },
+  {
+    "cinemaId": "maestosocb",
+    "name": "Cinema Maestoso - Campobasso",
+    "slug": "maestosocb",
+    "address": "C.da Colle Delle Api, 86100, Campobasso, CB",
+    "lat": 41.588675,
+    "lng": 14.6619634,
+    "chain": "eighteenTickets",
+    "host": "maestosocb.18tickets.it"
+  },
+  {
+    "cinemaId": "manzoni",
+    "name": "Cinema Teatro Manzoni - Cassino",
+    "slug": "manzoni",
+    "address": "Piazza Diamare, 03043, Cassino, FR",
+    "lat": 41.4909998,
+    "lng": 13.8295146,
+    "chain": "eighteenTickets",
+    "host": "manzoni.18tickets.it"
+  },
+  {
+    "cinemaId": "massarenti",
+    "name": "Cinema Teatro Massarenti - Molinella",
+    "slug": "massarenti",
+    "address": "Corso Mazzini 85, 40062, Molinella, BO",
+    "lat": 44.6197684,
+    "lng": 11.6684259,
+    "chain": "eighteenTickets",
+    "host": "massarenti.18tickets.it"
+  },
+  {
+    "cinemaId": "massaua",
+    "name": "Massaua Cityplex - Torino",
+    "slug": "massaua",
+    "address": "Piazza Massaua 9, 10141, Torino, TO",
+    "lat": 45.0739563,
+    "lng": 7.6200513,
+    "chain": "eighteenTickets",
+    "host": "massaua.18tickets.it"
+  },
+  {
+    "cinemaId": "metropolis",
+    "name": "Multisala Metropolis - Bassano del Grappa",
+    "slug": "metropolis",
+    "address": "Via C. Colombo, 36061, Bassano del Grappa, VI",
+    "lat": 45.7430007,
+    "lng": 11.7355944,
+    "chain": "eighteenTickets",
+    "host": "metropolis.18tickets.it"
+  },
+  {
+    "cinemaId": "nettuno-anzioastoria",
+    "name": "Cinema Astoria al Teatro Spazio Vitale - Nettuno",
+    "slug": "nettuno-anzioastoria",
+    "address": "via Capitano Dante Canducci 29/A, 00048, Nettuno, RM",
+    "lat": 41.4662573,
+    "lng": 12.6819565,
+    "chain": "eighteenTickets",
+    "host": "nettuno.anzioastoria.18tickets.it"
   }
 ]
