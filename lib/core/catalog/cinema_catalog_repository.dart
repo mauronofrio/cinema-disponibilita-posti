@@ -115,15 +115,29 @@ class CinemaCatalogRepository {
   /// failure (network, storage, parsing) just means "no new list". Callers
   /// arriving while a refresh is running share it (one request). True means
   /// a new list was stored: [load] returns it, merged with the bundled one.
-  Future<bool> refreshIfStale({required String appVersion}) {
-    return _inFlight ??= _guardedRefresh(appVersion).whenComplete(() {
+  ///
+  /// [force] skips the 24h gate - the cinema picker asks every time it
+  /// opens, since that's when a just-added cinema is looked for. Cheap: an
+  /// unchanged list is a bodyless 304 thanks to the ETag. A forced call
+  /// arriving during a normal one waits for it, then asks again (the normal
+  /// one may have been skipped as fresh).
+  Future<bool> refreshIfStale({required String appVersion, bool force = false}) {
+    final running = _inFlight;
+    if (force && running != null) {
+      return running.then(
+        (changed) async =>
+            await refreshIfStale(appVersion: appVersion, force: true) ||
+            changed,
+      );
+    }
+    return _inFlight ??= _guardedRefresh(appVersion, force).whenComplete(() {
       _inFlight = null;
     });
   }
 
-  Future<bool> _guardedRefresh(String appVersion) async {
+  Future<bool> _guardedRefresh(String appVersion, bool force) async {
     try {
-      return await _refreshIfStale(appVersion);
+      return await _refreshIfStale(appVersion, force);
     } catch (_) {
       return false;
     }
@@ -138,12 +152,12 @@ class CinemaCatalogRepository {
     await prefs.setString(_appVersionKey, appVersion);
   }
 
-  Future<bool> _refreshIfStale(String appVersion) async {
+  Future<bool> _refreshIfStale(String appVersion, bool force) async {
     final prefs = await SharedPreferences.getInstance();
     await _dropCacheFromOtherVersion(prefs, appVersion);
     final checkedAt = DateTime.tryParse(prefs.getString(_checkedAtKey) ?? '');
     final now = _clock.now();
-    if (checkedAt != null) {
+    if (checkedAt != null && !force) {
       final age = now.difference(checkedAt);
       // A negative age means the clock went backwards: treat it as stale
       // rather than trusting a check stamped "in the future".

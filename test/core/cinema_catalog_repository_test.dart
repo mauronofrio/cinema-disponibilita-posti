@@ -110,6 +110,29 @@ void main() {
     expect(await repo.load(appVersion: '1.0.8'), hasLength(5));
   });
 
+  test('force (the picker opening) skips the 24h gate', () async {
+    await repo.refreshIfStale(appVersion: '1.0.8');
+    github.body = _catalog(6);
+    github.etag = '"v2"';
+    expect(await repo.refreshIfStale(appVersion: '1.0.8', force: true), isTrue);
+    expect(github.requests, 2);
+    expect(await repo.load(appVersion: '1.0.8'), hasLength(6));
+    // Unchanged on GitHub: a 304, nothing new.
+    expect(await repo.refreshIfStale(appVersion: '1.0.8', force: true), isFalse);
+    expect(github.requests, 3);
+  });
+
+  test('a forced refresh during a skipped normal one still asks GitHub', () async {
+    await repo.refreshIfStale(appVersion: '1.0.8');
+    github.body = _catalog(6);
+    github.etag = '"v2"';
+    final normal = repo.refreshIfStale(appVersion: '1.0.8'); // fresh: skipped
+    final forced = repo.refreshIfStale(appVersion: '1.0.8', force: true);
+    expect(await normal, isFalse);
+    expect(await forced, isTrue);
+    expect(github.requests, 2);
+  });
+
   test('Review Focus 1: offline or a 5xx keeps the last good list and '
       'retries on the next launch', () async {
     github.body = _catalog(5);

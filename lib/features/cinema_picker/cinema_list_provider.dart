@@ -6,25 +6,39 @@ import '../../core/models/cinema.dart';
 import '../../core/storage/favorite_cinema_store.dart';
 
 /// Every cinema this app version can show: cached-or-bundled immediately,
-/// then - at most once a day - refreshed from GitHub in the background
-/// (see CinemaCatalogRepository). When a refresh brings a new valid list
+/// then - at most once a day, and every time the picker opens (see
+/// [refreshCinemaListNow]) - refreshed from GitHub in the background (see
+/// CinemaCatalogRepository). When a refresh brings a new valid list
 /// the provider rebuilds itself, so the picker updates without a restart.
 final cinemaListProvider = FutureProvider<List<Cinema>>((ref) async {
   final repo = ref.watch(cinemaCatalogRepositoryProvider);
-  String version;
-  try {
-    version = await ref.watch(appVersionProvider.future);
-  } catch (_) {
-    // Without a version the bundled list must still load: as "0.0.0" only
-    // entries declaring a minAppVersion are hidden.
-    version = '0.0.0';
-  }
+  final version = await _versionOrFallback(ref.watch(appVersionProvider.future));
   final cinemas = await repo.load(appVersion: version);
   repo.refreshIfStale(appVersion: version).then((changed) {
     if (changed && ref.mounted) ref.invalidateSelf();
   }).ignore();
   return cinemas;
 });
+
+/// Without a version the bundled list must still load: as "0.0.0" only
+/// entries declaring a minAppVersion are hidden.
+Future<String> _versionOrFallback(Future<String> version) async {
+  try {
+    return await version;
+  } catch (_) {
+    return '0.0.0';
+  }
+}
+
+/// The cinema picker calls this when it opens: whoever is looking for a
+/// cinema gets the list as it is on GitHub now, not as of the last daily
+/// check - a cinema added this morning is there. Never throws.
+Future<void> refreshCinemaListNow(WidgetRef ref) async {
+  final repo = ref.read(cinemaCatalogRepositoryProvider);
+  final version = await _versionOrFallback(ref.read(appVersionProvider.future));
+  final changed = await repo.refreshIfStale(appVersion: version, force: true);
+  if (changed) ref.invalidate(cinemaListProvider);
+}
 
 /// The installed app's version ("1.0.8"), used to hide catalog entries that
 /// need a newer one. Overridden in tests. Never retried: a failure must

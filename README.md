@@ -13,7 +13,7 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 - Da lì puoi cambiare giorno o orario senza tornare indietro alla lista film
 - Un tasto ti manda alla pagina ufficiale se vuoi comprare davvero il biglietto
 - Ti avvisa in automatico quando è disponibile una versione più recente (l'app non passa da nessuno store), con un tasto per leggere le novità prima di scaricarla
-- L'elenco dei cinema si aggiorna da solo (al massimo una volta al giorno, da questo repository): i nuovi cinema arrivano senza dover installare una nuova versione
+- L'elenco dei cinema si aggiorna da solo da questo repository, una volta al giorno e ogni volta che apri la schermata per aggiungere un cinema: i nuovi cinema e le correzioni arrivano senza dover installare una nuova versione
 - La programmazione già vista resta salvata sul telefono: passando da un cinema all'altro o riaprendo l'app non viene richiesta di nuovo ai siti dei cinema. Si riscarica solo tirando giù per aggiornare, oppure una volta dopo le 11 del giorno in questione se era stata scaricata prima (molte sale piccole sistemano la programmazione del giorno in mattinata). Le mappe posti invece sono sempre dal vivo
 
 ## Cinema supportati

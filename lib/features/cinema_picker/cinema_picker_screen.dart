@@ -20,6 +20,12 @@ class _CinemaPickerScreenState extends ConsumerState<CinemaPickerScreen> {
   String _query = '';
 
   @override
+  void initState() {
+    super.initState();
+    refreshCinemaListNow(ref).ignore();
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
