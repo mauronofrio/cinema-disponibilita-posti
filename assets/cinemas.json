@@ -3418,5 +3418,15 @@
     "lng": 9.691106,
     "chain": "eighteenTickets",
     "host": "boccaleone.18tickets.it"
+  },
+  {
+    "cinemaId": "brembilla",
+    "name": "Sala della Comunità - Val Brembilla",
+    "slug": "brembilla",
+    "address": "Via Don Pietro Rizzi, 46, 24012, Val Brembilla, BG",
+    "lat": 45.8198112,
+    "lng": 9.597513,
+    "chain": "eighteenTickets",
+    "host": "brembilla.18tickets.it"
   }
 ]

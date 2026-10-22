@@ -19,7 +19,7 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 ## Cinema supportati
 
 <!-- cinema-counts:start -->
-**339 cinema supportati** · The Space 35 · UCI 33 · 18tickets 193 · Webtic 56 · 2Tickets 22
+**340 cinema supportati** · The Space 35 · UCI 33 · 18tickets 194 · Webtic 56 · 2Tickets 22
 <!-- cinema-counts:end -->
 
 | Catena | Copertura |
