@@ -2938,5 +2938,15 @@
     "lng": 17.0816616,
     "chain": "eighteenTickets",
     "host": "metropolis.multicine.18tickets.it"
+  },
+  {
+    "cinemaId": "cinema-milleluci",
+    "name": "Cinema Milleluci - Castellana Grotte",
+    "slug": "cinema-milleluci",
+    "address": "via G. Marconi 58, 70013, Castellana Grotte, BA",
+    "lat": 40.8829381,
+    "lng": 17.1675488,
+    "chain": "eighteenTickets",
+    "host": "cinemamilleluci.18tickets.it"
   }
 ]
