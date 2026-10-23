@@ -255,6 +255,25 @@ Da tenere presente quando le si riguarda: alcune sale sembravano vuote solo perc
 | Tensostruttura | — | [tensostruttura.lab80.18tickets.it](https://tensostruttura.lab80.18tickets.it/) |
 | Università Sant' Agostino | — | [universitasagostino.lab80.18tickets.it](https://universitasagostino.lab80.18tickets.it/) |
 
+## Stesso cinema con due link (12)
+
+Pagine diverse per la stessa sala. Decisione del 23 ottobre 2026.
+
+| Sala | Altro link | Link usato dall'app | Decisione |
+|---|---|---|---|
+| Cinemars - Andria | [cinemars.18tickets.it](https://cinemars.18tickets.it/) | [www.cinemars.it](https://www.cinemars.it/) | teniamo quello dell'app |
+| Cinema Multisala Cynthianum - Genzano di Roma | [genzano.18tickets.it](https://genzano.18tickets.it/) | [genzano.cinemagenzano.it](https://genzano.cinemagenzano.it/) | teniamo quello dell'app |
+| Movieplex - L'Aquila | [movieplexlaquila.18tickets.it](https://movieplexlaquila.18tickets.it/) | [www.movieplex.it](https://www.movieplex.it/) | teniamo quello dell'app |
+| Red Carpet Cinema - Monopoli | [monopoli.18tickets.it](https://monopoli.18tickets.it/) | [monopoli.redcarpetcinema.it](https://monopoli.redcarpetcinema.it/) | teniamo quello dell'app |
+| Red Carpet Cinema - Monopoli | [www.monopoli.18tickets.it](https://www.monopoli.18tickets.it/) | [monopoli.redcarpetcinema.it](https://monopoli.redcarpetcinema.it/) | teniamo quello dell'app |
+| Cineplex Moderno - Due Carrare | [pv.cineplexmoderno.18tickets.it](https://pv.cineplexmoderno.18tickets.it/) | [pd.cineplexmoderno.18tickets.it](https://pd.cineplexmoderno.18tickets.it/) | teniamo quello dell'app |
+| Cinema Etrusco - Tarquinia | [cinemaetrusco.18tickets.it](https://cinemaetrusco.18tickets.it/) | [tarquinia.cinemaetrusco.18tickets.it](https://tarquinia.cinemaetrusco.18tickets.it/) | teniamo quello dell'app |
+| Cinema Loren - Praia a Mare | [cinemaloren.18tickets.it](https://cinemaloren.18tickets.it/) | [praiaamare.cinemaloren.18tickets.it](https://praiaamare.cinemaloren.18tickets.it/) | teniamo quello dell'app |
+| Cine Teatro Olbia - Olbia | [cinemateatroolbia.18tickets.it](https://cinemateatroolbia.18tickets.it/) | [olbia.cinemateatroolbia.18tickets.it](https://olbia.cinemateatroolbia.18tickets.it/) | teniamo quello dell'app |
+| Cineteatro Boccaleone - Bergamo | [boccaleone.18tickets.it](https://boccaleone.18tickets.it/) | [cineteatro.boccaleone.18tickets.it](https://cineteatro.boccaleone.18tickets.it/) | l'app usava boccaleone: passata a cineteatro.boccaleone (quello ufficiale) |
+| Cinema Teatro dei Trulli - Alberobello | [trulli.ibf.18tickets.it](https://trulli.ibf.18tickets.it/) | [ibf.18tickets.it](https://ibf.18tickets.it/) | teniamo quello dell'app (stessi film; trulli.ibf usa le pagine a «eventi») |
+| Cineteatro Brolo | [cineteatrobrolo.18tickets.it](https://cineteatrobrolo.18tickets.it/) | [cineteatrobrolo.it](https://cineteatrobrolo.it/) | non ancora nell'app: da aggiungere con cineteatrobrolo.it (il sito ufficiale) quando l'app leggerà le pagine a «eventi» |
+
 ## Circuiti già catalogati (59)
 
 Pagine 18tickets che elencano più sale. Non vanno nell'app (ci vanno le singole sale): ogni sala collegata è già nell'app, classificata o spenta. Da ricontrollare in futuro per vedere se ne compaiono di nuove.
