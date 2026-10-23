@@ -3428,5 +3428,75 @@
     "lng": 9.597513,
     "chain": "eighteenTickets",
     "host": "brembilla.18tickets.it"
+  },
+  {
+    "cinemaId": "paradiso-anacapri",
+    "name": "Cinema Paradiso - Anacapri",
+    "slug": "paradiso-anacapri",
+    "address": "Piazza Cerio 1, 80071, Anacapri, NA",
+    "lat": 40.5534894,
+    "lng": 14.2177661,
+    "chain": "eighteenTickets",
+    "host": "anacapri.cinemadinapoli.18tickets.it"
+  },
+  {
+    "cinemaId": "astoria-anzio",
+    "name": "Cinema Astoria - Anzio",
+    "slug": "astoria-anzio",
+    "address": "Via G. Matteotti 8, 00042, Anzio, RM",
+    "lat": 41.4483242,
+    "lng": 12.6281504,
+    "chain": "eighteenTickets",
+    "host": "astoria.anzioastoria.18tickets.it"
+  },
+  {
+    "cinemaId": "cinemaomate",
+    "name": "Cinema Nuovo Omate - Agrate Brianza",
+    "slug": "cinemaomate",
+    "address": "Via F. Filzi 35, 20864, Omate di Agrate Brianza, MB",
+    "lat": 45.5842605,
+    "lng": 9.3790023,
+    "chain": "eighteenTickets",
+    "host": "cinemaomate.18tickets.it"
+  },
+  {
+    "cinemaId": "cinetempio",
+    "name": "CineTempio - Tempio Pausania",
+    "slug": "cinetempio",
+    "address": "Via Asilo 2, 07029, Tempio Pausania, SS",
+    "lat": 40.900343,
+    "lng": 9.1041733,
+    "chain": "eighteenTickets",
+    "host": "cinetempio.18tickets.it"
+  },
+  {
+    "cinemaId": "donboscomarsala",
+    "name": "Auditorium Cine Teatro Don Bosco - Marsala",
+    "slug": "donboscomarsala",
+    "address": "Via dello Sbarco 23, 91025, Marsala, TP",
+    "lat": 37.7945149,
+    "lng": 12.4381559,
+    "chain": "eighteenTickets",
+    "host": "donboscomarsala.18tickets.it"
+  },
+  {
+    "cinemaId": "macomer",
+    "name": "CineMacomer - Macomer",
+    "slug": "macomer",
+    "address": "Via Leonardo da Vinci snc, 08015, Macomer, NU",
+    "lat": 40.2626506,
+    "lng": 8.7678483,
+    "chain": "eighteenTickets",
+    "host": "macomer.18tickets.it"
+  },
+  {
+    "cinemaId": "modernissimo-napoli",
+    "name": "Multicinema Modernissimo - Napoli",
+    "slug": "modernissimo-napoli",
+    "address": "Via Cisterna dell'Olio 49/59, 80134, Napoli, NA",
+    "lat": 40.8476957,
+    "lng": 14.2502615,
+    "chain": "eighteenTickets",
+    "host": "modernissimo.andromeda.18tickets.it"
   }
 ]
