@@ -3498,5 +3498,26 @@
     "lng": 14.2502615,
     "chain": "eighteenTickets",
     "host": "modernissimo.andromeda.18tickets.it"
+  },
+  {
+    "cinemaId": "tuscia-ferretti",
+    "name": "CineTuscia Village - Vitorchiano",
+    "slug": "tuscia-ferretti",
+    "address": "Via Marmolada s.n.c., 01030, Vitorchiano, VT",
+    "lat": 42.4433649,
+    "lng": 12.173349,
+    "chain": "eighteenTickets",
+    "host": "tuscia.ferretti.18tickets.it"
+  },
+  {
+    "cinemaId": "noise-ilcinemino",
+    "name": "Noise - Il Cinemino - Milano",
+    "slug": "noise-ilcinemino",
+    "address": "Via Ascanio Sforza 49, 20136, Milano, MI",
+    "lat": 45.4469907,
+    "lng": 9.1771014,
+    "chain": "eighteenTickets",
+    "host": "noise.ilcinemino.18tickets.it",
+    "scheduleFromFilmPages": true
   }
 ]

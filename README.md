@@ -19,7 +19,7 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 ## Cinema supportati
 
 <!-- cinema-counts:start -->
-**347 cinema supportati** · The Space 35 · UCI 33 · 18tickets 201 · Webtic 56 · 2Tickets 22
+**349 cinema supportati** · The Space 35 · UCI 33 · 18tickets 203 · Webtic 56 · 2Tickets 22
 <!-- cinema-counts:end -->
 
 | Catena | Copertura |
@@ -58,7 +58,7 @@ Prima di pubblicare un nuovo cinema nell'elenco, si verifica che funzioni davver
 flutter test --run-skipped --tags live test/live --dart-define=VERIFY_CHAIN=eighteenTickets
 ```
 
-Altri `--dart-define` opzionali: `VERIFY_FILE` (default `assets/cinemas.json`), `VERIFY_IDS` (elenco di `cinemaId` separati da virgola), `VERIFY_DELAY_MS` (pausa tra un cinema e l'altro, default 4000), `VERIFY_HORIZON_DAYS` (quanti giorni avanti cercare uno spettacolo, default 7: alzalo, ad es. a 30, per le sale che proiettano una volta a settimana), `VERIFY_REPORT`. Il rapporto finisce in `build/navigability_report.json`.
+Altri `--dart-define` opzionali: `VERIFY_FILE` (default `assets/cinemas.json`), `VERIFY_IDS` (elenco di `cinemaId` separati da virgola), `VERIFY_DELAY_MS` (pausa tra un cinema e l'altro, default 4000), `VERIFY_HORIZON_DAYS` (quanti giorni avanti cercare uno spettacolo, default 7: alzalo, ad es. a 30, per le sale che proiettano una volta a settimana), `VERIFY_RETRY_SECONDS` (attesa prima di ripetere una richiesta fallita, default 10: alzala, ad es. a 60, per le sale 18tickets che rispondono 429 dopo poche richieste), `VERIFY_REPORT`. Il rapporto finisce in `build/navigability_report.json`.
 
 ### Rilascio
 

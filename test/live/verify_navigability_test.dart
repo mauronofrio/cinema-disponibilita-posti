@@ -16,6 +16,8 @@ const _chain = String.fromEnvironment('VERIFY_CHAIN');
 const _ids = String.fromEnvironment('VERIFY_IDS');
 // Weekly or seasonal venues: widen the window (e.g. 30) to reach a show.
 const _horizonDays = int.fromEnvironment('VERIFY_HORIZON_DAYS', defaultValue: 7);
+// Tenants that 429 after ~3 quick requests stay blocked ~40 s: raise this (e.g. 60).
+const _retrySeconds = int.fromEnvironment('VERIFY_RETRY_SECONDS', defaultValue: 10);
 const _delayMs = int.fromEnvironment('VERIFY_DELAY_MS', defaultValue: 4000);
 const _report = String.fromEnvironment('VERIFY_REPORT', defaultValue: 'build/navigability_report.json');
 
@@ -36,7 +38,8 @@ void main() {
     final results = <NavigabilityResult>[];
     for (final c in cinemas) {
       final api = container.read(chainApiProvider(c.chain));
-      final r = await checkNavigability(api, c, DateTime.now(), horizonDays: _horizonDays);
+      final r = await checkNavigability(api, c, DateTime.now(),
+          horizonDays: _horizonDays, retryDelay: Duration(seconds: _retrySeconds));
       results.add(r);
       // ignore: avoid_print
       print('${switch (r.verdict) {
