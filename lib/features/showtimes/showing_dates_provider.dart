@@ -9,9 +9,9 @@ import '../../core/storage/schedule_cache_store.dart';
 import '../../core/util/provider_ttl.dart';
 
 /// Which days the cinema has showings for. Saved on the device and reused
-/// while [isShowingDatesFresh] says so (downloaded today, and after 11:00 or
-/// it isn't 11:00 yet); force-invalidated on day rollover by the app shell
-/// (see app.dart), where the saved copy is then stale by that same rule.
+/// while [isShowingDatesFresh] says so (downloaded today, less than 30
+/// minutes ago); re-checked by the app shell every time the app comes back
+/// to the foreground (see app.dart).
 final showingDatesProvider = FutureProvider.autoDispose
     .family<List<ShowingDate>, Cinema>((ref, cinema) async {
       keepAliveFor(ref, const Duration(minutes: 7));

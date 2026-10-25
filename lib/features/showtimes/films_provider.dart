@@ -18,10 +18,10 @@ import '../../core/util/provider_ttl.dart';
 /// platform makes pre-fetching several days upfront unsafe).
 ///
 /// Saved on the device (ScheduleCacheStore) and served from there while
-/// [isProgrammeFresh] says so: a day downloaded after 11:00 of that day is
-/// never downloaded again automatically, one downloaded earlier only once
-/// 11:00 of that day has passed and someone opens it. Pull-to-refresh
-/// forgets the saved copy first (see showtimes_home_screen.dart).
+/// [isProgrammeFresh] says so (less than 30 minutes old); after that it is
+/// downloaded again the next time someone opens that day, or when the app
+/// comes back to the foreground (see app.dart). Pull-to-refresh forgets the
+/// saved copy first (see showtimes_home_screen.dart).
 final filmsForDayProvider = FutureProvider.autoDispose
     .family<List<Film>, (Cinema, DateTime)>((ref, args) async {
       final (cinema, day) = args;
@@ -30,11 +30,7 @@ final filmsForDayProvider = FutureProvider.autoDispose
       final clock = ref.read(clockProvider);
       final cached = await store.readFilms(cinema, day);
       if (cached != null &&
-          isProgrammeFresh(
-            day: day,
-            fetchedAt: cached.fetchedAt,
-            now: clock.now(),
-          )) {
+          isProgrammeFresh(fetchedAt: cached.fetchedAt, now: clock.now())) {
         return cached.data;
       }
       final films = await ref

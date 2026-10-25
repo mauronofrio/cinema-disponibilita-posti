@@ -113,40 +113,42 @@ void main() {
     api = _CountingChainApi();
   });
 
-  test('today downloaded after 11: not downloaded again on relaunch', () async {
+  test('reused for 30 minutes on relaunch, downloaded again after', () async {
     await launch().read(filmsForDayProvider((_cinema, _today)).future);
-    clock.current = DateTime(2026, 10, 20, 22);
+    clock.current = DateTime(2026, 10, 20, 12, 29);
     final films = await launch().read(
       filmsForDayProvider((_cinema, _today)).future,
     );
     expect(api.filmCalls, 1);
     expect(films.map((f) => f.filmId), ['f20']);
+    clock.current = DateTime(2026, 10, 20, 12, 31);
+    await launch().read(filmsForDayProvider((_cinema, _today)).future);
+    expect(api.filmCalls, 2);
   });
 
-  test(
-    'today downloaded before 11: reused until 11, downloaded after',
-    () async {
-      clock.current = DateTime(2026, 10, 20, 9);
-      await launch().read(filmsForDayProvider((_cinema, _today)).future);
-      clock.current = DateTime(2026, 10, 20, 10, 30);
-      await launch().read(filmsForDayProvider((_cinema, _today)).future);
-      expect(api.filmCalls, 1);
-      clock.current = DateTime(2026, 10, 20, 11, 5);
-      await launch().read(filmsForDayProvider((_cinema, _today)).future);
-      expect(api.filmCalls, 2);
-      clock.current = DateTime(2026, 10, 20, 18);
-      await launch().read(filmsForDayProvider((_cinema, _today)).future);
-      expect(api.filmCalls, 2);
-    },
-  );
-
-  test('tomorrow seen today: reused until 11 of tomorrow', () async {
+  test('tomorrow seen today follows the same 30-minute rule', () async {
     await launch().read(filmsForDayProvider((_cinema, _tomorrow)).future);
-    clock.current = DateTime(2026, 10, 21, 10);
+    clock.current = DateTime(2026, 10, 20, 12, 20);
     await launch().read(filmsForDayProvider((_cinema, _tomorrow)).future);
     expect(api.filmCalls, 1);
-    clock.current = DateTime(2026, 10, 21, 11, 30);
+    clock.current = DateTime(2026, 10, 20, 13);
     await launch().read(filmsForDayProvider((_cinema, _tomorrow)).future);
+    expect(api.filmCalls, 2);
+  });
+
+  test('an invalidated provider (app back in the foreground) re-checks '
+      'the saved copy: no request while fresh, a new one once stale', () async {
+    final app = launch();
+    final sub = app.listen(filmsForDayProvider((_cinema, _today)), (_, _) {});
+    addTearDown(sub.close);
+    await app.read(filmsForDayProvider((_cinema, _today)).future);
+    clock.current = DateTime(2026, 10, 20, 12, 10);
+    app.invalidate(filmsForDayProvider);
+    await app.read(filmsForDayProvider((_cinema, _today)).future);
+    expect(api.filmCalls, 1);
+    clock.current = DateTime(2026, 10, 20, 12, 45);
+    app.invalidate(filmsForDayProvider);
+    await app.read(filmsForDayProvider((_cinema, _today)).future);
     expect(api.filmCalls, 2);
   });
 
@@ -207,14 +209,19 @@ void main() {
     expect(films, isNotEmpty);
   });
 
-  test('list of days: reused today, downloaded again the next day', () async {
+  test('list of days: reused for 30 minutes, never across midnight', () async {
     await launch().read(showingDatesProvider(_cinema).future);
-    clock.current = DateTime(2026, 10, 20, 23);
+    clock.current = DateTime(2026, 10, 20, 12, 25);
     await launch().read(showingDatesProvider(_cinema).future);
     expect(api.dateCalls, 1);
-    clock.current = DateTime(2026, 10, 21, 8);
+    clock.current = DateTime(2026, 10, 20, 12, 40);
     await launch().read(showingDatesProvider(_cinema).future);
     expect(api.dateCalls, 2);
+    clock.current = DateTime(2026, 10, 20, 23, 50);
+    await launch().read(showingDatesProvider(_cinema).future);
+    clock.current = DateTime(2026, 10, 21, 0, 5);
+    await launch().read(showingDatesProvider(_cinema).future);
+    expect(api.dateCalls, 4);
   });
 
   test(

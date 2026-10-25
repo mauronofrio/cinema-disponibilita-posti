@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/date/clock.dart';
 import 'core/storage/film_info_store.dart';
 import 'core/storage/schedule_cache_store.dart';
-import 'core/date/day_label.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_provider.dart';
 import 'core/theme/app_theme.dart';
@@ -13,6 +12,7 @@ import 'core/theme/no_stretch_scroll_behavior.dart';
 import 'core/update/update_checker.dart';
 import 'core/update/update_dialog.dart';
 import 'features/cinema_picker/cinema_list_provider.dart';
+import 'features/showtimes/films_provider.dart';
 import 'features/showtimes/showing_dates_provider.dart';
 import 'routing/app_router.dart';
 
@@ -25,13 +25,13 @@ class TheSpaceApp extends ConsumerStatefulWidget {
 
 class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
   AppLifecycleListener? _lifecycleListener;
-  String? _lastKnownDayKey;
 
   @override
   void initState() {
     super.initState();
-    _lastKnownDayKey = todayKey(ref.read(clockProvider).now());
-    _lifecycleListener = AppLifecycleListener(onResume: _checkForDayRollover);
+    _lifecycleListener = AppLifecycleListener(
+      onResume: _refreshSchedulesOnResume,
+    );
     // Fire-and-forget, once per app process - same "housekeeping, not
     // something the UI waits on" shape as the update check. 60 days is
     // arbitrary but generous: this cache has no TTL otherwise (see
@@ -56,25 +56,21 @@ class _TheSpaceAppState extends ConsumerState<TheSpaceApp> {
     super.dispose();
   }
 
-  /// The actual fix for the official app's stale-"today" bug: every time the
-  /// app comes back to the foreground, recompute the real calendar day from
-  /// the device clock and compare it against the day we last saw. If it
-  /// changed, drop the cached showing dates for the current favorite so
-  /// they're refetched rather than silently served from yesterday.
+  /// Every time the app comes back to the foreground, re-run the schedule
+  /// providers: each one re-reads its saved copy and asks the cinema again
+  /// only if that copy is past its 30-minute limit (schedule_freshness.dart),
+  /// so a screen left open in the background doesn't keep showing films the
+  /// cinema has since pulled. A fresh copy costs no request, and the screen
+  /// keeps showing the old data while a stale one is reloaded.
   ///
-  /// Films are no longer invalidated here (see films_provider.dart):
-  /// they're now keyed by the literal calendar day being viewed, not by an
-  /// abstract "today", so a rollover can't cause the old mislabeling bug -
-  /// worst case a day's session list stays cached for up to its own TTL
-  /// past the rollover, which clears on its own.
-  Future<void> _checkForDayRollover() async {
-    final currentDayKey = todayKey(ref.read(clockProvider).now());
-    if (currentDayKey == _lastKnownDayKey) return;
-    _lastKnownDayKey = currentDayKey;
-
+  /// This also covers the official app's stale-"today" bug: a showing-dates
+  /// list from yesterday is never fresh, so it's always refetched after a
+  /// day rollover.
+  Future<void> _refreshSchedulesOnResume() async {
     final activeCinema = await ref.read(activeCinemaProvider.future);
     if (activeCinema == null) return;
     ref.invalidate(showingDatesProvider(activeCinema));
+    ref.invalidate(filmsForDayProvider);
   }
 
   @override
@@ -139,7 +135,9 @@ class _UpdateCheckGateState extends ConsumerState<_UpdateCheckGate> {
     _checked = true;
     final update = await ref.read(updateCheckProvider.future);
     final navigatorContext = rootNavigatorKey.currentContext;
-    if (update == null || navigatorContext == null || !navigatorContext.mounted) {
+    if (update == null ||
+        navigatorContext == null ||
+        !navigatorContext.mounted) {
       return;
     }
     await showUpdateDialog(navigatorContext, update);

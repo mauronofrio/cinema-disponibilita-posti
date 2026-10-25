@@ -14,7 +14,7 @@ Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a vol
 - Un tasto ti manda alla pagina ufficiale se vuoi comprare davvero il biglietto
 - Ti avvisa in automatico quando è disponibile una versione più recente (l'app non passa da nessuno store), con un tasto per leggere le novità prima di scaricarla
 - L'elenco dei cinema si aggiorna da solo da questo repository, una volta al giorno e ogni volta che apri la schermata per aggiungere un cinema: i nuovi cinema e le correzioni arrivano senza dover installare una nuova versione
-- La programmazione già vista resta salvata sul telefono: passando da un cinema all'altro o riaprendo l'app non viene richiesta di nuovo ai siti dei cinema. Si riscarica solo tirando giù per aggiornare, oppure una volta dopo le 11 del giorno in questione se era stata scaricata prima (molte sale piccole sistemano la programmazione del giorno in mattinata). Le mappe posti invece sono sempre dal vivo
+- La programmazione già vista resta salvata sul telefono: passando da un cinema all'altro o riaprendo l'app non viene richiesta di nuovo ai siti dei cinema. Dopo 30 minuti si riscarica, la prossima volta che si apre quel giorno o si torna nell'app (i cinema spesso pubblicano film e li tolgono poco dopo); tirando giù per aggiornare si riscarica subito. Le mappe posti invece sono sempre dal vivo
 
 ## Cinema supportati
 
@@ -38,7 +38,7 @@ Ognuna di queste catene parla un'API diversa (alcune un JSON pulito, altre solo 
 
 Flutter, nessun backend proprio: l'app chiama direttamente le API/i siti pubblici delle catene supportate.
 
-- **Stato**: Riverpod (`flutter_riverpod`), cache in-memory con TTL brevi per le mappe posti. Persistenza locale (`shared_preferences`) solo per il cinema preferito, per l'ultimo elenco cinema scaricato, per la programmazione già vista (per cinema e giorno, regola delle 11 in `schedule_freshness.dart`, giorni passati cancellati all'avvio) e per la cache di trama/trailer (per titolo film, non per cinema - un film richiesto una volta non lo richiede più nemmeno da un altro cinema, pulita ogni 60 giorni)
+- **Stato**: Riverpod (`flutter_riverpod`), cache in-memory con TTL brevi per le mappe posti. Persistenza locale (`shared_preferences`) solo per il cinema preferito, per l'ultimo elenco cinema scaricato, per la programmazione già vista (per cinema e giorno, valida 30 minuti, `schedule_freshness.dart`, giorni passati cancellati all'avvio) e per la cache di trama/trailer (per titolo film, non per cinema - un film richiesto una volta non lo richiede più nemmeno da un altro cinema, pulita ogni 60 giorni)
 - **Rete**: `dio`, un client per catena, più un client TMDb indipendente dalle catene per trama/trailer
 - **Routing**: `go_router`
 - **Un'astrazione, cinque implementazioni**: ogni catena implementa la stessa `ChainApi` (`getShowingDates`/`getFilmsForDay`/`getSeatMap`); schermate e provider non sanno mai con quale catena stanno parlando. Aggiungere una nuova catena (o un nuovo cinema indipendente sulla stessa piattaforma) è una nuova classe più una riga nel registro, senza toccare l'interfaccia utente
