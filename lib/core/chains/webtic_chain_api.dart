@@ -33,11 +33,12 @@ import 'webtic/webtic_seat_map_parser.dart';
 /// from the user's perspective, a single screen load.
 ///
 /// Seat maps are identical across every source though: `getOccupancy`
-/// alone (just `LocalId`+`PerformanceId`) always echoes back the real room
-/// id as `idsala` (confirmed live on every chain checked), so [getSeatMap]
-/// never needs to already know which room a showtime plays in - it calls
-/// `getOccupancy` first and reads the room off its response, then calls
-/// `getMapSeats`.
+/// alone (just `LocalId`+`PerformanceId`) echoes back the real room id as
+/// `idsala`, so [getSeatMap] calls it first and reads the room off its
+/// response, then calls `getMapSeats`. Except before a showing's first sale
+/// or booking: then `idsala` is 0 (seen on dozens of portal venues), and
+/// the room comes from the schedule's own `ScreenId` instead
+/// ([Session.webticScreenId], only known on the `getFullSchedule` sources).
 class WebticChainApi implements ChainApi {
   WebticChainApi(this._client, this._clock);
 
@@ -218,6 +219,7 @@ class WebticChainApi implements ChainApi {
             startTime: parsed.startTime,
             endTime: parsed.endTime,
             screenName: parsed.screenName,
+            webticScreenId: parsed.screenId,
             // Always false off The Space - see [Session.isSoldOut]: no other
             // chain publishes it, and deriving it would cost one seat-map
             // request per showtime.
@@ -462,7 +464,10 @@ class WebticChainApi implements ChainApi {
         localId,
         session.sessionId,
       );
-      final screenId = parseWebticScreenIdFromOccupancy(occupancyBody);
+      final screenId = resolveWebticScreenId(
+        occupancyScreenId: parseWebticScreenIdFromOccupancy(occupancyBody),
+        scheduleScreenId: session.webticScreenId,
+      );
       final mapSeatsBody = await _client.getMapSeats(localId, screenId);
       return compute(
         parseWebticSeatMap,

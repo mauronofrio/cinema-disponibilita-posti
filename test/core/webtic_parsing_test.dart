@@ -37,6 +37,15 @@ void main() {
       },
     );
 
+    test('keeps the room ScreenId, real session', () {
+      final films = parseWebticFullSchedule(raw);
+      final odissea = films.firstWhere((f) => f.eventId == '1464');
+      final session = odissea.sessionsByDay[DateTime(2026, 7, 16)]!.firstWhere(
+        (s) => s.performanceId == '45019',
+      );
+      expect(session.screenId, 235);
+    });
+
     test('"HH:MM" Duration is converted to total minutes', () {
       final films = parseWebticFullSchedule(raw);
       final odissea = films.firstWhere((f) => f.eventId == '1464');
@@ -281,6 +290,85 @@ void main() {
         expect(seatMap.rows.single.rowLabel, 'G');
       },
     );
+  });
+
+  group('resolveWebticScreenId', () {
+    test('the room from Occupancy wins when it is known', () {
+      expect(
+        resolveWebticScreenId(occupancyScreenId: 73, scheduleScreenId: 75),
+        73,
+      );
+    });
+
+    test('idsala 0 (nothing sold yet) falls back to the schedule ScreenId', () {
+      expect(
+        resolveWebticScreenId(occupancyScreenId: 0, scheduleScreenId: 75),
+        75,
+      );
+    });
+
+    test('stays 0 when neither source knows the room', () {
+      expect(
+        resolveWebticScreenId(occupancyScreenId: 0, scheduleScreenId: null),
+        0,
+      );
+    });
+  });
+
+  group('parseWebticSeatMap (free seating - POSTO UNICO)', () {
+    SeatMap parse(String mapSeatsJson, String occupancyJson) =>
+        parseWebticSeatMap(
+          WebticSeatMapPayload(
+            mapSeatsResponseBody: mapSeatsJson,
+            occupancyResponseBody: occupancyJson,
+          ),
+        );
+
+    test('a POSTO UNICO room is one unnumbered sector, no grid', () {
+      // Same shape as Ariston Sanremo's SALA RITZ (396 places, all aliased
+      // POSTO UNICO, real grid positions).
+      const mapSeatsJson = '''
+      {"DS":{"MapSeats":{"posti":[
+        {"idposto":"1/22","fila":2,"colonna":8,"alias":"POSTO UNICO","settore":"PT","tipologia":"STANDARD"},
+        {"idposto":"1/21","fila":2,"colonna":9,"alias":"POSTO UNICO","settore":"PT","tipologia":"STANDARD"},
+        {"idposto":"1/20","fila":2,"colonna":10,"alias":"POSTO UNICO","settore":"PT","tipologia":"STANDARD"}
+      ]}}}
+      ''';
+      const occupancyJson =
+          '{"DS":{"Occupancy":{"idsala":93,"posti":[{"idposto":"1/21","status":"ACQUISTO"}]}}}';
+      final seatMap = parse(mapSeatsJson, occupancyJson);
+      expect(seatMap.rows, isEmpty);
+      expect(seatMap.unnumberedSectors, hasLength(1));
+      expect(seatMap.unnumberedSectors.single.freeSeats, 2);
+      expect(seatMap.unnumberedSectors.single.capacity, 3);
+    });
+
+    test('a few numbered places alongside still make it free seating', () {
+      const mapSeatsJson = '''
+      {"DS":{"MapSeats":{"posti":[
+        {"idposto":"1","fila":1,"colonna":1,"alias":"POSTO UNICO","settore":"PT","tipologia":"STANDARD"},
+        {"idposto":"2","fila":1,"colonna":2,"alias":"Posto Unico","settore":"PT","tipologia":"STANDARD"},
+        {"idposto":"P.D.","fila":1,"colonna":3,"alias":"P.D.","settore":"PT","tipologia":"DISABILE"}
+      ]}}}
+      ''';
+      const occupancyJson = '{"DS":{"Occupancy":{"idsala":0,"posti":[]}}}';
+      final seatMap = parse(mapSeatsJson, occupancyJson);
+      expect(seatMap.unnumberedSectors.single.freeSeats, 3);
+    });
+
+    test('a numbered room keeps its grid', () {
+      const mapSeatsJson = '''
+      {"DS":{"MapSeats":{"posti":[
+        {"idposto":"A/1","fila":1,"colonna":1,"alias":"A/1","settore":"PT","tipologia":"STANDARD"},
+        {"idposto":"A/2","fila":1,"colonna":2,"alias":"POSTO UNICO","settore":"PT","tipologia":"STANDARD"},
+        {"idposto":"A/3","fila":1,"colonna":3,"alias":"A/3","settore":"PT","tipologia":"STANDARD"}
+      ]}}}
+      ''';
+      const occupancyJson = '{"DS":{"Occupancy":{"idsala":0,"posti":[]}}}';
+      final seatMap = parse(mapSeatsJson, occupancyJson);
+      expect(seatMap.unnumberedSectors, isEmpty);
+      expect(seatMap.rows.single.seats.whereType<Seat>(), hasLength(3));
+    });
   });
 
   group('parseWebticScreenIdFromOccupancy', () {

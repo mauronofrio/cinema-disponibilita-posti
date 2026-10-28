@@ -4,30 +4,28 @@ import '../parsing_utils.dart';
 
 /// One showtime for one film, on one specific day - as returned by
 /// `getFullSchedule`.
-///
-/// Used to also carry `screenId` (`ScreenId` from the raw response) on the
-/// claim it was "needed for the seat map's getMapSeats call" - that stopped
-/// being true once `WebticChainApi.getSeatMap` started deriving the room id
-/// from `getOccupancy`'s own `idsala` field instead (see that class's doc
-/// comment, "the idsala shortcut"), but the field itself, and its hard
-/// `as num` cast on every single performance in the catalog, stuck around
-/// unused. Removed rather than given a safe fallback like the audit's other
-/// stale-cast fixes: nothing reads it (confirmed with a grep), so there's no
-/// behaviour to preserve, only a cast to stop letting one performance
-/// missing `ScreenId` kill an entire cinema's catalog for a field nothing
-/// uses.
 class ParsedWebticSession {
   const ParsedWebticSession({
     required this.performanceId,
     required this.startTime,
     required this.endTime,
     required this.screenName,
+    this.screenId,
   });
 
   final String performanceId;
   final DateTime startTime;
   final DateTime endTime;
   final String screenName;
+
+  /// `ScreenId` from the raw response - the room's id for `getMapSeats`.
+  /// `WebticChainApi.getSeatMap` normally reads the room off `getOccupancy`
+  /// instead, but that answers `idsala: 0` until the showing's first seat
+  /// is sold or booked (confirmed live on Notorious Fiume Veneto and The
+  /// Screen Roma: idsala 0 always came with an empty `posti`), so this is
+  /// the fallback. Read leniently: a performance missing it just loses the
+  /// fallback, never the whole catalog.
+  final int? screenId;
 }
 
 /// One film's full catalog entry - every session it has, across every day
@@ -87,6 +85,7 @@ List<ParsedWebticFilm> parseWebticFullSchedule(String responseBody) {
               startTime: DateTime.parse(p['StartTime'] as String),
               endTime: DateTime.parse(p['EndTime'] as String),
               screenName: (p['Screen'] as String?) ?? '',
+              screenId: (p['ScreenId'] as num?)?.toInt(),
             ),
           )
           .toList();

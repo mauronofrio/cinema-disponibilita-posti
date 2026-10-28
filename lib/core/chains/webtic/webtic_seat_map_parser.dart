@@ -21,7 +21,8 @@ class WebticSeatMapPayload {
 /// even though the request itself only ever took a `PerformanceId` - no
 /// separate "which room does this showtime play in" lookup is needed at
 /// all, `getOccupancy` is called first and this is read off its response
-/// before calling `getMapSeats`.
+/// before calling `getMapSeats`. 0 before the first sale or booking - see
+/// [resolveWebticScreenId].
 int parseWebticScreenIdFromOccupancy(String occupancyResponseBody) {
   final occupancyJson =
       json.decode(occupancyResponseBody) as Map<String, dynamic>;
@@ -29,6 +30,19 @@ int parseWebticScreenIdFromOccupancy(String occupancyResponseBody) {
       (occupancyJson['DS'] as Map<String, dynamic>)['Occupancy']
           as Map<String, dynamic>;
   return (occupancy['idsala'] as num).toInt();
+}
+
+/// The room to ask `getMapSeats` for. `getOccupancy` answers `idsala: 0`
+/// (with an empty `posti`) until the showing's first seat is sold or
+/// booked - the map is still there under the schedule's own `ScreenId`, and
+/// with nothing taken every seat is simply free. Stays 0 when neither
+/// source knows the room, same empty map as before.
+int resolveWebticScreenId({
+  required int occupancyScreenId,
+  required int? scheduleScreenId,
+}) {
+  if (occupancyScreenId != 0) return occupancyScreenId;
+  return scheduleScreenId ?? 0;
 }
 
 /// Confirmed live on Giometti Cinema (Pesaro, room "2"/idsala 74): the
@@ -85,6 +99,39 @@ SeatMap parseWebticSeatMap(WebticSeatMapPayload payload) {
       .cast<Map<String, dynamic>>()
       .map((s) => s['idposto'] as String)
       .toSet();
+
+  // Free-seating rooms (Ariston Sanremo, Orione Bologna, Quattro Mori
+  // Livorno...) still list one map entry per place, but every one is
+  // aliased "POSTO UNICO" and their grid positions mean nothing to the
+  // buyer - so the room is shown as one unnumbered sector instead. By
+  // majority, since a couple of numbered accessibility places can sit
+  // alongside (Quattro Mori: 534 + 2).
+  final freeSeatingCount = rawSeats
+      .where(
+        (s) => ((s['alias'] as String?) ?? '').toUpperCase().startsWith(
+          'POSTO UNICO',
+        ),
+      )
+      .length;
+  if (freeSeatingCount * 2 > rawSeats.length) {
+    final taken = rawSeats
+        .where((s) => occupiedSeatIds.contains(s['idposto']))
+        .length;
+    return SeatMap(
+      screenLabel: '',
+      totalRows: 0,
+      totalColumns: 0,
+      rows: const [],
+      areaCategories: const [],
+      unnumberedSectors: [
+        UnnumberedSector(
+          name: 'Posto unico',
+          freeSeats: rawSeats.length - taken,
+          capacity: rawSeats.length,
+        ),
+      ],
+    );
+  }
 
   var totalColumns = 0;
   final byRow = <int, List<Map<String, dynamic>>>{};
