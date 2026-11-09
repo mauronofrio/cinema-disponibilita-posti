@@ -4,6 +4,13 @@ App Android **non ufficiale** per chi vuole solo sapere due cose, in fretta: *co
 
 Nata per risolvere due fastidi delle app ufficiali: l'etichetta "oggi" che a volte resta bloccata su ieri dopo la mezzanotte, e i tempi di caricamento della mappa posti - lenti non perché l'endpoint dei posti sia lento, ma perché l'app/sito ufficiale avviano l'intero flusso di prenotazione (ordine, pagamento, concessioni) prima ancora di mostrarti i posti liberi. Questa app salta dritta al punto.
 
+<p align="center">
+  <img src="docs/screenshots/1-film.jpg" width="200" alt="Spettacoli del giorno con locandine e orari">
+  <img src="docs/screenshots/2-posti.jpg" width="200" alt="Mappa posti con legenda e posti occupati">
+  <img src="docs/screenshots/3-scheda.jpg" width="200" alt="Scheda film con trama e trailer">
+  <img src="docs/screenshots/4-scelta.jpg" width="200" alt="I tuoi cinema nelle impostazioni">
+</p>
+
 ## Cosa fa
 
 - Scegli il tuo cinema preferito da una lista ricercabile per nome, catena o città (o più di uno, e passa dall'uno all'altro dalle impostazioni)
